@@ -48,25 +48,10 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#hero" onclick="scrollToTop(event)">Hero</a>
+                            <a class="nav-link" href="#home" onclick="scrollToTop(event)">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#projects">Projects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sideProjects">Side</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#skills">Skills</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#experiences">Experiences</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#contact">Contact</a>
+                            <a class="nav-link" href="#catalog">Catalog</a>
                         </li>
                     </ul>
                 </div>
@@ -91,6 +76,7 @@
                             space where gamers can discover exclusive products and unique collaborations to elevate
                             their gaming experience.
                         </p>
+                        <a href="#shop-now" class="btn-cta sci-fi-btn">Explore the Galaxy of Games</a>
                     </div>
                 </div>
             </div>
@@ -102,38 +88,50 @@
 
             <div class="container">
                 <div class="row">
-                    <div class="col-md-4 col-12">
+                    <div class="col-lg-3 col-md-4 col-12">
                         <aside class="sidebar-categories">
-                            <h2 class="section-heading">Categories</h2>
-                            <ul>
-                                <li><a href="#">Console & Games</a>
-                                    <ul>
-                                        <li><a href="#">Nintendo Switch</a></li>
-                                        <li><a href="#">PlayStation</a></li>
-                                        <li><a href="#">Xbox</a></li>
-                                        <li><a href="#">PC Games</a></li>
-                                        <li><a href="#">Game Key / Digital Codes</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="#">Gaming Gear & Accessories</a>
-                                    <ul>
-                                        <li><a href="#">Headsets & Microphones</a></li>
-                                        <li><a href="#">Keyboards & Mice</a></li>
-                                        <li><a href="#">Mousepads & Desk Mats</a></li>
-                                        <li><a href="#">Controllers & Joysticks</a></li>
-                                        <li><a href="#">Gaming Chairs</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="#">Merchandise & Collectibles</a></li>
-                                <li><a href="#">Trading Cards & Board Games</a></li>
-                                <li><a href="#">Tech & Hardware</a></li>
-                                <li><a href="#">Pre-Owned / Used Items</a></li>
-                                <li><a href="#">New Arrivals</a></li>
-                                <li><a href="#">Sale / Discounts</a></li>
-                            </ul>
+                            <!-- Toggle button shown only on small screens -->
+                            <button class="btn btn-primary d-md-none mb-3 btn-collapse" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#categoryCollapse" aria-expanded="false"
+                                aria-controls="categoryCollapse">
+                                Open Category
+                            </button>
+
+                            <!-- Collapsible wrapper -->
+                            <div class="collapse d-md-block" id="categoryCollapse">
+                                <h2 class="categories-heading">Categories</h2>
+                                <ul class="categories-list">
+                                    <li>
+                                        <a href="#" class="parent-link">Console & Games</a>
+                                        <ul class="submenu">
+                                            <li><a href="#">Nintendo Switch</a></li>
+                                            <li><a href="#">PlayStation</a></li>
+                                            <li><a href="#">Xbox</a></li>
+                                            <li><a href="#">PC Games</a></li>
+                                            <li><a href="#">Game Key / Digital Codes</a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="parent-link">Gaming Gear & Accessories</a>
+                                        <ul class="submenu">
+                                            <li><a href="#">Headsets & Microphones</a></li>
+                                            <li><a href="#">Keyboards & Mice</a></li>
+                                            <li><a href="#">Mousepads & Desk Mats</a></li>
+                                            <li><a href="#">Controllers & Joysticks</a></li>
+                                            <li><a href="#">Gaming Chairs</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#" class="parent-link">Merchandise & Collectibles</a></li>
+                                    <li><a href="#" class="parent-link">Trading Cards & Board Games</a></li>
+                                    <li><a href="#" class="parent-link">Tech & Hardware</a></li>
+                                    <li><a href="#" class="parent-link">Pre-Owned / Used Items</a></li>
+                                    <li><a href="#" class="parent-link">New Arrivals</a></li>
+                                    <li><a href="#" class="parent-link">Sale / Discounts</a></li>
+                                </ul>
+                            </div>
                         </aside>
                     </div>
-                    <div class="col-md-8 col-12">
+                    <div class="col-lg-9 col-md-8 col-12">
                         <section id="featuredAdvertisement" class="featured-advertisement">
                             <div class="container">
                                 <div class="row justify-content-center">
@@ -345,7 +343,9 @@
 
             </div>
 
-
+            <button id="scrollTopBtn" title="Back to Top" aria-label="Scroll to top">
+                <i class="fas fa-arrow-up"></i>
+            </button>
         </main>
 
         <footer class="site-footer text-center mt-5">

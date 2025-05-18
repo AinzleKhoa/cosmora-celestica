@@ -666,10 +666,6 @@ nav button {
     transform: scale(1.1);
 }
 
-nav {
-    opacity: 0;
-}
-
 /*---------------------------------------
   SECTION       
 -----------------------------------------*/
@@ -756,6 +752,124 @@ nav {
     border-bottom-left-radius: 10%;
 }
 
+/* CTA Button */
+.btn-cta {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 14px 40px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #00e5ff;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    border: 2px solid #00e5ff;
+    border-radius: 50px;
+    box-shadow:
+        0 0 12px #00e5ff,
+        0 0 24px #00b0cc,
+        inset 0 0 6px #00e5ff;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.btn-cta:hover,
+.btn-cta:focus {
+    color: #33ffff;
+    border-color: #33ffff;
+    box-shadow:
+        0 0 30px #33ffff,
+        0 0 40px #0099ff,
+        inset 0 0 10px #33ffff;
+    outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .btn-cta {
+        font-size: 16px;
+        padding: 12px 36px;
+        margin-top: 24px;
+    }
+
+    .banner-wrapper {
+        height: auto;
+        text-align: center;
+    }
+
+    .banner-name {
+        font-size: 48px;
+    }
+
+    .banner-role {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .banner-description {
+        font-size: 14px;
+        max-width: 100%;
+    }
+
+    .banner-image img {
+        width: 100%;
+        max-width: 300px;
+        border-bottom-left-radius: 8%;
+    }
+
+    .banner-text {
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-cta {
+        font-size: 14px;
+        padding: 10px 30px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+    }
+
+    .banner-wrapper {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        margin-top: 20px;
+    }
+
+    .banner-image,
+    .banner-text {
+        flex: 1 1 100%;
+        text-align: center;
+        padding: 10px 15px;
+    }
+
+    .banner-name {
+        font-size: 36px;
+        letter-spacing: 0.05em;
+    }
+
+    .banner-role {
+        font-size: 16px;
+        margin-bottom: 15px;
+        letter-spacing: 0.1em;
+    }
+
+    .banner-description {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .banner-image img {
+        max-width: 250px;
+        border-radius: 15px 15px 0 0;
+        border-bottom-left-radius: 0;
+    }
+}
+
 /*---------------------------------------
   SHADOW TRANSITION       
 -----------------------------------------*/
@@ -784,6 +898,47 @@ nav {
 /*---------------------------------------
  CATEGORY             
 -----------------------------------------*/
+.btn-collapse {
+    background-color: #007bff;
+    /* You can use a darker or neon-blue shade here */
+    border: none;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #00e5ff;
+    text-shadow:
+        0 0 8px #00e5ff,
+        0 0 12px #00b0cc;
+    box-shadow:
+        0 0 12px #00e5ff,
+        0 0 20px #00b0cc;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    display: block;
+    margin: auto;
+    max-width: 200px;
+    width: 100%;
+}
+
+.btn-collapse:hover,
+.btn-collapse:focus {
+    background-color: #0056b3;
+    /* Slightly darker blue */
+    color: #33ffff;
+    box-shadow:
+        0 0 20px #33ffff,
+        0 0 30px #0099ff;
+    outline: none;
+}
+
+.btn-collapse:active {
+    background-color: #003d80;
+    box-shadow: none;
+    color: #00ccff;
+}
 
 .sidebar-categories {
     background: rgba(0, 15, 30, 0.6);
@@ -792,19 +947,15 @@ nav {
     border: 1px solid rgba(0, 150, 255, 0.4);
     border-radius: 12px;
     color: #8ac9ff;
+    transition: all 0.3s ease;
     box-shadow:
         0 0 15px rgba(0, 150, 255, 0.7),
         inset 0 0 10px rgba(0, 150, 255, 0.4);
     padding: 20px 25px;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    max-height: 80vh;
-    overflow-y: auto;
 }
 
 /* Heading */
-.sidebar-categories h2 {
+.categories-heading {
     color: #52c7ff;
     font-weight: 700;
     font-size: 1.8rem;
@@ -815,27 +966,37 @@ nav {
 }
 
 /* List styles */
-.sidebar-categories ul {
+.categories-list {
     list-style: none;
     padding-left: 0;
+    padding-right: 10px;
+    margin: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #00e5ff transparent;
+    font-weight: 500;
+    max-height: 80vh;
 }
 
-.sidebar-categories ul li {
+.categories-list>li {
     margin-bottom: 12px;
 }
 
 /* Parent category link */
-.sidebar-categories>ul>li>a {
+.categories-list>li>a.parent-link {
     color: #7ad1ff;
     font-size: 1.1rem;
     font-weight: 600;
     text-decoration: none;
     position: relative;
-    padding-left: 10px;
+    padding-left: 16px;
+    /* space for arrow */
+    display: inline-block;
     transition: color 0.3s ease;
 }
 
-.sidebar-categories>ul>li>a::before {
+/* Arrow before parent links */
+.categories-list>li>a.parent-link::before {
     content: "▶";
     position: absolute;
     left: 0;
@@ -846,19 +1007,25 @@ nav {
     transition: transform 0.3s ease;
 }
 
-/* Rotate arrow when submenu is hovered */
-.sidebar-categories>ul>li:hover>a::before {
+/* Rotate arrow on hover */
+.categories-list>li:hover>a.parent-link::before {
     transform: translateY(-50%) rotate(90deg);
 }
 
 /* Submenu */
-.sidebar-categories ul ul {
+.categories-list ul.submenu {
     margin-top: 8px;
     padding-left: 18px;
     border-left: 1px solid rgba(0, 150, 255, 0.3);
+    list-style: none;
 }
 
-.sidebar-categories ul ul li a {
+.categories-list ul.submenu>li {
+    margin-bottom: 6px;
+}
+
+/* Submenu links */
+.categories-list ul.submenu>li>a {
     color: #a0d8ff;
     font-size: 0.95rem;
     font-weight: 400;
@@ -866,32 +1033,20 @@ nav {
     transition: color 0.3s ease;
 }
 
-.sidebar-categories ul ul li a:hover {
+/* Submenu link hover */
+.categories-list ul.submenu>li>a:hover {
     color: #00e5ff;
     text-shadow: 0 0 8px #00e5ff;
 }
 
 /* Hover effect for parent links */
-.sidebar-categories>ul>li>a:hover {
+.categories-list>li>a.parent-link:hover {
     color: #00e5ff;
     text-shadow:
         0 0 8px #00e5ff,
         0 0 12px #00b0cc;
 }
 
-/* Scrollbar styling */
-.sidebar-categories::-webkit-scrollbar {
-    width: 8px;
-}
-
-.sidebar-categories::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 150, 255, 0.6);
-    border-radius: 10px;
-}
-
-.sidebar-categories::-webkit-scrollbar-track {
-    background: transparent;
-}
 
 /*---------------------------------------
  ADVERTISEMENT             
@@ -1239,6 +1394,47 @@ nav {
     font-size: 0.85rem;
     opacity: 0.8;
     margin: 0;
+}
+
+/*---------------------------------------
+  SCROLL TO TOP             
+-----------------------------------------*/
+#scrollTopBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(77, 208, 225, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow:
+        0 0 20px #4dd0e1,
+        inset 0 0 15px #00cfff;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: none;
+    /* hidden initially */
+    backdrop-filter: blur(6px);
+    color: #4dd0e1;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#scrollTopBtn:hover {
+    background: rgba(0, 255, 255, 0.4);
+    box-shadow:
+        0 0 30px #00fff7,
+        inset 0 0 20px #00fff7;
+}
+
+#scrollTopBtn img {
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 0 5px #00fff7);
 }
 
 /*---------------------------------------
