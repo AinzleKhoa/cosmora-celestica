@@ -134,7 +134,7 @@ function initPage() {
     });
     // Games (1, 2, 4 items)
     initOwlCarousel('.featured-games__carousel', {
-        responsiveItems: { 0: 1, 600: 2, 1000: 4 }
+        responsiveItems: { 0: 1, 600: 2, 1000: 3 }
     });
     // Accessories (1, 2, 3 items)
     initOwlCarousel('.featured-accessories__carousel', {
