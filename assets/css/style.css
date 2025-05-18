@@ -776,7 +776,7 @@ nav {
     z-index: 2;
 }
 
-.category,
+.sidebar-categories,
 .featured-advertisement {
     margin-top: 100px;
 }
@@ -785,16 +785,112 @@ nav {
  CATEGORY             
 -----------------------------------------*/
 
-/* Modal Background */
-.category {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(3px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: #ced7e0;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.8), 0 0 25px rgba(125, 221, 244, 0.8);
+.sidebar-categories {
+    background: rgba(0, 15, 30, 0.6);
+    /* nền đậm hơn, tông xanh dương đen */
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 150, 255, 0.4);
+    border-radius: 12px;
+    color: #8ac9ff;
+    box-shadow:
+        0 0 15px rgba(0, 150, 255, 0.7),
+        inset 0 0 10px rgba(0, 150, 255, 0.4);
+    padding: 20px 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
     transition: all 0.3s ease;
-    padding: 10px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Heading */
+.sidebar-categories h2 {
+    color: #52c7ff;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow:
+        0 0 10px #52c7ff,
+        0 0 15px #00cfff;
+}
+
+/* List styles */
+.sidebar-categories ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.sidebar-categories ul li {
+    margin-bottom: 12px;
+}
+
+/* Parent category link */
+.sidebar-categories>ul>li>a {
+    color: #7ad1ff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    position: relative;
+    padding-left: 10px;
+    transition: color 0.3s ease;
+}
+
+.sidebar-categories>ul>li>a::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00bfff;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+/* Rotate arrow when submenu is hovered */
+.sidebar-categories>ul>li:hover>a::before {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+/* Submenu */
+.sidebar-categories ul ul {
+    margin-top: 8px;
+    padding-left: 18px;
+    border-left: 1px solid rgba(0, 150, 255, 0.3);
+}
+
+.sidebar-categories ul ul li a {
+    color: #a0d8ff;
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.sidebar-categories ul ul li a:hover {
+    color: #00e5ff;
+    text-shadow: 0 0 8px #00e5ff;
+}
+
+/* Hover effect for parent links */
+.sidebar-categories>ul>li>a:hover {
+    color: #00e5ff;
+    text-shadow:
+        0 0 8px #00e5ff,
+        0 0 12px #00b0cc;
+}
+
+/* Scrollbar styling */
+.sidebar-categories::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-categories::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 150, 255, 0.6);
+    border-radius: 10px;
+}
+
+.sidebar-categories::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 /*---------------------------------------
