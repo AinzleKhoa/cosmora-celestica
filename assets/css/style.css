@@ -694,6 +694,11 @@ nav {
   BANNER       
 -----------------------------------------*/
 
+.banner-section {
+    position: relative;
+    z-index: 1;
+}
+
 .banner-name {
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
@@ -752,18 +757,55 @@ nav {
 }
 
 /*---------------------------------------
+  SHADOW TRANSITION       
+-----------------------------------------*/
+.main-container {
+    position: relative;
+    z-index: 2;
+}
+
+.shadow-transition {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 400px;
+    padding-top: 200px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.1) 30%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.category,
+.featured-advertisement {
+    margin-top: 100px;
+}
+
+/*---------------------------------------
+ CATEGORY             
+-----------------------------------------*/
+
+/* Modal Background */
+.category {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #ced7e0;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.8), 0 0 25px rgba(125, 221, 244, 0.8);
+    transition: all 0.3s ease;
+    padding: 10px;
+}
+
+/*---------------------------------------
  ADVERTISEMENT             
 -----------------------------------------*/
 .featured-advertisement {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.1) 15%, rgba(0, 0, 0, 0) 100%);
-    padding-top: 100px;
-    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     flex-direction: column;
-    z-index: 2;
 }
 
 .featured-advertisement__card-link {
