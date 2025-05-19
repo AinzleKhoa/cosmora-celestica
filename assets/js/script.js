@@ -30,33 +30,16 @@ function initOwlCarousel(selector, options = {}) {
 /*---------------------------------------
   Initialize the hero background image with overlay             
 -----------------------------------------*/
-function initBackground(headerId) {
-    const header = document.getElementById(headerId);
-    if (!header) return;
-
-    const bg = header.getAttribute('data-bg');
-    if (!bg) return;
-
-    header.style.background = `
-        linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0) 100%),
-        url('${bg}')
-    `;
-    header.style.backgroundSize = "cover";
-    header.style.backgroundPosition = "center";
-    header.style.backgroundRepeat = "no-repeat";
-    header.style.backgroundAttachment = "fixed";
-}
-
-function initBackgroundNoFixed(headerId) {
+function initBackground(headerId, fixed = true) {
     const header = document.getElementById(headerId);
     if (!header) {
-        console.error("Header element not found");
+        console.error(`Header element with id "${headerId}" not found`);
         return;
     }
 
     const bg = header.getAttribute('data-bg');
     if (!bg) {
-        console.error("No background image URL found in data-bg attribute");
+        console.error(`No background image URL found in data-bg attribute on element "${headerId}"`);
         return;
     }
 
@@ -66,7 +49,7 @@ function initBackgroundNoFixed(headerId) {
     header.style.backgroundSize = "cover";
     header.style.backgroundPosition = "center";
     header.style.backgroundRepeat = "no-repeat";
-    header.style.backgroundAttachment = "scroll";
+    header.style.backgroundAttachment = fixed ? "fixed" : "scroll";
     header.style.zIndex = "1";
 }
 
@@ -140,10 +123,10 @@ scrollBtn.addEventListener('click', () => {
 -----------------------------------------*/
 function initPage() {
     AOS.init();
-    initBackground('main-background');
+    initBackground('main-background', true);  // fixed background
+    initBackground('banner', false);           // scroll background
     initScrollSpy();
     hidePreloader(1000);
-    initBackgroundNoFixed('banner');
     // Advertisement (single item)
     initOwlCarousel('.featured-advertisement__carousel', {
         responsiveItems: { 0: 1 },
@@ -151,11 +134,11 @@ function initPage() {
     });
     // Games (1, 2, 4 items)
     initOwlCarousel('.featured-games__carousel', {
-        responsiveItems: { 0: 1, 600: 2, 1000: 3 }
+        responsiveItems: { 0: 2, 600: 2, 1000: 3 }
     });
     // Accessories (1, 2, 3 items)
     initOwlCarousel('.featured-accessories__carousel', {
-        responsiveItems: { 0: 1, 600: 2, 1000: 3 }
+        responsiveItems: { 0: 2, 600: 2, 1000: 3 }
     });
 }
 

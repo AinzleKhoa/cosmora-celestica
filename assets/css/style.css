@@ -701,9 +701,9 @@ nav button {
     font-size: 64px;
     line-height: 1.2;
     color: #4dd0e1;
-    /* Medium cyan/teal */
     letter-spacing: 0.07em;
     text-transform: uppercase;
+    animation: flicker 6s infinite;
 
     text-shadow:
         0 0 6px rgba(77, 208, 225, 0.7),
@@ -750,6 +750,7 @@ nav button {
 .banner-image img {
     width: 80%;
     border-bottom-left-radius: 10%;
+    animation: float-bob 3s ease-in-out infinite;
 }
 
 /* CTA Button */
@@ -772,6 +773,7 @@ nav button {
         inset 0 0 6px #00e5ff;
     transition: all 0.3s ease;
     user-select: none;
+    animation: flicker 10s infinite;
 }
 
 .btn-cta:hover,
@@ -1394,6 +1396,68 @@ nav button {
     font-size: 0.85rem;
     opacity: 0.8;
     margin: 0;
+}
+
+/*---------------------------------------
+  CATALOG             
+-----------------------------------------*/
+.catalog-banner-section {
+    margin-top: 60px;
+    background: rgba(0, 20, 40, 0.1);
+    backdrop-filter: blur(6px);
+    padding: 30px 0;
+    box-shadow:
+        0 0 20px rgba(77, 208, 225, 0.8),
+        inset 0 0 10px rgba(77, 208, 225, 0.4);
+    position: relative;
+    height: 200px;
+    z-index: 2;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+
+    /* Background image */
+    background-image: url('https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.catalog-banner-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 10, 20, 0.4);
+    border-radius: 15px;
+    z-index: 0;
+}
+
+/* Ensure content is above overlay */
+.catalog-banner-section>.container {
+    position: relative;
+    z-index: 1;
+}
+
+.catalog-banner-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 52px;
+    color: #4dd0e1;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow:
+        0 0 12px #4dd0e1,
+        0 0 25px #00cfff,
+        0 0 40px #00e5ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .catalog-banner-title {
+        font-size: 32px;
+        letter-spacing: 0.08em;
+        padding: 0 10px;
+    }
 }
 
 /*---------------------------------------
