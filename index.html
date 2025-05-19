@@ -100,33 +100,77 @@
                             <!-- Collapsible wrapper -->
                             <div class="collapse d-md-block" id="categoryCollapse">
                                 <h2 class="categories-heading">Categories</h2>
-                                <ul class="categories-list">
+                                <ul class="categories-list" id="categoriesAccordion">
                                     <li>
-                                        <a href="#" class="parent-link">Console & Games</a>
-                                        <ul class="submenu">
-                                            <li><a href="#">Nintendo Switch</a></li>
-                                            <li><a href="#">PlayStation</a></li>
-                                            <li><a href="#">Xbox</a></li>
-                                            <li><a href="#">PC Games</a></li>
-                                            <li><a href="#">Game Key / Digital Codes</a></li>
-                                        </ul>
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingConsole">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseConsole"
+                                                    aria-expanded="false" aria-controls="collapseConsole">
+                                                    Console & Games
+                                                </button>
+                                            </h2>
+                                            <div id="collapseConsole" class="accordion-collapse collapse"
+                                                aria-labelledby="headingConsole" data-bs-parent="#categoriesAccordion">
+                                                <div class="accordion-body">
+                                                    <ul class="submenu">
+                                                        <li><a href="#">Nintendo Switch</a></li>
+                                                        <li><a href="#">PlayStation</a></li>
+                                                        <li><a href="#">Xbox</a></li>
+                                                        <li><a href="#">PC Games</a></li>
+                                                        <li><a href="#">Game Key / Digital Codes</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li>
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingGear">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseGear"
+                                                    aria-expanded="false" aria-controls="collapseGear">
+                                                    Gaming Gear & Accessories
+                                                </button>
+                                            </h2>
+                                            <div id="collapseGear" class="accordion-collapse collapse"
+                                                aria-labelledby="headingGear" data-bs-parent="#categoriesAccordion">
+                                                <div class="accordion-body">
+                                                    <ul class="submenu">
+                                                        <li><a href="#">Headsets & Microphones</a></li>
+                                                        <li><a href="#">Keyboards & Mice</a></li>
+                                                        <li><a href="#">Mousepads & Desk Mats</a></li>
+                                                        <li><a href="#">Controllers & Joysticks</a></li>
+                                                        <li><a href="#">Gaming Chairs</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </li>
                                     <li>
-                                        <a href="#" class="parent-link">Gaming Gear & Accessories</a>
-                                        <ul class="submenu">
-                                            <li><a href="#">Headsets & Microphones</a></li>
-                                            <li><a href="#">Keyboards & Mice</a></li>
-                                            <li><a href="#">Mousepads & Desk Mats</a></li>
-                                            <li><a href="#">Controllers & Joysticks</a></li>
-                                            <li><a href="#">Gaming Chairs</a></li>
-                                        </ul>
+                                        <a href="#">Merchandise & Collectibles</a>
                                     </li>
-                                    <li><a href="#" class="parent-link">Merchandise & Collectibles</a></li>
-                                    <li><a href="#" class="parent-link">Trading Cards & Board Games</a></li>
-                                    <li><a href="#" class="parent-link">Tech & Hardware</a></li>
-                                    <li><a href="#" class="parent-link">Pre-Owned / Used Items</a></li>
-                                    <li><a href="#" class="parent-link">New Arrivals</a></li>
-                                    <li><a href="#" class="parent-link">Sale / Discounts</a></li>
+
+                                    <li>
+                                        <a href="#">Trading Cards & Board Games</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">Tech & Hardware</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">Pre-Owned / Used Items</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">New Arrivals</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">Sale / Discounts</a>
+                                    </li>
                                 </ul>
                             </div>
                         </aside>

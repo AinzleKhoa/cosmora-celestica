@@ -983,71 +983,131 @@ nav button {
     margin-bottom: 12px;
 }
 
-/* Parent category link */
-.categories-list>li>a.parent-link {
-    color: #7ad1ff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-decoration: none;
+/* Accordion button */
+.accordion-button {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #4de3ff;
+    border-radius: 12px;
+    padding-left: 30px;
     position: relative;
-    padding-left: 16px;
-    /* space for arrow */
-    display: inline-block;
-    transition: color 0.3s ease;
+    transition: all 0.35s ease;
+    text-shadow:
+        0 0 12px #00e5ff,
+        0 0 18px #00bbff;
 }
 
-/* Arrow before parent links */
-.categories-list>li>a.parent-link::before {
+/* Arrow before accordion button */
+.accordion-button::before {
     content: "▶";
     position: absolute;
-    left: 0;
+    left: 6px;
     top: 50%;
     transform: translateY(-50%);
-    color: #00bfff;
-    font-size: 0.8rem;
-    transition: transform 0.3s ease;
+    color: #00ccff;
+    font-size: 1.0rem;
+    transition: transform 0.35s ease, color 0.35s ease;
 }
 
-/* Rotate arrow on hover */
-.categories-list>li:hover>a.parent-link::before {
+/* Rotate arrow when open */
+.accordion-button:not(.collapsed)::before {
     transform: translateY(-50%) rotate(90deg);
+    color: #4de3ff;
 }
 
-/* Submenu */
-.categories-list ul.submenu {
-    margin-top: 8px;
-    padding-left: 18px;
-    border-left: 1px solid rgba(0, 150, 255, 0.3);
+/* Hover effect */
+.accordion-button:hover {
+    background: rgba(0, 70, 110, 0.85);
+    border-color: #4de3ffcc;
+    color: #7effff;
+    box-shadow:
+        0 0 20px #4de3ffcc,
+        inset 0 0 35px #00f0ffcc;
+}
+
+/* Expanded button state */
+.accordion-button:not(.collapsed) {
+    color: #7effff;
+    background: rgba(0, 85, 135, 0.9);
+    border-color: #7effffcc;
+    box-shadow:
+        0 0 25px #7effffcc,
+        inset 0 0 40px #00ffffcc;
+}
+
+/* Button drop shadow */
+.accordion-button::after {
+    filter: drop-shadow(0 0 3px #00dfff);
+}
+
+/* Accordion body */
+.accordion-body {
+    padding: 1rem 1.5rem;
+    background: rgba(0, 30, 60, 0.6);
+    border-left: 3px solid #00eaffcc;
+    border-radius: 0 12px 12px 0;
+    box-shadow:
+        inset 0 0 12px #00aaff88;
+}
+
+/* Submenu list */
+.accordion-body ul.submenu {
     list-style: none;
+    padding-left: 20px;
+    margin: 0;
+    color: #90d4ffcc;
+    font-weight: 400;
+    font-size: 1rem;
 }
 
-.categories-list ul.submenu>li {
-    margin-bottom: 6px;
+/* Submenu items spacing */
+.accordion-body ul.submenu>li {
+    margin-bottom: 10px;
 }
 
 /* Submenu links */
-.categories-list ul.submenu>li>a {
-    color: #a0d8ff;
-    font-size: 0.95rem;
-    font-weight: 400;
+.accordion-body ul.submenu>li>a {
+    color: #90d4ffcc;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.35s ease;
+    text-shadow: 0 0 8px #00bfffaa;
+    display: block;
+    padding: 2px 0;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* Submenu link hover */
-.categories-list ul.submenu>li>a:hover {
+/* Submenu hover */
+.accordion-body ul.submenu>li>a:hover {
     color: #00e5ff;
-    text-shadow: 0 0 8px #00e5ff;
+    text-shadow:
+        0 0 12px #00e5ff,
+        0 0 25px #008bbd;
+    text-decoration: underline;
 }
 
-/* Hover effect for parent links */
-.categories-list>li>a.parent-link:hover {
+.categories-list>li>a:not(.parent-link) {
+    display: block;
+    color: #707a9b;
+    /* muted grey-blue */
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding-left: 20px;
+    margin: 8px 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    text-shadow: 0 0 8px transparent;
+}
+
+.categories-list>li>a:not(.parent-link):hover {
     color: #00e5ff;
     text-shadow:
         0 0 8px #00e5ff,
         0 0 12px #00b0cc;
+    text-decoration: underline;
 }
-
 
 /*---------------------------------------
  ADVERTISEMENT             
