@@ -1,0 +1,180 @@
+<!-- 
+    Converted from: profile.jsp
+    Author: Ainzle
+    Java/JSP, JSTL, EL removed
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/assets/css/styles.css"> <!-- Adjust as needed -->
+</head>
+<body>
+
+<!-- Include header1 and header2 content manually here -->
+
+<!-- page title -->
+<section class="section section--first section--last section--head" data-bg="/assets/img/banner/cityafar.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section__wrap">
+                    <h2 class="section__title">Profile</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb__item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb__item breadcrumb__item--active">Profile</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- section -->
+<section class="section section--last">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="profile">
+                    <div class="profile__user">
+                        <div class="profile__avatar">
+                            <img src="/assets/img/user.svg" alt="">
+                        </div>
+                        <div class="profile__meta">
+                            <h3>USERNAME</h3>
+                            <span>ID: USER_ID</span>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-tabs profile__tabs" id="profile__tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tab-1" role="tab">My purchases</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tab-2" role="tab">Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tab-3" role="tab">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>	
+        </div>
+
+        <!-- content tabs -->
+        <div class="tab-content">
+            <!-- My purchases -->
+            <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive table-responsive--border">
+                            <table class="profile__table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Title</th>
+                                        <th></th>
+                                        <th>Price</th>
+                                        <th>Purchased Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Repeat for each purchase -->
+                                    <tr>
+                                        <td>
+                                            <a href="/gamedetails?id=GAME_ID">
+                                                <div class="profile__img">
+                                                    <img src="/assets/img/cards/GAME_IMAGE.jpg" alt="">
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td>Game Title</td>
+                                        <td></td>
+                                        <td><span class="profile__price">$XX.XX</span></td>
+                                        <td>2025-02-24</td>
+                                    </tr>
+                                    <!-- End repeat -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="tab-pane fade" id="tab-2" role="tabpanel">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <form action="/profile" method="POST" class="form">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="form__title">Profile details</h4>
+                                    <h4 class="form__title">Modify your username and email here.</h4>
+                                </div>
+                                <input type="hidden" name="id" value="USER_ID"/>
+                                <input type="hidden" name="authProvider" value="local"/>
+
+                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                    <label class="form__label" for="username">Username</label>
+                                    <input id="username" type="text" name="username" class="form__input" placeholder="USERNAME" required>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                    <label class="form__label" for="email">Email</label>
+                                    <input id="email" type="text" name="email" class="form__input" placeholder="EMAIL" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <h4 class="form__title">Change password</h4>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                    <label class="form__label" for="newpass">New Password</label>
+                                    <input id="newpass" type="password" name="newpass" class="form__input">
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                    <label class="form__label" for="confirmpass">Confirm New Password</label>
+                                    <input id="confirmpass" type="password" name="confirmnewpass" class="form__input">
+                                </div>
+
+                                <div class="col-12">
+                                    <h4 class="form__title">Your old password is required to update profile</h4>
+                                    <label class="form__label" for="oldpass">Old Password</label>
+                                    <input id="oldpass" type="password" name="oldpass" class="form__input" required>
+                                </div>
+
+                                <!-- Optional error/success messages -->
+                                <div class="col-12">
+                                    <!-- Example: <p style="color: red;">Error message here</p> -->
+                                </div>
+
+                                <div class="col-12">
+                                    <button class="form__btn" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="tab-pane fade" id="tab-3" role="tabpanel">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <h4 class="form__title">Are you sure you want to log out?</h4>
+                        <a class="form__btn" href="/logout">Yes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end content tabs -->
+    </div>
+</section>
+
+<!-- Include footer1 and footer2 content manually here -->
+
+</body>
+</html>
