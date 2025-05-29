@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmora Celeestica</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Sixtyfour+Convergence&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Sixtyfour+Convergence&display=swap"
+        rel="stylesheet">
+
+
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/aos.css">
+    <link rel="stylesheet" href="./assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://vjs.zencdn.net/8.22.0/video-js.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="70" tabindex="0">
+
+    <section class="preloader">
+        <div class="spinner">
+            <img src="./assets/img/loading.gif" alt="Loading..." />
+            <h1 class="loading-text">Loading<span class="dots"></span></h1>
+        </div>
+    </section>
+
+    <div id="main-background" data-bg="./assets/img/background.png">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">Cosmora Celestica</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="home.html" onclick="scrollToTop(event)">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="catalog.html">Catalog</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <img src="./assets/img/blue-planet.png" alt="" class="fixed-img-left">
+        <img src="./assets/img/spaceship.png" alt="" class="fixed-img-right">
+
+        <main class="main-container">
+
+            <section class="product-detail-section" data-bg="./assets/img/banner.png">
+                <div class="container">
+                    <div class="row align-items-center product-detail-container">
+                        <div class="col-lg-6 d-flex justify-content-center align-items-center">
+                            <div class="product-image">
+                                <img src="./assets/img/game/gtav.jpg" alt="Grand Theft Auto V" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="product-info">
+                                <h1 class="product-title">Grand Theft Auto V</h1>
+                                <p class="product-genre">Action / Open World / Crime</p>
+                                <p class="product-description">
+                                    Grand Theft Auto V offers players the freedom to explore the massive city of Los
+                                    Santos and its countryside,
+                                    all while participating in heists, car chases, and side missions in a stunning
+                                    sci-fi noir world.
+                                </p>
+                                <div class="platform-icons">
+                                    <img src="./assets/img/platforms/windows.svg" alt="Windows" />
+                                    <img src="./assets/img/platforms/playstation.svg" alt="PlayStation" />
+                                    <img src="./assets/img/platforms/xbox.svg" alt="Xbox" />
+                                </div>
+                                <div class="product-price">$29.99</div>
+                                <button class="btn-buy">Buy Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <button id="scrollTopBtn" title="Back to Top" aria-label="Scroll to top">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+        </main>
+
+        <footer class="site-footer text-center mt-5">
+            <div class="container py-5">
+                <h4 class="footer-brand mb-3" style="color: #7dddf4; font-weight: 700; letter-spacing: 0.1em;">
+                    Cosmora Celestica
+                </h4>
+                <p class="footer-subtext mb-4 text-light" style="font-style: italic;">
+                    Powering your gaming universe
+                </p>
+
+                <ul class="footer-menu list-unstyled d-flex justify-content-center flex-wrap mb-4">
+                    <li class="mx-3"><a href="#hero" class="footer-link">Home</a></li>
+                    <li class="mx-3"><a href="#about" class="footer-link">Catalog</a></li>
+                    <li class="mx-3"><a href="#projects" class="footer-link">Profile</a></li>
+                </ul>
+
+                <div class="social-links mb-4">
+                    <a href="#" target="_blank" aria-label="Email">
+                        <i class="fas fa-envelope fa-lg mx-2"></i>
+                    </a>
+                    <a href="#" target="_blank" aria-label="GitHub">
+                        <i class="fab fa-github fa-lg mx-2"></i>
+                    </a>
+                    <a href="#" target="_blank" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin fa-lg mx-2"></i>
+                    </a>
+                </div>
+
+                <p class="small mb-0" style="color: #7dddf4;">
+                    &copy; 2025 <strong>Cosmora Celestica</strong>. Game on, always.
+                </p>
+            </div>
+        </footer>
+
+
+    </div>
+    <!-- Background End -->
+
+    <!-- Navbar End -->
+</body>
+
+</html>
+
+<script src="./assets/js/bootstrap.bundle.min.js"></script>
+<script src="./assets/js/jquery-3.7.1.min.js"></script>
+<script src="./assets/js/aos.js"></script>
+<script src="https://vjs.zencdn.net/8.22.0/video.min.js"></script>
+<script src="./assets/js/lazysizes.min.js"></script>
+<script src="./assets/js/owl.carousel.min.js"></script>
+<script src="./assets/js/script.js"></script>

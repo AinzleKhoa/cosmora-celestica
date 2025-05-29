@@ -905,7 +905,7 @@ nav button {
     border: none;
     padding: 10px 20px;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #00e5ff;
     text-shadow:
         0 0 8px #00e5ff,
@@ -959,7 +959,7 @@ nav button {
 .categories-heading {
     color: #52c7ff;
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     margin-bottom: 20px;
     text-shadow:
         0 0 10px #52c7ff,
@@ -987,7 +987,7 @@ nav button {
 .accordion-button {
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     color: #4de3ff;
     border-radius: 12px;
     padding-left: 30px;
@@ -1006,7 +1006,7 @@ nav button {
     top: 50%;
     transform: translateY(-50%);
     color: #00ccff;
-    font-size: 1.0rem;
+    font-size: 0.8rem;
     transition: transform 0.35s ease, color 0.35s ease;
 }
 
@@ -1054,11 +1054,11 @@ nav button {
 /* Submenu list */
 .accordion-body ul.submenu {
     list-style: none;
-    padding-left: 20px;
+    padding-left: 5px;
     margin: 0;
     color: #90d4ffcc;
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 0.8rem;
 }
 
 /* Submenu items spacing */
@@ -1092,7 +1092,7 @@ nav button {
     /* muted grey-blue */
     font-family: 'Orbitron', sans-serif;
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: 0.85rem;
     padding-left: 20px;
     margin: 8px 0;
     text-decoration: none;
@@ -1519,8 +1519,6 @@ nav button {
     }
 }
 
-
-
 /*---------------------------------------
   CATALOG GAMES            
 -----------------------------------------*/
@@ -1697,6 +1695,156 @@ nav button {
     .catalog-games__platform li img {
         width: 28px;
         height: 28px;
+    }
+}
+
+/*---------------------------------------
+  PRODUCT DETAILS             
+-----------------------------------------*/
+.product-detail-section {
+    margin-top: 40px;
+    padding: 60px 0;
+    color: #a0eaff;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.product-detail-container {
+    backdrop-filter: blur(4px);
+    background: rgba(0, 16, 24, 0.4);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow:
+        0 0 25px #00cfff99,
+        inset 0 0 30px #003f5caa;
+    color: #a0eaff;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 40px;
+}
+
+.product-image {
+    width: 60%;
+}
+
+.product-image img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 25px;
+    box-shadow:
+        0 0 15px #00e5ffbb,
+        inset 0 0 20px #0099ccaa;
+    transition: transform 0.3s ease;
+}
+
+.product-image img:hover {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding-left: 30px;
+}
+
+.product-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #00cfff;
+    text-shadow:
+        0 0 12px #00cfff,
+        0 0 25px #00aadd;
+    margin-bottom: 10px;
+}
+
+.product-genre {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #88ccffaa;
+    margin-bottom: 20px;
+}
+
+.product-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #a0dfffcc;
+    margin-bottom: 30px;
+}
+
+.platform-icons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.platform-icons img {
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 0 4px #00e5ff);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.platform-icons img:hover {
+    transform: scale(1.2);
+}
+
+.product-price {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #00ffff;
+    text-shadow:
+        0 0 10px #00ffff,
+        0 0 20px #00bbcc;
+    margin-bottom: 30px;
+}
+
+.btn-buy {
+    background: linear-gradient(90deg, #00e5ff, #0099cc);
+    border: none;
+    color: #002d3a;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    padding: 15px 40px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow:
+        0 0 12px #00e5ff,
+        inset 0 0 25px #007799;
+    transition: all 0.3s ease;
+}
+
+.btn-buy:hover {
+    background: linear-gradient(90deg, #00ffff, #00aacc);
+    color: #001f29;
+    box-shadow:
+        0 0 25px #00ffff,
+        inset 0 0 35px #00ccff;
+    transform: translateY(-3px);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .product-detail-container {
+        padding: 30px 20px;
+    }
+
+    .product-info {
+        padding-left: 0;
+        margin-top: 25px;
+    }
+
+    .product-title {
+        font-size: 2rem;
+    }
+
+    .product-price {
+        font-size: 1.6rem;
+    }
+
+    .btn-buy {
+        font-size: 1.2rem;
+        padding: 12px 30px;
     }
 }
 

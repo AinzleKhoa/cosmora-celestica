@@ -125,6 +125,7 @@ function initPage() {
     AOS.init();
     initBackground('main-background', true);  // fixed background
     initBackground('banner', false);           // scroll background
+    initBackground('product-detail-section', true);
     initScrollSpy();
     hidePreloader(1000);
     // Advertisement (single item)
@@ -134,7 +135,7 @@ function initPage() {
     });
     // Games (1, 2, 4 items)
     initOwlCarousel('.featured-games__carousel', {
-        responsiveItems: { 0: 2, 600: 2, 1000: 3 }
+        responsiveItems: { 0: 2, 600: 2, 1000: 4 }
     });
     // Accessories (1, 2, 3 items)
     initOwlCarousel('.featured-accessories__carousel', {
