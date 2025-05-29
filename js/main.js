@@ -126,6 +126,41 @@ $(document).ready(function () {
 		items: 1
 	});
 
+	$('.section__carousel--accessories').owlCarousel({
+		mouseDrag: true,
+		touchDrag: true,
+		dots: false,
+		loop: true,
+		autoplay: true,
+		smartSpeed: 700,
+		margin: 30,
+		responsive: {
+			0: {
+				items: 2,
+			},
+			576: {
+				items: 3,
+			},
+			768: {
+				items: 3,
+				margin: 30,
+				autoWidth: false,
+			},
+			992: {
+				items: 4,
+				margin: 30,
+				autoWidth: false,
+			},
+			1200: {
+				items: 5,
+				margin: 30,
+				autoWidth: false,
+				mouseDrag: false,
+				touchDrag: false,
+			},
+		}
+	});
+
 	$('.section__carousel--big').owlCarousel({
 		mouseDrag: true,
 		touchDrag: true,
