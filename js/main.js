@@ -6,14 +6,14 @@ $(document).ready(function () {
 	==============================*/
 	var mainHeader = $('.header');
 	var scrolling = false,
-	previousTop = 0,
-	currentTop = 0,
-	scrollDelta = 10,
-	scrollOffset = 140;
+		previousTop = 0,
+		currentTop = 0,
+		scrollDelta = 10,
+		scrollOffset = 140;
 
 	var scrolling = false;
-	$(window).on('scroll', function(){
-		if( !scrolling ) {
+	$(window).on('scroll', function () {
+		if (!scrolling) {
 			scrolling = true;
 			(!window.requestAnimationFrame)
 				? setTimeout(autoHideHeader, 250)
@@ -37,24 +37,24 @@ $(document).ready(function () {
 		}
 	}
 
-	function disableScrolling(){
-		var x=window.scrollX;
-		var y=window.scrollY;
-		window.onscroll=function(){window.scrollTo(x, y);};
+	function disableScrolling() {
+		var x = window.scrollX;
+		var y = window.scrollY;
+		window.onscroll = function () { window.scrollTo(x, y); };
 	}
 
-	function enableScrolling(){
-		window.onscroll=function(){};
+	function enableScrolling() {
+		window.onscroll = function () { };
 	}
 
 	/*==============================
 	Header
 	==============================*/
-	$('.header__menu').on('click', function() {
+	$('.header__menu').on('click', function () {
 		$('.header__menu').toggleClass('header__menu--active');
 		$('.header__nav').toggleClass('header__nav--active');
 
-		if( $('.header__nav').hasClass('header__nav--active') ) {
+		if ($('.header__nav').hasClass('header__nav--active')) {
 			disableScrolling();
 		} else {
 			enableScrolling();
@@ -64,7 +64,7 @@ $(document).ready(function () {
 	/*==============================
 	Multi level dropdowns
 	==============================*/
-	$("ul.dropdown-menu [data-toggle='dropdown']").on("click", function(event) {
+	$("ul.dropdown-menu [data-toggle='dropdown']").on("click", function (event) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -78,19 +78,19 @@ $(document).ready(function () {
 	/*==============================
 	Bg
 	==============================*/
-	$('.section--bg').each( function() {
-		if ($(this).attr("data-bg")){
+	$('.section--bg').each(function () {
+		if ($(this).attr("data-bg")) {
 			$(this).css({
 				'background': 'url(' + $(this).data('bg') + ')',
-				'background-position': 'center top 140px',
+				'background-position': 'center top 80px',
 				'background-repeat': 'no-repeat',
-				'background-size': 'auto 500px'
+				'background-size': 'auto 600px'
 			});
 		}
 	});
 
-	$('.section--head').each( function() {
-		if ($(this).attr("data-bg")){
+	$('.section--head').each(function () {
+		if ($(this).attr("data-bg")) {
 			$(this).css({
 				'background': 'url(' + $(this).data('bg') + ')',
 				'background-position': 'center top 140px',
@@ -100,8 +100,8 @@ $(document).ready(function () {
 		}
 	});
 
-	$('.section--full-bg').each( function() {
-		if ($(this).attr("data-bg")){
+	$('.section--full-bg').each(function () {
+		if ($(this).attr("data-bg")) {
 			$(this).css({
 				'background': 'url(' + $(this).data('bg') + ')',
 				'background-position': 'center center',
@@ -114,29 +114,41 @@ $(document).ready(function () {
 	/*==============================
 	Section carousel
 	==============================*/
+	$('.section__carousel--ad').owlCarousel({
+		mouseDrag: true,
+		touchDrag: true,
+		dots: false,
+		loop: true,
+		autoplay: true,
+		smartSpeed: 1600,
+		margin: 30,
+		autoHeight: true,
+		items: 1
+	});
+
 	$('.section__carousel--big').owlCarousel({
 		mouseDrag: true,
 		touchDrag: true,
 		dots: false,
 		loop: true,
-		autoplay: false,
+		autoplay: true,
 		smartSpeed: 700,
 		margin: 20,
 		autoHeight: true,
 		autoWidth: true,
-		responsive : {
-			0 : {
+		responsive: {
+			0: {
 				items: 2,
 			},
-			576 : {
+			576: {
 				items: 3,
 			},
-			768 : {
+			768: {
 				items: 1,
 				margin: 30,
 				autoWidth: false,
 			},
-			1200 : {
+			1200: {
 				items: 2,
 				margin: 30,
 				autoWidth: false,
@@ -151,29 +163,29 @@ $(document).ready(function () {
 		touchDrag: true,
 		dots: false,
 		loop: true,
-		autoplay: false,
+		autoplay: true,
 		smartSpeed: 700,
 		margin: 20,
 		autoHeight: true,
 		autoWidth: true,
-		responsive : {
-			0 : {
+		responsive: {
+			0: {
 				items: 2,
 			},
-			576 : {
+			576: {
 				items: 3,
 			},
-			768 : {
+			768: {
 				items: 3,
 				margin: 30,
 				autoWidth: false,
 			},
-			992 : {
+			992: {
 				items: 4,
 				margin: 30,
 				autoWidth: false,
 			},
-			1200 : {
+			1200: {
 				items: 5,
 				margin: 30,
 				autoWidth: false,
@@ -183,11 +195,11 @@ $(document).ready(function () {
 		}
 	});
 
-	$('.section__nav--prev, .details__nav--prev').on('click', function() {
+	$('.section__nav--prev, .details__nav--prev').on('click', function () {
 		var carouselId = $(this).attr('data-nav');
 		$(carouselId).trigger('prev.owl.carousel');
 	});
-	$('.section__nav--next, .details__nav--next').on('click', function() {
+	$('.section__nav--next, .details__nav--next').on('click', function () {
 		var carouselId = $(this).attr('data-nav');
 		$(carouselId).trigger('next.owl.carousel');
 	});
@@ -205,23 +217,23 @@ $(document).ready(function () {
 		autoplayHoverPause: true,
 		smartSpeed: 700,
 		margin: 20,
-		responsive : {
-			0 : {
+		responsive: {
+			0: {
 				items: 2,
 			},
-			576 : {
+			576: {
 				items: 2,
 				margin: 30,
 			},
-			768 : {
+			768: {
 				items: 3,
 				margin: 30,
 			},
-			992 : {
+			992: {
 				items: 4,
 				margin: 30,
 			},
-			1200 : {
+			1200: {
 				items: 6,
 				margin: 30,
 			},
@@ -241,22 +253,22 @@ $(document).ready(function () {
 		margin: 20,
 		autoHeight: true,
 		autoWidth: true,
-		responsive : {
-			0 : {
+		responsive: {
+			0: {
 				items: 2,
 			},
-			576 : {
+			576: {
 				items: 3,
 			},
-			768 : {
+			768: {
 				autoWidth: false,
 				items: 4,
 			},
-			992 : {
+			992: {
 				autoWidth: false,
 				items: 5,
 			},
-			1200 : {
+			1200: {
 				autoWidth: false,
 				items: 6,
 			},
@@ -274,12 +286,12 @@ $(document).ready(function () {
 		removalDelay: 300,
 		mainClass: 'mfp-fade',
 		callbacks: {
-			open: function() {
+			open: function () {
 				if ($(window).width() > 1200) {
-					$('.header').css('margin-left', "-" + (getScrollBarWidth()/2) + "px");
+					$('.header').css('margin-left', "-" + (getScrollBarWidth() / 2) + "px");
 				}
 			},
-			close: function() {
+			close: function () {
 				if ($(window).width() > 1200) {
 					$('.header').css('margin-left', 0);
 				}
@@ -298,12 +310,12 @@ $(document).ready(function () {
 			verticalFit: true
 		},
 		callbacks: {
-			open: function() {
+			open: function () {
 				if ($(window).width() > 1200) {
-					$('.header').css('margin-left', "-" + (getScrollBarWidth()/2) + "px");
+					$('.header').css('margin-left', "-" + (getScrollBarWidth() / 2) + "px");
 				}
 			},
-			close: function() {
+			close: function () {
 				if ($(window).width() > 1200) {
 					$('.header').css('margin-left', 0);
 				}
@@ -322,12 +334,12 @@ $(document).ready(function () {
 		removalDelay: 300,
 		mainClass: 'my-mfp-zoom-in',
 		callbacks: {
-			open: function() {
+			open: function () {
 				if ($(window).width() > 1200) {
-					$('.header').css('margin-left', "-" + (getScrollBarWidth()/2) + "px");
+					$('.header').css('margin-left', "-" + (getScrollBarWidth() / 2) + "px");
 				}
 			},
-			close: function() {
+			close: function () {
 				if ($(window).width() > 1200) {
 					$('.header').css('margin-left', 0);
 				}
@@ -340,9 +352,9 @@ $(document).ready(function () {
 		$.magnificPopup.close();
 	});
 
-	function getScrollBarWidth () {
-		var $outer = $('<div>').css({visibility: 'hidden', width: 100, overflow: 'scroll'}).appendTo('body'),
-			widthWithScroll = $('<div>').css({width: '100%'}).appendTo($outer).outerWidth();
+	function getScrollBarWidth() {
+		var $outer = $('<div>').css({ visibility: 'hidden', width: 100, overflow: 'scroll' }).appendTo('body'),
+			widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth();
 		$outer.remove();
 		return 100 - widthWithScroll;
 	};
@@ -385,7 +397,7 @@ $(document).ready(function () {
 				document.getElementById('filter__range-start'),
 				document.getElementById('filter__range-end')
 			];
-			firstSlider.noUiSlider.on('update', function( values, handle ) {
+			firstSlider.noUiSlider.on('update', function (values, handle) {
 				firstValues[handle].innerHTML = values[handle];
 			});
 		} else {
