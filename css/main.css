@@ -1905,9 +1905,13 @@ body::-webkit-scrollbar-thumb {
   width: 100%;
   margin-bottom: 15px;
   color: #fff;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
   transition: 0.5s;
+}
+
+.card__brand {
+  color: rgb(216, 200, 200) !important;
 }
 
 .card__title h3 a {
