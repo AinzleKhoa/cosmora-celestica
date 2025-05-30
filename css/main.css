@@ -1159,7 +1159,7 @@ body::-webkit-scrollbar-thumb {
   top: 140px;
   left: 0;
   right: 0;
-  height: 500px;
+  height: 1000px;
   pointer-events: none;
   background: -webkit-linear-gradient(top, rgba(27, 34, 46, 0.4) 0%, #1b222e 60%);
   background: -ms-linear-gradient(top, rgba(27, 34, 46, 0.4) 0%, #1b222e 60%);
@@ -2366,6 +2366,20 @@ body::-webkit-scrollbar-thumb {
 /*==============================
 	Details
 ==============================*/
+.rating {
+  color: #FFA500;
+  font-weight: bold;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 30px;
+}
+
+.rating__star {
+  font-size: 18px;
+}
+
 .details {
   position: relative;
   display: block;
@@ -2380,6 +2394,11 @@ body::-webkit-scrollbar-thumb {
 .details__head {
   position: relative;
   width: 100%;
+}
+
+.details__head img {
+  margin: 0 auto;
+  width: 80%;
 }
 
 .details__cover {
@@ -2479,6 +2498,16 @@ body::-webkit-scrollbar-thumb {
 }
 
 .details__cart-title {
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0.4px;
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+  color: #dbdada;
+}
+
+.details__cart-name {
   font-size: 14px;
   line-height: 100%;
   letter-spacing: 0.4px;
@@ -2676,10 +2705,36 @@ body::-webkit-scrollbar-thumb {
 }
 
 .details__gallery {
-  position: relative;
+  display: flex;
+  gap: 10px;
   margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(167, 130, 233, 0.06);
+  flex-wrap: wrap;
+}
+
+.details__thumb {
+  width: 160px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+}
+
+.details__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.details__thumb.active {
+  border: 2px solid #4aa2dd;
+  box-shadow: 0 0 0 2px rgba(74, 162, 221, 0.4);
+}
+
+.details__showcase {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .details__carousel {
@@ -2873,6 +2928,12 @@ body::-webkit-scrollbar-thumb {
   .details__content {
     order: 4;
     position: relative;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .details__head img {
     width: 100%;
   }
 }
