@@ -297,6 +297,16 @@ $(document).ready(function () {
 		$(this).addClass('active');
 	});
 
+	const descToggle = document.getElementById('descToggle');
+	const descContent = document.getElementById('descContent');
+
+	if (descToggle && descContent) {
+		descToggle.addEventListener('click', () => {
+			const expanded = descContent.classList.toggle('expanded');
+			descToggle.textContent = expanded ? 'Read less' : 'Read more';
+		});
+	}
+
 	/*==============================
 	Modal
 	==============================*/
