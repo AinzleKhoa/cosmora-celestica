@@ -308,6 +308,19 @@ $(document).ready(function () {
 	}
 
 	/*==============================
+	Admin
+	==============================*/
+	$('.admin-dropdown').on('click', function (e) {
+		$('#adminDropdown').toggleClass('show');
+		e.stopPropagation();
+	});
+
+	$(document).on('click', function (e) {
+		if (!$(e.target).closest('.admin-dropdown').length) {
+			$('#adminDropdown').removeClass('show');
+		}
+	});
+	/*==============================
 	Modal
 	==============================*/
 	$('.post__video, .details__trailer, .open-map').magnificPopup({

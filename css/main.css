@@ -6459,6 +6459,379 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 /*==============================
+  Admin Profile Dropdown
+==============================*/
+.admin-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.admin-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #222c3c;
+}
+
+.admin-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e4e4e4;
+  margin: 0;
+}
+
+.admin-role {
+  font-size: 12px;
+  color: #888;
+}
+
+.admin-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: #1d232e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  width: 200px;
+  display: none;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.admin-menu.show {
+  display: block;
+}
+
+.admin-user {
+  background: #2a2f3a;
+  padding: 12px 16px;
+  border-radius: 8px 8px 0 0;
+}
+
+.admin-user .admin-name {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 4px 0 0 0;
+  color: #fff;
+}
+
+.admin-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-links li a {
+  display: block;
+  padding: 10px 16px;
+  color: #ccc;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s;
+}
+
+.admin-links li a:hover {
+  background: #2f3544;
+  color: #fff;
+}
+
+/*==============================
+  Admin Sidebar
+==============================*/
+.admin-sidebar {
+  position: fixed;
+  top: 70px;
+  /* Adjust to match your header height */
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 70px);
+  background-color: #161d2a;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.admin-sidebar__logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #00b4ff;
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-sidebar__nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-sidebar__item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.admin-sidebar__link {
+  display: block;
+  padding: 14px 20px;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.2s ease, color 0.2s;
+}
+
+.admin-sidebar__link:hover,
+.admin-sidebar__link.active {
+  background-color: #1e2738;
+  color: #fff;
+}
+
+.admin-sidebar__link i {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+/*==============================
+  Admin Main Content
+==============================*/
+/* Admin Content Area */
+.admin-main {
+  margin-top: 80px;
+  margin-left: 220px;
+  padding: 24px 32px;
+  background-color: #10151e;
+  min-height: 100vh;
+  color: #f1f1f1;
+}
+
+/* Table Container */
+.admin-table-wrapper {
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 40px;
+  overflow-x: auto;
+}
+
+/* Section Title */
+.table-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #1a202c;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Table Header */
+.table thead {
+  background-color: #252c3b;
+}
+
+.table thead th {
+  padding: 14px 20px;
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  border-bottom: 1px solid #394053;
+  white-space: nowrap;
+}
+
+/* Table Body */
+.table tbody td {
+  padding: 14px 20px;
+  color: #d1d5db;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table tbody tr:hover {
+  background-color: #2b3242;
+}
+
+/* Status Badge */
+.badge-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #22c55e;
+}
+
+/* Action Icons */
+.table-actions-center {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn-action {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-details {
+  background-color: #1d4ed8;
+  color: #fff;
+}
+
+.btn-details:hover {
+  background-color: #2563eb;
+}
+
+.btn-toggle {
+  background-color: #10b981;
+  /* green */
+  color: #fff;
+}
+
+.btn-toggle:hover {
+  background-color: #059669;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+.btn-edit {
+  background-color: #eab308;
+  /* amber/yellow tone */
+  color: #000;
+}
+
+.btn-edit:hover {
+  background-color: #facc15;
+}
+
+@media (max-width: 576px) {
+  .btn-action {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 991px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 70px;
+    left: -220px;
+    transition: left 0.3s ease;
+    padding-top: 50px;
+  }
+
+  .admin-sidebar.open {
+    left: 0;
+  }
+
+  .admin-main {
+    margin-left: 0;
+    padding-top: 90px;
+  }
+
+  .admin-sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 80px;
+    left: 10px;
+    z-index: 1000;
+    background: #1e2738;
+    color: #00b4ff;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
+
+/* Optional: Hide toggle on large screens */
+@media (min-width: 992px) {
+  .admin-sidebar-toggle {
+    display: none;
+  }
+}
+
+/*==============================
+	Admin Pagination
+==============================*/
+/* Pagination Container */
+.admin-pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Pagination List */
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Pagination Links */
+.page-link {
+  color: #ccc;
+  background-color: #1a202c;
+  border: 1px solid #2d3748;
+  padding: 8px 14px;
+  margin: 0 2px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.page-link:hover {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+/* Active Page */
+.page-item.active .page-link {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+/* Disabled Page */
+.page-item.disabled .page-link {
+  color: #666;
+  cursor: not-allowed;
+  background-color: #1a202c;
+  border-color: #2d3748;
+}
+
+/*==============================
 	Modal
 ==============================*/
 .modal {
