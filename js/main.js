@@ -84,7 +84,7 @@ $(document).ready(function () {
 				'background': 'url(' + $(this).data('bg') + ')',
 				'background-position': 'center top 80px',
 				'background-repeat': 'no-repeat',
-				'background-size': 'auto 600px'
+				'background-size': 'auto 1000px'
 			});
 		}
 	});

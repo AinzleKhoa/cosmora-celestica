@@ -1131,7 +1131,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 .section--first {
-  padding-top: 200px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
 
 .section--bg {
@@ -3623,18 +3624,16 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 200px;
+  height: 260px;
   margin-bottom: 10px;
   overflow: hidden;
   background-color: #111827;
-  /* optional dark bg for padding gaps */
 }
 
 .card--uniform .card__cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* this is what stretches the image properly */
   border-radius: 6px;
 }
 
@@ -3645,7 +3644,6 @@ body::-webkit-scrollbar-thumb {
 
 .card--uniform .card__title {
   min-height: 100px;
-  /* forces consistent spacing even if brand/title varies */
   margin-bottom: auto;
 }
 
@@ -6547,7 +6545,6 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 .admin-sidebar {
   position: fixed;
   top: 70px;
-  /* Adjust to match your header height */
   left: 0;
   width: 220px;
   height: calc(100vh - 70px);
@@ -6555,6 +6552,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
   border-right: 1px solid rgba(255, 255, 255, 0.05);
   overflow-y: auto;
   z-index: 999;
+  min-height: 100vh;
 }
 
 .admin-sidebar__logo {
@@ -6597,6 +6595,152 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 /*==============================
+  Admin Header Content
+==============================*/
+/* Admin Header */
+.admin-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-add-product {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #1d4ed8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 30px;
+}
+
+.btn-add-product:hover {
+  background-color: #2563eb;
+}
+
+/* Search Bar */
+.search-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input {
+  padding: 12px;
+  border-radius: 30px;
+  border: 2px solid #444;
+  font-size: 16px;
+  background: #333;
+  color: #fff;
+  outline: none;
+  width: 300px;
+}
+
+.search-btn {
+  padding: 12px 20px;
+  border-radius: 30px;
+  background: #0088ff;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.search-btn:hover {
+  background: #00aef0;
+}
+
+/* Main Filter Section */
+.main-filter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.main-filter span {
+  font-size: 16px;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.filter-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #f3f4f6;
+  color: #333;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background-color: #1d4ed8;
+  color: #fff;
+}
+
+/* Filter Icon */
+.fas-filter-icon {
+  font-size: 14px;
+  padding: 0 10px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Mobile (up to 576px) */
+@media (max-width: 576px) {
+  .admin-header-top {
+    flex-direction: column;
+    /* Stacks the header items vertically */
+    align-items: flex-start;
+  }
+
+  .search-filter-wrapper {
+    flex-direction: column;
+    /* Stacks the search bar and button vertically */
+    align-items: flex-start;
+  }
+
+  .search-btn {
+    width: 100%;
+    /* Takes full width on small screens */
+  }
+
+  .filter-btns {
+    flex-direction: column;
+    /* Stacks filter buttons vertically */
+    width: 100%;
+  }
+
+  .filter-btn {
+    width: 100%;
+    /* Filter buttons take full width on small screens */
+  }
+}
+
+/* Medium Devices (up to 991px) */
+@media (max-width: 991px) {
+  .search-input {
+    width: 100%;
+    /* Full width search input on medium screens */
+  }
+
+  .search-btn {
+    width: 100%;
+    /* Full width search button */
+  }
+}
+
+/*==============================
   Admin Main Content
 ==============================*/
 /* Admin Content Area */
@@ -6619,10 +6763,12 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 /* Section Title */
 .table-title {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #3b4d69;
 }
 
 /* Table */
@@ -6680,8 +6826,8 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 .table-actions-center {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
+  align-items: center;
 }
 
 .btn-action {
@@ -6829,6 +6975,99 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
   cursor: not-allowed;
   background-color: #1a202c;
   border-color: #2d3748;
+}
+
+/*==============================
+	Homepage
+==============================*/
+.custom-section {
+  padding: 80px 20px;
+  color: white;
+}
+
+/* Search Bar */
+.custom-search-input {
+  padding: 12px 30px;
+  border-radius: 30px;
+  border: 2px solid #555;
+  font-size: 16px;
+  color: #fff;
+  background: #333;
+  outline: none;
+}
+
+.custom-search-input:focus {
+  background: #444;
+  border-color: #0ef;
+}
+
+/* Search Button */
+.custom-search-btn {
+  padding: 12px 20px;
+  border-radius: 30px;
+  background: #0e76a8;
+  border: 2px solid #0e76a8;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.custom-search-btn:hover {
+  background: #0b5d8e;
+  border-color: #0b5d8e;
+}
+
+/* Category Buttons */
+.custom-category-btn {
+  padding: 12px 25px;
+  border-radius: 30px;
+  background: #444;
+  color: #fff;
+  font-size: 16px;
+  margin-right: 15px;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.custom-category-btn:hover {
+  background: #0e76a8;
+}
+
+.custom-sales-off {
+  background: #e74c3c;
+  border: none;
+}
+
+.custom-sales-off:hover {
+  background: #c0392b;
+}
+
+/* Filter Options */
+.custom-filter-select {
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 16px;
+  border: 2px solid #555;
+  background: #333;
+  color: #fff;
+  margin-right: 15px;
+}
+
+.custom-filter-select:focus {
+  outline: none;
+  border-color: #0ef;
+}
+
+/* Search Button for Success */
+.custom-search-btn.btn-success {
+  background: #27ae60;
+  color: #fff;
+  border: none;
+}
+
+.custom-search-btn.btn-success:hover {
+  background: #2ecc71;
 }
 
 /*==============================
