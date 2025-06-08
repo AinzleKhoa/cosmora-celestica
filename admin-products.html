@@ -76,27 +76,32 @@
 		<ul class="admin-sidebar__nav">
 			<li class="admin-sidebar__item">
 				<a href="admin-products.html" class="admin-sidebar__link active">
-					<i class="fas fa-box"></i> Products
+					<i class="fas fa-box"></i> Manage Products
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
 				<a href="admin-staff.html" class="admin-sidebar__link">
-					<i class="fas fa-briefcase"></i> Staffs
+					<i class="fas fa-briefcase"></i> Manage Staffs
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
-				<a href="#" class="admin-sidebar__link">
-					<i class="fas fa-users"></i> Users
+				<a href="admin-customer.html" class="admin-sidebar__link">
+					<i class="fas fa-users"></i> Manage Customers
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
-				<a href="#" class="admin-sidebar__link">
-					<i class="fas fa-tag"></i> Vouchers
+				<a href="admin-order.html" class="admin-sidebar__link">
+					<i class="fas fa-clipboard-list"></i> Manage Orders
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
-				<a href="#" class="admin-sidebar__link">
-					<i class="fas fa-percent"></i> Discounts
+				<a href="admin-voucher.html" class="admin-sidebar__link">
+					<i class="fas fa-tag"></i> Manage Vouchers
+				</a>
+			</li>
+			<li class="admin-sidebar__item">
+				<a href="admin-discount.html" class="admin-sidebar__link">
+					<i class="fas fa-percent"></i> Manage Discounts
 				</a>
 			</li>
 		</ul>
@@ -110,14 +115,14 @@
 
 		<section class="admin-header">
 			<div class="admin-header-top">
-				<button class="btn-add-product">+ Add New Product</button>
+				<a class="btn-admin-add" href="./admin-product-create.html">+ Add New Product</a>
 				<div class="search-filter-wrapper">
 					<input type="text" class="search-input" placeholder="Enter product name...">
 					<button class="search-btn">Search</button>
 				</div>
 			</div>
 			<div class="main-filter">
-				<span><i class="fas fa-filter fas-filter-icon"></i>Main Category:</span>
+				<span><i class="fas fa-box fas-filter-icon"></i>Main Category:</span>
 				<div class="filter-btns">
 					<button class="filter-btn active">All</button>
 					<button class="filter-btn">Game</button>
@@ -127,6 +132,23 @@
 					<button class="filter-btn">Controller</button>
 				</div>
 			</div>
+			<div class="main-filter">
+				<span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
+				<select class="admin-filter-select">
+					<option value="ascending">A-Z</option>
+					<option value="descending">Z-A</option>
+				</select>
+				<select class="admin-filter-select">
+					<option value="all">All Dates</option>
+					<option value="last30">Last 30 Days</option>
+					<option value="lastYear">Last Year</option>
+				</select>
+				<select class="admin-filter-select">
+					<option value="all">All Statuses</option>
+					<option value="active">Active</option>
+					<option value="suspended">Suspended</option>
+				</select>
+			</div>
 		</section>
 
 		<section class="admin-table-wrapper">
@@ -135,29 +157,29 @@
 					<thead class="table-light text-dark">
 						<tr>
 							<th>ID</th>
-							<th>User</th>
-							<th>Username</th>
-							<th>Email</th>
-							<th>Role</th>
-							<th>Status</th>
+							<th>Product Image</th>
+							<th>Product Name</th>
+							<th>Price</th>
+							<th>Sale Price</th>
+							<th>Discount (%)</th>
+							<th>Category</th>
 							<th style="text-align: center;">Action</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>1</td>
-							<td>Hayden</td>
-							<td>Hayden</td>
-							<td>work409@gmail.com</td>
-							<td>Admin</td>
-							<td><span class="badge-status">Active</span></td>
+							<td>42</td>
+							<td>Wireless Mouse</td>
+							<td>Wireless Mouse</td>
+							<td>$50.00</td>
+							<td>$39.99</td>
+							<td>20%</td>
+							<td>Game</td>
 							<td>
 								<div class="table-actions-center">
-									<button class="btn-action btn-details">Details</button>
-									<button class="btn-action btn-edit" data-bs-toggle="modal"
-										data-bs-target="#editStaffModal">Edit</button>
-									<button class="btn-action btn-toggle">Deactivate</button>
-									<button class="btn-action btn-delete">Delete</button>
+									<a class="btn-action btn-details" href="./admin-product-details.html">Details</a>
+									<a class="btn-action btn-edit" href="./admin-product-edit.html">Edit</a>
+									<a class="btn-action btn-delete" href="./admin-product-delete.html">Delete</a>
 								</div>
 							</td>
 						</tr>

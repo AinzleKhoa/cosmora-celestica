@@ -1131,7 +1131,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .section--first {
-  padding-top: 50px;
+  padding-top: 100px;
   padding-bottom: 50px;
 }
 
@@ -1149,7 +1149,7 @@ body::-webkit-scrollbar-thumb {
   position: absolute;
   display: block;
   z-index: 1;
-  top: 140px;
+  top: 80px;
   left: 0;
   right: 0;
   height: 1000px;
@@ -1478,7 +1478,7 @@ body::-webkit-scrollbar-thumb {
   }
 
   .section--first {
-    padding-top: 210px;
+    padding-top: 80px;
   }
 
   .section--catalog {
@@ -1516,7 +1516,7 @@ body::-webkit-scrollbar-thumb {
   }
 
   .section--first {
-    padding-top: 220px;
+    padding-top: 100px;
   }
 
   .section--catalog {
@@ -1593,7 +1593,7 @@ body::-webkit-scrollbar-thumb {
   }
 
   .section--first {
-    padding-top: 230px;
+    padding-top: 100px;
   }
 
   .section--catalog {
@@ -6605,7 +6605,24 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
   margin-bottom: 20px;
 }
 
-.btn-add-product {
+/* Filter Options */
+.admin-filter-select {
+  padding: 2px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  border: 2px solid #555;
+  background: #333;
+  color: #fff;
+  margin-right: 15px;
+  text-align: center;
+}
+
+.admin-filter-select:focus {
+  outline: none;
+  border-color: #0ef;
+}
+
+.btn-admin-add {
   padding: 10px 20px;
   font-size: 16px;
   background-color: #1d4ed8;
@@ -6617,8 +6634,9 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
   margin-bottom: 30px;
 }
 
-.btn-add-product:hover {
+.btn-admin-add:hover {
   background-color: #2563eb;
+  color: #fff;
 }
 
 /* Search Bar */
@@ -6629,8 +6647,8 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .search-input {
-  padding: 12px;
-  border-radius: 30px;
+  padding: 8px;
+  border-radius: 14px;
   border: 2px solid #444;
   font-size: 16px;
   background: #333;
@@ -6640,8 +6658,8 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .search-btn {
-  padding: 12px 20px;
-  border-radius: 30px;
+  padding: 8px;
+  border-radius: 14px;
   background: #0088ff;
   color: #fff;
   font-size: 16px;
@@ -6672,7 +6690,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .filter-btn {
-  padding: 10px 20px;
+  padding: 6px 14px;
   font-size: 14px;
   background-color: #f3f4f6;
   color: #333;
@@ -6688,7 +6706,6 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
   color: #fff;
 }
 
-/* Filter Icon */
 .fas-filter-icon {
   font-size: 14px;
   padding: 0 10px;
@@ -6700,30 +6717,25 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 @media (max-width: 576px) {
   .admin-header-top {
     flex-direction: column;
-    /* Stacks the header items vertically */
     align-items: flex-start;
   }
 
   .search-filter-wrapper {
     flex-direction: column;
-    /* Stacks the search bar and button vertically */
     align-items: flex-start;
   }
 
   .search-btn {
     width: 100%;
-    /* Takes full width on small screens */
   }
 
   .filter-btns {
     flex-direction: column;
-    /* Stacks filter buttons vertically */
     width: 100%;
   }
 
   .filter-btn {
     width: 100%;
-    /* Filter buttons take full width on small screens */
   }
 }
 
@@ -6731,12 +6743,10 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 @media (max-width: 991px) {
   .search-input {
     width: 100%;
-    /* Full width search input on medium screens */
   }
 
   .search-btn {
     width: 100%;
-    /* Full width search button */
   }
 }
 
@@ -6831,13 +6841,25 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .btn-action {
-  padding: 6px 12px;
+  padding: 6px;
   font-size: 13px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.badge-staff {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #3b82f6;
+  color: #fff;
+  border-radius: 20px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .btn-details {
@@ -6847,16 +6869,17 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 .btn-details:hover {
   background-color: #2563eb;
+  color: #fff;
 }
 
 .btn-toggle {
   background-color: #10b981;
-  /* green */
   color: #fff;
 }
 
 .btn-toggle:hover {
   background-color: #059669;
+  color: #fff;
 }
 
 .btn-delete {
@@ -6866,6 +6889,16 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 .btn-delete:hover {
   background-color: #dc2626;
+  color: #fff;
+}
+
+.btn-history {
+  background-color: #6b21a8;
+  color: #fff;
+}
+
+.btn-history:hover {
+  background-color: #9d4ed6;
 }
 
 .btn-edit {
@@ -6926,6 +6959,171 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 /*==============================
+  Product Admin Create Style
+==============================*/
+.admin-manage-wrapper {
+  background-color: #121821;
+  color: #ffffff;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Subtitle Design */
+.admin-manage-subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #00b7ff;
+  padding-left: 0.5rem;
+  border-left: 4px solid #00b7ff;
+}
+
+/* Fieldset Redesign */
+.admin-manage-fieldset {
+  border: none;
+  background-color: #1a222d;
+  border-radius: 12px;
+  padding: 1.5rem 1.5rem 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 6px rgba(0, 183, 255, 0.06);
+}
+
+/* Labels */
+.admin-manage-label {
+  font-weight: 500;
+  color: #cfd8dc;
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+/* Inputs & Selects */
+.admin-manage-input {
+  background-color: #2c3644;
+  border: 1px solid #3e4a59;
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  width: 100%;
+  transition: 0.2s ease-in-out;
+}
+
+.admin-manage-input:focus {
+  background-color: #374452;
+  border-color: #00b7ff;
+  outline: none;
+}
+
+/* Textarea specifically */
+textarea.admin-manage-input {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Multi-select */
+select[multiple].admin-manage-input {
+  min-height: 100px;
+}
+
+/* Grid spacing */
+.row.g-3>[class^="col"] {
+  margin-bottom: 1rem;
+}
+
+/* Adjust file input */
+input[type="file"].admin-manage-input {
+  padding: 4px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .admin-manage-fieldset {
+    padding: 1rem;
+  }
+
+  .admin-manage-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+.admin-manage-back {
+  color: #00b7ff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.admin-manage-back:hover {
+  color: #0090cc;
+  text-decoration: underline;
+}
+
+.admin-manage-reset {
+  background-color: #3b434c;
+  color: #ffffff;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.admin-manage-reset:hover {
+  background-color: #505861;
+}
+
+.admin-manage-button {
+  background-color: #00b7ff;
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.admin-manage-button:hover {
+  background-color: #0095d9;
+}
+
+.admin-manage-button-delete {
+  background-color: #e74c3c;
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.admin-manage-button-delete:hover {
+  background-color: #c0392b;
+}
+
+.admin-manage-image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-manage-image-gallery img {
+  max-width: 180px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.admin-manage-image-gallery img:hover {
+  transform: scale(1.03);
+}
+
+/*==============================
 	Admin Pagination
 ==============================*/
 /* Pagination Container */
@@ -6981,13 +7179,13 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 	Homepage
 ==============================*/
 .custom-section {
-  padding: 80px 20px;
+  padding: 40px 20px;
   color: white;
 }
 
 /* Search Bar */
 .custom-search-input {
-  padding: 12px 30px;
+  padding: 10px 30px;
   border-radius: 30px;
   border: 2px solid #555;
   font-size: 16px;
@@ -7003,7 +7201,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 /* Search Button */
 .custom-search-btn {
-  padding: 12px 20px;
+  padding: 10px;
   border-radius: 30px;
   background: #0e76a8;
   border: 2px solid #0e76a8;
@@ -7020,12 +7218,12 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 /* Category Buttons */
 .custom-category-btn {
-  padding: 12px 25px;
-  border-radius: 30px;
+  padding: 8px 16px;
+  border-radius: 14px;
   background: #444;
   color: #fff;
   font-size: 16px;
-  margin-right: 15px;
+  margin-right: 10px;
   border: none;
   transition: background 0.3s ease;
 }
@@ -7045,29 +7243,18 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 /* Filter Options */
 .custom-filter-select {
-  padding: 12px 20px;
+  padding: 8px 16px;
   border-radius: 30px;
   font-size: 16px;
   border: 2px solid #555;
   background: #333;
   color: #fff;
-  margin-right: 15px;
+  margin-right: 10px;
 }
 
 .custom-filter-select:focus {
   outline: none;
   border-color: #0ef;
-}
-
-/* Search Button for Success */
-.custom-search-btn.btn-success {
-  background: #27ae60;
-  color: #fff;
-  border: none;
-}
-
-.custom-search-btn.btn-success:hover {
-  background: #2ecc71;
 }
 
 /*==============================

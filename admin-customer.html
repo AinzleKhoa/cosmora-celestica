@@ -80,12 +80,12 @@
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
-				<a href="admin-staff.html" class="admin-sidebar__link active">
+				<a href="admin-staff.html" class="admin-sidebar__link">
 					<i class="fas fa-briefcase"></i> Manage Staffs
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
-				<a href="admin-customer.html" class="admin-sidebar__link">
+				<a href="admin-customer.html" class="admin-sidebar__link active">
 					<i class="fas fa-users"></i> Manage Customers
 				</a>
 			</li>
@@ -110,14 +110,14 @@
 	<main class="admin-main">
 
 		<div class="table-header">
-			<h2 class="table-title">Manage Staffs</h2>
+			<h2 class="table-title">Manage Customers</h2>
 		</div>
 
 		<section class="admin-header">
 			<div class="admin-header-top">
-				<button class="btn-admin-add">+ Add New Staff</button>
+				<button class="btn-admin-add">+ Add New Customer</button>
 				<div class="search-filter-wrapper">
-					<input type="text" class="search-input" placeholder="Enter staff name...">
+					<input type="text" class="search-input" placeholder="Enter customer name...">
 					<button class="search-btn">Search</button>
 				</div>
 			</div>
@@ -149,7 +149,6 @@
 							<th>Fullname</th>
 							<th>Username</th>
 							<th>Email</th>
-							<th>Role</th>
 							<th>Status</th>
 							<th style="text-align: center;">Action</th>
 						</tr>
@@ -160,15 +159,15 @@
 							<td>Hayden</td>
 							<td>Hayden</td>
 							<td>work409@gmail.com</td>
-							<td>Staff</td>
 							<td><span class="badge-status">Active</span></td>
 							<td>
 								<div class="table-actions-center">
 									<button class="btn-action btn-details">Details</button>
 									<button class="btn-action btn-edit" data-bs-toggle="modal"
 										data-bs-target="#editStaffModal">Edit</button>
+									<button class="btn-action btn-toggle">Deactivate</button>
 									<button class="btn-action btn-delete">Delete</button>
-									<button class="btn-action btn-history">Activity Log</button>
+									<button class="btn-action btn-history">Order History</button>
 								</div>
 							</td>
 						</tr>

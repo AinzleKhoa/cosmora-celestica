@@ -44,71 +44,9 @@
                             </a>
 
                             <ul class="header__nav">
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link" href="index.html">Home</a>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link" href="category-game.html">Games</a>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link" href="#" role="button" id="dropdownMenu1"
-                                        data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">Accessories<svg xmlns='http://www.w3.org/2000/svg'
-                                            viewBox='0 0 512 512'>
-                                            <path fill='none' stroke-linecap='round' stroke-linejoin='round'
-                                                stroke-width='48' d='M112 184l144 144 144-144' />
-                                        </svg></a>
-
-                                    <ul class="dropdown-menu header__nav-menu" aria-labelledby="dropdownMenu1">
-                                        <li><a href="#">Headsets</a></li>
-                                        <li><a href="#">Keyboard</a></li>
-                                        <li><a href="#">Mouse</a></li>
-                                        <li><a href="#">Controller</a></li>
-                                    </ul>
-                                </li>
                             </ul>
 
                             <div class="header__actions">
-                                <a href="login.html" class="header__login">
-                                    <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                        viewBox='0 0 512 512'>
-                                        <path
-                                            d='M192,176V136a40,40,0,0,1,40-40H392a40,40,0,0,1,40,40V376a40,40,0,0,1-40,40H240c-22.09,0-48-17.91-48-40V336'
-                                            style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                        <polyline points='288 336 368 256 288 176'
-                                            style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                        <line x1='80' y1='256' x2='352' y2='256'
-                                            style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                    </svg>
-                                    <span>Login</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="header__wrap">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="header__content">
-                            <form action="#" class="header__form">
-                                <input type="text" class="header__input" placeholder="I'm searching for...">
-                                <button class="header__btn" type="button">
-                                    <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                        viewBox='0 0 512 512'>
-                                        <path
-                                            d='M221.09,64A157.09,157.09,0,1,0,378.18,221.09,157.1,157.1,0,0,0,221.09,64Z'
-                                            style='fill:none;stroke-miterlimit:10;stroke-width:32px' />
-                                        <line x1='338.29' y1='338.29' x2='448' y2='448'
-                                            style='fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px' />
-                                    </svg>
-                                </button>
-                            </form>
-
-                            <div class="header__actions header__actions--2">
                                 <a href="checkout.html" class="header__link">
                                     <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
                                         viewBox='0 0 512 512'>
@@ -122,6 +60,19 @@
                                             style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
                                     </svg>
                                     <span>$00.00</span>
+                                </a>
+                                <a href="login.html" class="header__login">
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
+                                        viewBox='0 0 512 512'>
+                                        <path
+                                            d='M192,176V136a40,40,0,0,1,40-40H392a40,40,0,0,1,40,40V376a40,40,0,0,1-40,40H240c-22.09,0-48-17.91-48-40V336'
+                                            style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                        <polyline points='288 336 368 256 288 176'
+                                            style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                        <line x1='80' y1='256' x2='352' y2='256'
+                                            style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                    </svg>
+                                    <span>Login</span>
                                 </a>
                             </div>
                         </div>
@@ -163,19 +114,29 @@
                 <div class="col-12">
                     <div class="input-group custom-input-group">
                         <input type="text" class="form-control custom-search-input" placeholder="I'm searching for...">
-                        <button class="btn custom-search-btn" type="button">🔍</button>
+                        <button class="btn custom-search-btn" type="button">Search</button>
                     </div>
                 </div>
 
                 <!-- Category Buttons -->
                 <div class="col-12 mt-3 text-center">
                     <h2>Category:</h2>
+                    <button class="btn custom-category-btn active">All Category</button>
                     <button class="btn custom-category-btn">Game</button>
                     <button class="btn custom-category-btn">Headset</button>
                     <button class="btn custom-category-btn">Keyboard</button>
                     <button class="btn custom-category-btn">Mouse</button>
                     <button class="btn custom-category-btn">Controller</button>
-                    <button class="btn custom-category-btn custom-sales-off">Sales Off</button>
+                </div>
+
+                <!-- Category Buttons -->
+                <div class="col-12 mt-3 text-center">
+                    <h2>Discounts:</h2>
+                    <button class="btn custom-category-btn custom-sales-off">All Sales Off</button>
+                    <button class="btn custom-category-btn custom-sales-off">-10%</button>
+                    <button class="btn custom-category-btn custom-sales-off">-20%</button>
+                    <button class="btn custom-category-btn custom-sales-off">-30%</button>
+                    <button class="btn custom-category-btn custom-sales-off">-40%</button>
                 </div>
 
                 <!-- Filter Options -->
@@ -196,7 +157,6 @@
                         <option>Option 1</option>
                         <option>Option 2</option>
                     </select>
-                    <button class="btn btn-success custom-search-btn">Search</button>
                 </div>
 
             </div>
@@ -381,6 +341,7 @@
                         </ul>
 
                         <div class="card__title">
+                            <h3 class="card__brand">Santa Monica Studio</h3>
                             <h3><a href="details.html">Desperados III Digital Deluxe Edition</a></h3>
                             <span>$49.00</span>
                         </div>
