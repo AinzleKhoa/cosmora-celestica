@@ -152,8 +152,10 @@
 						<input type="number" class="form-control admin-manage-input" name="quantity" required>
 					</div>
 					<div class="col-md-6">
-						<label class="form-label admin-manage-label">Product Image</label>
-						<input type="file" class="form-control admin-manage-input" name="image" accept="image/*">
+						<label class="form-label admin-manage-label">Product Images</label>
+						<input type="file" class="form-control admin-manage-input" name="images[]" accept="image/*"
+							multiple>
+						<div id="imagePreviewContainer" class="admin-manage-image-gallery mt-3"></div>
 					</div>
 				</div>
 			</fieldset>

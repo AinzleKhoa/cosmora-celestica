@@ -7123,6 +7123,12 @@ input[type="file"].admin-manage-input {
   transform: scale(1.03);
 }
 
+.admin-manage-image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 /*==============================
 	Admin Pagination
 ==============================*/

@@ -420,6 +420,33 @@ $(document).ready(function () {
 	});
 
 	/*==============================
+	Admin
+	==============================*/
+	$('input[name="images[]"]').on('change', function (e) {
+		const previewContainer = $('#imagePreviewContainer');
+		previewContainer.empty();
+
+		Array.from(e.target.files).forEach(file => {
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				const img = $('<img>', {
+					src: e.target.result,
+					alt: file.name,
+					css: {
+						maxWidth: '120px',
+						borderRadius: '6px',
+						marginRight: '10px',
+						marginBottom: '10px',
+						boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+					}
+				});
+				previewContainer.append(img);
+			};
+			reader.readAsDataURL(file);
+		});
+	});
+
+	/*==============================
 	Range sliders
 	==============================*/
 	function initializeSlider() {
