@@ -1,4 +1,4 @@
 <!-- Begin page content -->
-<main class="flex-shrink-0">
+<main>
     <% response.sendRedirect(request.getContextPath() + "/home"); %>
 </main>

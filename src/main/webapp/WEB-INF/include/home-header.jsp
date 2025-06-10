@@ -9,9 +9,6 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/bootstrap-reboot.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/bootstrap-grid.min.css">
@@ -46,15 +43,15 @@
                                 <span></span>
                             </button>
 
-                            <a href="${pageContext.servletContext.contextPath}/home" class="header__logo">
-                                <img src="img/logo.png" alt="">
+                            <a href="/home" class="header__logo">
+                                <img src="${pageContext.servletContext.contextPath}/img/logo.png" alt="">
                             </a>
 
                             <ul class="header__nav">
                             </ul>
 
                             <div class="header__actions">
-                                <a href="${pageContext.servletContext.contextPath}/checkout" class="header__link">
+                                <a href="/checkout" class="header__link">
                                     <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
                                         viewBox='0 0 512 512'>
                                         <circle cx='176' cy='416' r='16'
@@ -68,7 +65,7 @@
                                     </svg>
                                     <span>$00.00</span>
                                 </a>
-                                <a href="${pageContext.servletContext.contextPath}/login" class="header__login">
+                                <a href="/login" class="header__login">
                                     <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
                                         viewBox='0 0 512 512'>
                                         <path

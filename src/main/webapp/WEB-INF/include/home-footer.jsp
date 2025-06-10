@@ -12,7 +12,7 @@
             <div class="col-12">
                 <div class="footer__wrap">
                     <a class="footer__logo" href="${pageContext.servletContext.contextPath}/home">
-                        <img src="img/logo.png" alt="">
+                        <img src="${pageContext.servletContext.contextPath}/img/logo.png" alt="">
                     </a>
 
                     <span class="footer__copyright">© CosmoraCelestica, 2025</span>
