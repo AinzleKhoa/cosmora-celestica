@@ -4,6 +4,7 @@
  */
 package shop.dao;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +18,23 @@ import shop.model.Customer;
 public class CustomerDAO extends DBContext {
 
     public Customer login(String email, String password) {
-        String query = "";
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.email = ?";
+            Object[] params = {email};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getBoolean("is_deactivated")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return null;
     }
 

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import shop.dao.CustomerDAO;
+import shop.filter.PasswordUtils;
 import shop.model.Customer;
 
 /**
@@ -52,12 +53,37 @@ public class LoginServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        
+
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.login(email,password);
+        Customer customer = cDAO.login(email, password);
+
+        if (customer != null) {
+            response.sendRedirect(request.getContextPath() + "/home");
+
+            if (!customer.isIsDeactivated()) {
+                boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+
+                if (isPasswordMatched) {
+                    session = request.getSession(true);
+                    session.setAttribute("currentCustomer", customer);
+                    response.sendRedirect(request.getContextPath() + "/home");
+                } else {
+                    request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
+                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                }
+
+            } else {
+                request.setAttribute("errorMessage", "Your account is locked. Contacts us for more informations");
+                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+            }
+
+        } else {
+            request.setAttribute("errorMessage", "Something went wrong. Please try again.");
+            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+        }
     }
 
     /**

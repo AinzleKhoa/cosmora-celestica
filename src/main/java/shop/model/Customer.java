@@ -65,6 +65,13 @@ public class Customer {
         this.passwordHash = passwordHash;
     }
 
+    public Customer(int customerId, String email, String passwordHash, boolean isDeactivated) {
+        this.customerId = customerId;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.isDeactivated = isDeactivated;
+    }
+
     public int getCustomerId() {
         return customerId;
     }

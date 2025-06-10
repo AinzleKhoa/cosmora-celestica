@@ -13,10 +13,17 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- authorization form -->
-                    <form action="#" class="sign__form">
+                    <form action="${pageContext.servletContext.contextPath}/login" method="POST" class="sign__form" onsubmit="return validateForm(event, 'login')">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
+
+                        <!-- Error Message Container -->
+                        <div id="errorMessages" style="color: red; margin-bottom: 20px;">
+                            <c:if test="${not empty requestScope.errorMessage}">
+                                <p>${requestScope.errorMessage}</p>
+                            </c:if>
+                        </div>
 
                         <div class="sign__group">
                             <input type="email" class="sign__input" placeholder="Email" autocomplete="username">
@@ -32,7 +39,7 @@
                                 <label for="remember">Remember Me</label>
                         </div>
 
-                        <button class="sign__btn" type="button">Sign in</button>
+                        <button class="sign__btn" type="submit">Sign in</button>
 
                         <span class="sign__delimiter">or</span>
 
@@ -44,7 +51,7 @@
                                 </svg></a>
                         </div>
 
-                        <span class="sign__text">Don't have an account? <a href="${pageContext.servletContext.contextPath}/register">Sign up!</a></span>
+                        <span class="sign__text">Don't have an account? <a href="${pageContext.servletContext.contextPath}/register">Register!</a></span>
 
                         <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
                     </form>
