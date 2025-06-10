@@ -1,9 +1,10 @@
 <%-- 
-    Document   : login
-    Created on : Jun 10, 2025, 4:14:46 PM
+    Document   : register
+    Created on : Jun 10, 2025, 9:06:15 PM
     Author     : CE190449 - Le Anh Khoa
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 <!-- sign in -->
@@ -12,27 +13,36 @@
         <div class="row">
             <div class="col-12">
                 <div class="sign__content">
-                    <!-- authorization form -->
-                    <form action="#" class="sign__form">
+                    <!-- registration form -->
+                    <form action="${pageContext.servletContext.contextPath}/register" method="POST" class="sign__form" onsubmit="return validateForm(event)">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
 
-                        <div class="sign__group">
-                            <input type="email" class="sign__input" placeholder="Email" autocomplete="username">
+                        <!-- Error Message Container -->
+                        <div id="errorMessages" style="color: red; margin-bottom: 20px;">
+                            <c:if test="${not empty requestScope.errorMessage}">
+                                <p>${requestScope.errorMessage}</p>
+                            </c:if>
                         </div>
 
                         <div class="sign__group">
-                            <input type="password" class="sign__input" placeholder="Password"
-                                   autocomplete="new-password">
+                            <input type="text" class="sign__input" placeholder="Username" id="username" name="username" required>
                         </div>
 
-                        <div class="sign__group sign__group--checkbox">
-                            <input id="remember" name="remember" type="checkbox" checked="checked">
-                                <label for="remember">Remember Me</label>
+                        <div class="sign__group">
+                            <input type="email" class="sign__input" placeholder="Email" id="email" name="email" autocomplete="username" required>
                         </div>
 
-                        <button class="sign__btn" type="button">Sign in</button>
+                        <div class="sign__group">
+                            <input type="password" class="sign__input" placeholder="Password" id="password" name="password" autocomplete="new-password" required>
+                        </div>
+
+                        <div class="sign__group">
+                            <input type="password" class="sign__input" placeholder="Confirm Password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                        </div>
+
+                        <button class="sign__btn" type="submit">Sign up</button>
 
                         <span class="sign__delimiter">or</span>
 
@@ -44,11 +54,9 @@
                                 </svg></a>
                         </div>
 
-                        <span class="sign__text">Don't have an account? <a href="${pageContext.servletContext.contextPath}/register">Sign up!</a></span>
-
-                        <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
+                        <span class="sign__text">Already have an account? <a href="${pageContext.servletContext.contextPath}/login">Sign in!</a></span>
                     </form>
-                    <!-- end authorization form -->
+                    <!-- registration form -->
                 </div>
             </div>
         </div>
