@@ -43,7 +43,7 @@
                                 <span></span>
                             </button>
 
-                            <a href="/home" class="header__logo">
+                            <a href="${pageContext.servletContext.contextPath}/home" class="header__logo">
                                 <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                             </a>
 
@@ -65,7 +65,7 @@
                                     </svg>
                                     <span>$00.00</span>
                                 </a>
-                                <a href="/login" class="header__login">
+                                <a href="${pageContext.servletContext.contextPath}/login" class="header__login">
                                     <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
                                         viewBox='0 0 512 512'>
                                         <path
