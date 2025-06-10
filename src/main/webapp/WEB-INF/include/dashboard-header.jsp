@@ -13,19 +13,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<!-- CSS -->
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/bootstrap-reboot.min.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/bootstrap-grid.min.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/owl.carousel.min.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/magnific-popup.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/nouislider.min.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/jquery.mCustomScrollbar.min.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/paymentfont.min.css">
-	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/main.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/bootstrap-reboot.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/bootstrap-grid.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/magnific-popup.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/nouislider.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 	<!-- Favicons -->
-	<link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/icon/logo.png" sizes="32x32">
-	<link rel="apple-touch-icon" href="${pageContext.servletContext.contextPath}/icon/logo.png">
+	<link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">
+	<link rel="apple-touch-icon" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png">
 
 	<meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
 	<meta name="keywords" content="">

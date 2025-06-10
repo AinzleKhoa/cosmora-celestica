@@ -10,14 +10,14 @@
 
 <head>
     <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/bootstrap-reboot.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/bootstrap-grid.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/magnific-popup.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/nouislider.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/jquery.mCustomScrollbar.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/paymentfont.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/main.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/bootstrap-reboot.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/nouislider.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">
@@ -44,7 +44,7 @@
                             </button>
 
                             <a href="/home" class="header__logo">
-                                <img src="${pageContext.servletContext.contextPath}/img/logo.png" alt="">
+                                <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                             </a>
 
                             <ul class="header__nav">

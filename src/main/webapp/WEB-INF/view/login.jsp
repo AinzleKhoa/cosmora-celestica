@@ -15,7 +15,7 @@
                     <!-- authorization form -->
                     <form action="#" class="sign__form">
                         <a href="index.html" class="sign__logo">
-                            <img src="img/logo.png" alt="">
+                            <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
 
                         <div class="sign__group">

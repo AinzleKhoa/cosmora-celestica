@@ -7,13 +7,13 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 
-<section class="section section--bg section__ad--bg section--first" data-bg="img/bg3.png">
+<section class="section section--bg section__ad--bg section--first" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
     <div class="owl-carousel section__carousel--ad" id="carousel00">
 
         <a href="${pageContext.servletContext.contextPath}/product-details" class="advertisement__card-link" target="_blank">
             <div class="advertisement__card card">
                 <div class="advertisement__image-wrapper">
-                    <img src="./img/advertisement/ad1.png" alt="Minecraft Origin Modding"
+                    <img src="${pageContext.servletContext.contextPath}/assets//img/advertisement/ad1.png" alt="Minecraft Origin Modding"
                          class="advertisement__image" />
                 </div>
             </div>
@@ -22,7 +22,7 @@
         <a href="${pageContext.servletContext.contextPath}/product-details" class="advertisement__card-link" target="_blank">
             <div class="advertisement__card card">
                 <div class="advertisement__image-wrapper">
-                    <img src="./img/advertisement/ad2.png" alt="Minecraft Origin Modding"
+                    <img src="${pageContext.servletContext.contextPath}/assets/img/advertisement/ad2.png" alt="Minecraft Origin Modding"
                          class="advertisement__image" />
                 </div>
             </div>
@@ -91,7 +91,7 @@
             <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 col-equal">
                 <div class="card card--catalog card--uniform">
                     <a href="${pageContext.servletContext.contextPath}/product-details" class="card__cover">
-                        <img src="img/mice/mice1.png" alt="" />
+                        <img src="${pageContext.servletContext.contextPath}/assets/img/mice/mice1.png" alt="" />
                         <span class="card__new">NEW</span>
                     </a>
 
@@ -124,7 +124,7 @@
             <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 col-equal">
                 <div class="card card--catalog card--uniform">
                     <a href="${pageContext.servletContext.contextPath}/product-details" class="card__cover">
-                        <img src="img/controller/controller1.png" alt="" />
+                        <img src="${pageContext.servletContext.contextPath}/assets/img/controller/controller1.png" alt="" />
                         <span class="card__new">NEW</span>
                     </a>
 
@@ -157,7 +157,7 @@
             <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 col-equal">
                 <div class="card card--catalog card--uniform">
                     <a href="${pageContext.servletContext.contextPath}/product-details" class="card__cover">
-                        <img src="img/keyboard/keyboard2.png" alt="" />
+                        <img src="${pageContext.servletContext.contextPath}/assets/img/keyboard/keyboard2.png" alt="" />
                         <span class="card__new">NEW</span>
                     </a>
 
@@ -190,7 +190,7 @@
             <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 col-equal">
                 <div class="card card--catalog card--uniform">
                     <a href="${pageContext.servletContext.contextPath}/product-details" class="card__cover">
-                        <img src="img/accessories/headset2.png" alt="Tai nghe Razer Kraken" />
+                        <img src="${pageContext.servletContext.contextPath}/assets/img/accessories/headset2.png" alt="Tai nghe Razer Kraken" />
                         <span class="card__new">NEW</span>
                     </a>
 
@@ -223,7 +223,7 @@
             <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 col-equal">
                 <div class="card card--catalog card--uniform">
                     <a href="${pageContext.servletContext.contextPath}/product-details" class="card__cover">
-                        <img src="img/cards/gowragnarok.jpg" alt="">
+                        <img src="${pageContext.servletContext.contextPath}/assets/img/cards/gowragnarok.jpg" alt="">
                         <span class="card__new">New</span>
                     </a>
 
