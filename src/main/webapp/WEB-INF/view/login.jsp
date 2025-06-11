@@ -18,19 +18,26 @@
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
 
+                        <!-- Success Message Container -->
+                        <div id="successMessage" style="color: green; margin-bottom: 15px;">
+                            <c:if test="${not empty successMessage}">
+                                <p>${successMessage}</p>
+                            </c:if>
+                        </div>
+
                         <!-- Error Message Container -->
-                        <div id="errorMessages" style="color: red; margin-bottom: 20px;">
+                        <div id="errorMessages" style="color: red; margin-bottom: 15px;">
                             <c:if test="${not empty requestScope.errorMessage}">
                                 <p>${requestScope.errorMessage}</p>
                             </c:if>
                         </div>
 
                         <div class="sign__group">
-                            <input type="email" class="sign__input" placeholder="Email" autocomplete="username">
+                            <input type="email" class="sign__input" placeholder="Email" name="email" autocomplete="username">
                         </div>
 
                         <div class="sign__group">
-                            <input type="password" class="sign__input" placeholder="Password"
+                            <input type="password" class="sign__input" name="password" placeholder="Password"
                                    autocomplete="new-password">
                         </div>
 

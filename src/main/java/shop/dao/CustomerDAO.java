@@ -17,7 +17,7 @@ import shop.model.Customer;
  */
 public class CustomerDAO extends DBContext {
 
-    public Customer login(String email, String password) {
+    public Customer login(String email) {
         try {
             String query = "SELECT *\n"
                     + "FROM customer c\n"
@@ -36,6 +36,22 @@ public class CustomerDAO extends DBContext {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public boolean isEmailExists(String email) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.email = ?";
+            Object[] params = {email};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     public int register(Customer customer) {

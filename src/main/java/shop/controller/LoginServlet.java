@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import shop.dao.CustomerDAO;
-import shop.filter.PasswordUtils;
+import shop.util.PasswordUtils;
 import shop.model.Customer;
 
 /**
@@ -35,6 +35,19 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false); // Get the current session (if it exists)
+
+        if (session != null) {
+            // Retrieve the success message from the session
+            String successMessage = (String) session.getAttribute("successMessage");
+            if (successMessage != null) {
+                // Add the message to the request to be displayed on the login page
+                request.setAttribute("successMessage", successMessage);
+                // Remove the message from the session after it has been used
+                session.removeAttribute("successMessage");
+            }
+        }
+
         request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
     }
 
@@ -58,30 +71,30 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.login(email, password);
+        Customer customer = cDAO.login(email);
 
         if (customer != null) {
-            response.sendRedirect(request.getContextPath() + "/home");
-
             if (!customer.isIsDeactivated()) {
+                // Check password match before setting session
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
-
                 if (isPasswordMatched) {
+                    // Create a new session and set the customer attribute
                     session = request.getSession(true);
                     session.setAttribute("currentCustomer", customer);
                     response.sendRedirect(request.getContextPath() + "/home");
                 } else {
+                    // If password doesn't match, set error message and forward
                     request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
                     request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
                 }
-
             } else {
+                // If account is deactivated, set error message and forward
                 request.setAttribute("errorMessage", "Your account is locked. Contacts us for more informations");
                 request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
             }
-
         } else {
-            request.setAttribute("errorMessage", "Something went wrong. Please try again.");
+            // If email doesn't exist, set error message and forward
+            request.setAttribute("errorMessage", "Email doesn't exist.");
             request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
         }
     }

@@ -12,16 +12,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import shop.dao.CustomerDAO;
-import shop.util.PasswordUtils;
-import shop.model.Customer;
 
 /**
  *
  * @author CE190449 - Le Anh Khoa
  */
-@WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
-public class RegisterServlet extends HttpServlet {
+@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
+public class LogoutServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -35,7 +32,13 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 
     /**
@@ -49,27 +52,6 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-
-        CustomerDAO cDAO = new CustomerDAO();
-        String hashedPassword = PasswordUtils.hashPassword(password);
-
-        if (!cDAO.isEmailExists(email)) {
-            if (cDAO.register(new Customer(username, email, hashedPassword)) > 0) {
-                // Store success message in the session
-                HttpSession session = request.getSession();
-                request.setAttribute("successMessage", "Register successful! Please log in.");
-                response.sendRedirect(request.getContextPath() + "/login");
-            } else {
-                request.setAttribute("errorMessage", "Something went wrong. Please try again.");
-                request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
-            }
-        } else {
-            request.setAttribute("errorMessage", "The email already exists. Please try again.");
-            request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
-        }
     }
 
     /**
