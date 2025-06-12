@@ -192,8 +192,8 @@ public class Customer {
         this.address = address;
     }
 
-    public void setAvatarUri(String avatarUri) {
-        this.avatarUri = avatarUri;
+    public void setAvatarUri(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
