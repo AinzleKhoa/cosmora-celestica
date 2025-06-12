@@ -59,10 +59,11 @@ public class Customer {
         this.createdAt = createdAt;
     }
 
-    public Customer(String username, String email, String passwordHash) {
+    public Customer(String username, String email, String passwordHash, String avatarUrl) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.avatarUrl = avatarUrl;
     }
 
     public Customer(int customerId, String email, String passwordHash, boolean isDeactivated) {
@@ -104,7 +105,7 @@ public class Customer {
         return address;
     }
 
-    public String getAvatarUri() {
+    public String getAvatarUrl() {
         return avatarUrl;
     }
 

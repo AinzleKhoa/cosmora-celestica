@@ -71,7 +71,7 @@
                                         <c:when test="${not empty user}">
                                             <div class="admin-dropdown" onclick="toggleDropdown()">
                                                 <div class="admin-profile">
-                                                    <img src="img/user.svg" alt="Avatar" class="admin-avatar">
+                                                    <img src="${user.avatarUrl}" alt="Avatar" class="admin-avatar">
                                                     <div>
                                                         <p class="admin-name">${user.username}</p>
                                                         <span class="admin-role">Customer</span>

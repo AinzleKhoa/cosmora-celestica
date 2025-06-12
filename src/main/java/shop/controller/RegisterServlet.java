@@ -52,12 +52,13 @@ public class RegisterServlet extends HttpServlet {
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String avatarUrl = request.getContextPath() + "/assets/img/avatar/avatar1.png";
 
         CustomerDAO cDAO = new CustomerDAO();
         String hashedPassword = PasswordUtils.hashPassword(password);
 
         if (!cDAO.isEmailExists(email)) {
-            if (cDAO.register(new Customer(username, email, hashedPassword)) > 0) {
+            if (cDAO.register(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
                 // Store success message in the session
                 HttpSession session = request.getSession();
                 session.setAttribute("successMessage", "Register successful! Please log in.");

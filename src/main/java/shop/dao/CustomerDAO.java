@@ -74,11 +74,12 @@ public class CustomerDAO extends DBContext {
     public int register(Customer customer) {
         try {
             String query = "INSERT INTO customer (username, email, password_hash, avatar_url, created_at)\n"
-                    + "VALUES (?, ?, ?, CURRENT_TIMESTAMP);";
+                    + "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);";
             Object[] params = {
                 customer.getUsername(),
                 customer.getEmail(),
-                customer.getPasswordHash()
+                customer.getPasswordHash(),
+                customer.getAvatarUrl()
             };
             return execQuery(query, params);
         } catch (SQLException ex) {
