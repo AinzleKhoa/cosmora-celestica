@@ -483,34 +483,39 @@ $(document).ready(function () {
     $(window).on('load', initializeSlider());
 });
 
-function validateForm() {
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    
+function validateForm(event, formType) {
     let errors = [];
     
-    // Validate username (3-20 characters, letters, numbers, underscores only)
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    if (!usernameRegex.test(username)) {
-        errors.push("Username must be 3-20 characters long and can only contain letters, numbers, and underscores.");
+    // Get form inputs
+    const username = document.getElementById('username') ? document.getElementById('username').value : null; // for registration
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword') ? document.getElementById('confirmPassword').value : null; // for registration
+    
+    // Validate username (only for registration)
+    if (formType === 'register') {
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!username || !usernameRegex.test(username)) {
+            errors.push("Username must be 3-20 characters long and can only contain letters, numbers, and underscores.");
+        }
     }
 
-    // Validate email (simple check)
+    // Validate email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
         errors.push("Please enter a valid email address.");
     }
 
-    // Validate password (at least 8 characters, 1 letter and 1 number)
+    // Validate password (both for login and registration)
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (!passwordRegex.test(password)) {
-        errors.push("Password must be at least 8 characters long and contain at least 1 letter and 1 number.");
+    if (password.length < 8) {
+        errors.push("Password must be at least 8 characters long.");
+    } else if (!passwordRegex.test(password)) {
+        errors.push("Password must contain at least 1 letter and 1 number.");
     }
 
-    // Check if passwords match
-    if (password !== confirmPassword) {
+    // Validate confirm password (only for registration)
+    if (formType === 'register' && password !== confirmPassword) {
         errors.push("Passwords do not match.");
     }
 

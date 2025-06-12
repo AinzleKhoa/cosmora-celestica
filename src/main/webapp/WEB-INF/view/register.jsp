@@ -14,7 +14,7 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- registration form -->
-                    <form action="${pageContext.servletContext.contextPath}/register" method="POST" class="sign__form" onsubmit="return validateForm(event)">
+                    <form action="${pageContext.servletContext.contextPath}/register" method="POST" class="sign__form" onsubmit="return validateForm(event, 'register')">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
@@ -54,7 +54,7 @@
                                 </svg></a>
                         </div>
 
-                        <span class="sign__text">Already have an account? <a href="${pageContext.servletContext.contextPath}/login">Sign in!</a></span>
+                        <span class="sign__text">Already have an account? <a href="${pageContext.servletContext.contextPath}/login">Login!</a></span>
                     </form>
                     <!-- registration form -->
                 </div>

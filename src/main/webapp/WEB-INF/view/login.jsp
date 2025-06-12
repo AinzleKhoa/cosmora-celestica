@@ -13,17 +13,31 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- authorization form -->
-                    <form action="#" class="sign__form">
+                    <form action="${pageContext.servletContext.contextPath}/login" method="POST" class="sign__form" onsubmit="return validateForm(event, 'login')">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
 
-                        <div class="sign__group">
-                            <input type="email" class="sign__input" placeholder="Email" autocomplete="username">
+                        <!-- Success Message Container -->
+                        <div id="successMessage" style="color: green; margin-bottom: 15px;">
+                            <c:if test="${not empty successMessage}">
+                                <p>${successMessage}</p>
+                            </c:if>
+                        </div>
+
+                        <!-- Error Message Container -->
+                        <div id="errorMessages" style="color: red; margin-bottom: 15px;">
+                            <c:if test="${not empty requestScope.errorMessage}">
+                                <p>${requestScope.errorMessage}</p>
+                            </c:if>
                         </div>
 
                         <div class="sign__group">
-                            <input type="password" class="sign__input" placeholder="Password"
+                            <input type="email" class="sign__input" placeholder="Email" name="email" autocomplete="username">
+                        </div>
+
+                        <div class="sign__group">
+                            <input type="password" class="sign__input" name="password" placeholder="Password"
                                    autocomplete="new-password">
                         </div>
 
@@ -32,7 +46,7 @@
                                 <label for="remember">Remember Me</label>
                         </div>
 
-                        <button class="sign__btn" type="button">Sign in</button>
+                        <button class="sign__btn" type="submit">Sign in</button>
 
                         <span class="sign__delimiter">or</span>
 
@@ -44,7 +58,7 @@
                                 </svg></a>
                         </div>
 
-                        <span class="sign__text">Don't have an account? <a href="${pageContext.servletContext.contextPath}/register">Sign up!</a></span>
+                        <span class="sign__text">Don't have an account? <a href="${pageContext.servletContext.contextPath}/register">Register!</a></span>
 
                         <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
                     </form>
