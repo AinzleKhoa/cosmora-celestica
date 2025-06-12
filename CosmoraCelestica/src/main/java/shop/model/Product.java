@@ -20,7 +20,7 @@ public class Product {
     private BigDecimal price;
     private int quantity;
     private BigDecimal salePrice;
-    private Integer categoryId; // Nếu categoryId cũng có thể null thì đổi, nếu không thì giữ int
+    private Integer categoryId;
     private Integer brandId;
     private Integer gameDetailsId;
     private Timestamp createdAt;

@@ -40,15 +40,13 @@ public class ProductDAO extends DBContext {
             if (rs.next()) {
                 return rs.getInt(1) + 1;
             }
-            return 1; // Fallback for a completely empty table
+            return 1;
         }
     }
 
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
 
-        // Câu lệnh SQL sử dụng subquery để lấy ảnh đại diện.
-        // TOP 1 và ORDER BY đảm bảo luôn lấy được ảnh đầu tiên một cách nhất quán.
         String sql = "SELECT "
                 + "    p.product_id, p.name, p.price, p.quantity, "
                 + "    c.name AS category_name, "
@@ -63,13 +61,10 @@ public class ProductDAO extends DBContext {
                 + "ORDER BY "
                 + "    p.product_id";
 
-        // Sử dụng try-with-resources để quản lý tài nguyên (PreparedStatement, ResultSet) tự động
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Product product = new Product();
-
-                // Đọc dữ liệu từ ResultSet và gán vào đối tượng Product
                 product.setProductId(rs.getInt("product_id"));
                 product.setName(rs.getString("name"));
                 product.setPrice(rs.getBigDecimal("price"));
@@ -77,20 +72,15 @@ public class ProductDAO extends DBContext {
                 product.setCategoryName(rs.getString("category_name"));
                 product.setBrandName(rs.getString("brand_name"));
 
-                // "Gói" URL ảnh duy nhất lấy được từ DB vào một List<String>
                 String singleImageUrl = rs.getString("image_url");
                 List<String> imageUrls = new ArrayList<>();
                 if (singleImageUrl != null && !singleImageUrl.isEmpty()) {
                     imageUrls.add(singleImageUrl);
                 }
-                // Gán danh sách chứa 1 ảnh này vào Product Model
                 product.setImageUrls(imageUrls);
-
-                // Thêm sản phẩm hoàn chỉnh vào danh sách kết quả
                 productList.add(product);
             }
         } catch (SQLException e) {
-            // Ghi lại lỗi ra console để gỡ rối khi có sự cố
             e.printStackTrace();
         }
 
@@ -181,7 +171,7 @@ public class ProductDAO extends DBContext {
 
             if (attributes != null && !attributes.isEmpty()) {
                 String sqlAttr = "INSERT INTO product_attribute (product_id, attribute_id, value) VALUES (?, ?, ?)";
-                AttributeDAO attributeDAO = new AttributeDAO(); // Assuming you have this DAO
+                AttributeDAO attributeDAO = new AttributeDAO();
                 try ( PreparedStatement psAttr = conn.prepareStatement(sqlAttr)) {
                     for (ProductAttribute pa : attributes) {
                         if (pa != null && pa.getValue() != null && !pa.getValue().isEmpty()) {
@@ -211,15 +201,10 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    /**
-     * Phương thức này đã được sửa lại để tạo image_id duy nhất trên toàn bảng.
-     */
     private void addProductAndImages(Connection conn, Product product, List<String> imageUrls) throws SQLException {
-        // 1. Tạo ID mới cho sản phẩm và gán vào đối tượng product
         int newProductId = generateNewProductId();
         product.setProductId(newProductId);
 
-        // 2. Chuẩn bị và thực thi câu lệnh INSERT cho bảng `product`
         String sqlProduct = "INSERT INTO product (product_id, name, description, price, quantity, sale_price, category_id, brand_id, game_details_id, created_at, updated_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
 
@@ -251,25 +236,18 @@ public class ProductDAO extends DBContext {
             psProduct.executeUpdate();
         }
 
-        // ==================================================================
-        // FIX 2: Sửa lại logic chèn ảnh để sử dụng ID duy nhất
-        // ==================================================================
         if (imageUrls != null && !imageUrls.isEmpty()) {
             String sqlImage = "INSERT INTO image (image_id, product_id, image_URL) VALUES (?, ?, ?)";
             try ( PreparedStatement psImage = conn.prepareStatement(sqlImage)) {
 
-                // Lấy ID ảnh hợp lệ tiếp theo TRƯỚC khi lặp
                 int nextImageId = generateNewImageId(conn);
 
                 for (String imageUrl : imageUrls) {
                     if (imageUrl != null && !imageUrl.isEmpty()) {
-                        // Gán các tham số
-                        psImage.setInt(1, nextImageId); // Cột 1: Dùng ID duy nhất
-                        psImage.setInt(2, product.getProductId());   // Cột 2: product_id
-                        psImage.setString(3, imageUrl);              // Cột 3: image_URL
+                        psImage.setInt(1, nextImageId);
+                        psImage.setInt(2, product.getProductId());
+                        psImage.setString(3, imageUrl);
                         psImage.addBatch();
-
-                        // Tăng ID cho ảnh tiếp theo
                         nextImageId++;
                     }
                 }
@@ -280,13 +258,10 @@ public class ProductDAO extends DBContext {
 
     public boolean updateProduct(Product product, GameDetails gameDetails, List<ProductAttribute> attributes, List<String> newImageUrls) throws SQLException {
 
-        // Giả định 'conn' là kết nối được quản lý bởi lớp DBContext cha.
-        // Toàn bộ logic được gói trong một transaction.
         try {
-            // 1. Bắt đầu transaction
+
             conn.setAutoCommit(false);
 
-            // 2. Cập nhật bảng `product`
             String productSql = "UPDATE product SET name = ?, description = ?, price = ?, quantity = ?, "
                     + "sale_price = ?, category_id = ?, brand_id = ?, updated_at = GETDATE() "
                     + "WHERE product_id = ?";
@@ -302,7 +277,6 @@ public class ProductDAO extends DBContext {
                 ps.executeUpdate();
             }
 
-            // 3. Cập nhật bảng `game_details` (nếu là game và có thông tin)
             if (product.getGameDetailsId() != null && gameDetails != null) {
                 String gameSql = "UPDATE game_details SET developer = ?, genre = ?, release_date = ? WHERE game_details_id = ?";
                 try ( PreparedStatement ps = conn.prepareStatement(gameSql)) {
@@ -314,7 +288,6 @@ public class ProductDAO extends DBContext {
                 }
             }
 
-            // 4. Cập nhật bảng `product_attribute` (xóa cũ, chèn mới)
             String deleteAttrSql = "DELETE FROM product_attribute WHERE product_id = ?";
             try ( PreparedStatement ps = conn.prepareStatement(deleteAttrSql)) {
                 ps.setInt(1, product.getProductId());
@@ -338,20 +311,17 @@ public class ProductDAO extends DBContext {
                 }
             }
 
-            // 5. Cập nhật bảng `image` (chỉ khi có danh sách ảnh mới được cung cấp)
             if (newImageUrls != null) {
-                // Luôn xóa tất cả ảnh cũ để đồng bộ
                 String deleteImgSql = "DELETE FROM image WHERE product_id = ?";
                 try ( PreparedStatement ps = conn.prepareStatement(deleteImgSql)) {
                     ps.setInt(1, product.getProductId());
                     ps.executeUpdate();
                 }
 
-                // Nếu danh sách ảnh mới không rỗng, chèn chúng vào
                 if (!newImageUrls.isEmpty()) {
                     String insertImageSql = "INSERT INTO image (image_id, product_id, image_URL) VALUES (?, ?, ?)";
                     try ( PreparedStatement psImage = conn.prepareStatement(insertImageSql)) {
-                        int nextImageId = generateNewImageId(conn); // Tái sử dụng hàm tạo ID ảnh
+                        int nextImageId = generateNewImageId(conn);
                         for (String imageUrl : newImageUrls) {
                             if (imageUrl != null && !imageUrl.isEmpty()) {
                                 psImage.setInt(1, nextImageId++);
@@ -365,19 +335,16 @@ public class ProductDAO extends DBContext {
                 }
             }
 
-            // 6. Hoàn tất transaction
             conn.commit();
             return true;
 
         } catch (SQLException e) {
-            // Nếu có lỗi, rollback lại tất cả các thay đổi
             if (conn != null) {
                 conn.rollback();
             }
             e.printStackTrace();
-            return false; // Trả về false để báo hiệu thất bại
+            return false;
         } finally {
-            // Đảm bảo auto-commit được bật lại, và KHÔNG đóng kết nối ở đây
             if (conn != null) {
                 conn.setAutoCommit(true);
             }
@@ -387,7 +354,6 @@ public class ProductDAO extends DBContext {
     public Product getProductById(int productId) {
         Product product = null;
 
-        // Câu lệnh SQL chính, đã loại bỏ subquery lấy ảnh để tối ưu
         String productSql = "SELECT p.*, c.name AS category_name, b.brand_name, gd.developer, gd.genre, gd.release_date "
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
@@ -395,22 +361,18 @@ public class ProductDAO extends DBContext {
                 + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id "
                 + "WHERE p.product_id = ?";
 
-        // Câu lệnh SQL mới để lấy TẤT CẢ URL ảnh cho sản phẩm
         String imagesSql = "SELECT image_URL FROM image WHERE product_id = ? ORDER BY image_id";
 
-        // Câu lệnh SQL để lấy thuộc tính (giữ nguyên)
         String attributeSql = "SELECT a.name AS attribute_name, pa.value "
                 + "FROM product_attribute pa "
                 + "JOIN attribute a ON pa.attribute_id = a.attribute_id "
                 + "WHERE pa.product_id = ?";
 
         try {
-            // 1. Lấy thông tin sản phẩm chính
             try ( PreparedStatement psProduct = conn.prepareStatement(productSql)) {
                 psProduct.setInt(1, productId);
                 try ( ResultSet rs = psProduct.executeQuery()) {
                     if (rs.next()) {
-                        // mapResultSetToProduct sẽ không còn setImageUrl nữa
                         product = mapResultSetToProduct(rs);
                         if (rs.getObject("game_details_id") != null) {
                             product.setGameDetails(mapResultSetToGameDetails(rs));
@@ -419,9 +381,7 @@ public class ProductDAO extends DBContext {
                 }
             }
 
-            // 2. Nếu tìm thấy sản phẩm, lấy danh sách ảnh và thuộc tính
             if (product != null) {
-                // Lấy danh sách URL ảnh
                 List<String> imageUrls = new ArrayList<>();
                 try ( PreparedStatement psImages = conn.prepareStatement(imagesSql)) {
                     psImages.setInt(1, productId);
@@ -431,10 +391,9 @@ public class ProductDAO extends DBContext {
                         }
                     }
                 }
-                // Set danh sách ảnh vào model product
+
                 product.setImageUrls(imageUrls);
 
-                // Lấy danh sách thuộc tính
                 List<ProductAttribute> attributes = new ArrayList<>();
                 try ( PreparedStatement psAttr = conn.prepareStatement(attributeSql)) {
                     psAttr.setInt(1, productId);
@@ -457,7 +416,6 @@ public class ProductDAO extends DBContext {
         return product;
     }
 
-    // Tìm phương thức mapResultSetToProduct trong ProductDAO.java và sửa lại
     private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
         Product product = new Product();
         product.setProductId(rs.getInt("product_id"));
@@ -466,11 +424,10 @@ public class ProductDAO extends DBContext {
         product.setPrice(rs.getBigDecimal("price"));
         product.setQuantity(rs.getInt("quantity"));
         product.setSalePrice(rs.getBigDecimal("sale_price"));
-        product.setCategoryId(rs.getInt("category_id")); // Thêm dòng này để lấy categoryId
-        product.setBrandId(rs.getInt("brand_id")); // Thêm dòng này để lấy brandId
+        product.setCategoryId(rs.getInt("category_id"));
+        product.setBrandId(rs.getInt("brand_id"));
         product.setCategoryName(rs.getString("category_name"));
         product.setBrandName(rs.getString("brand_name"));
-        // product.setImageUrl(rs.getString("image_url")); // <-- XÓA HOẶC VÔ HIỆU HÓA DÒNG NÀY
         product.setCreatedAt(rs.getTimestamp("created_at"));
         product.setUpdatedAt(rs.getTimestamp("updated_at"));
         return product;

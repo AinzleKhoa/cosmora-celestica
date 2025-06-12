@@ -1,8 +1,7 @@
 <%--
     Document   : product-edit
-    Created on : Jun 12, 2025
-    Author     : HoangSang (Revised by Gemini)
-    Description: A complete and dynamic product editing form.
+    Created on : Jun 12, 2025, 10:55:00 PM
+    Author     : HoangSang 
 --%>
 
 <%@page import="java.util.List"%>
@@ -23,19 +22,17 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/bootstrap-reboot.min.css">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/bootstrap-grid.min.css">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/main.css">
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <title>Edit Product - Cosmora Celestica</title>
     </head>
+
     <body>
-        <%-- ================================================================== --%>
-        <%-- CHUẨN BỊ DỮ LIỆU TỪ SERVLET --%>
-        <%-- ================================================================== --%>
         <%
             Product product = (Product) request.getAttribute("product");
             List<Category> categories = (List<Category>) request.getAttribute("categoriesList");
             List<Brand> brands = (List<Brand>) request.getAttribute("brandsList");
 
-            // Tạo một Map để dễ dàng tra cứu giá trị thuộc tính
             Map<String, String> attributeMap = new HashMap<>();
             if (product != null && product.getAttributes() != null) {
                 for (ProductAttribute attr : product.getAttributes()) {
@@ -43,27 +40,20 @@
                 }
             }
 
-            // Giả sử product.getImageUrls() trả về List<String> từ DAO của bạn
-            // Khai báo và khởi tạo một danh sách rỗng trước
             List<String> imageUrls = new ArrayList<>();
 
-// Kiểm tra xem product và danh sách ảnh của nó có tồn tại không
             if (product != null && product.getImageUrls() != null) {
-                // Nếu có, gán lại biến imageUrls bằng danh sách thật
                 imageUrls = product.getImageUrls();
             }
-// Nếu không, biến imageUrls sẽ giữ nguyên là một danh sách rỗng đã tạo ở trên.
             GameDetails gameDetails = (product != null && product.getGameDetails() != null) ? product.getGameDetails() : new GameDetails();
         %>
 
-        <header class="header"> ... </header>
-        <aside class="admin-sidebar"> ... </aside>
 
-        <main class="admin-main">
+
+        <main class="main">
             <div class="table-header d-flex justify-content-between align-items-center">
                 <h2 class="table-title">Edit Product: <%= (product != null) ? product.getName() : ""%></h2>
-                <a href="<%= request.getContextPath()%>/products?action=list" class="admin-manage-back">
-                    <i class="fas fa-arrow-left mr-1"></i> Back to Product List</a>
+                <a href="<%= request.getContextPath()%>/products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Back</a>
             </div>
 
             <% if (product != null) {%>
@@ -82,7 +72,6 @@
                     </div>
                 </div>
 
-                <%-- Hình ảnh sản phẩm --%>
                 <div class="form-card">
                     <h3 class="form-card__title">Product Images (Upload to replace existing images)</h3>
                     <div class="row g-3">
@@ -104,7 +93,6 @@
                     </div>
                 </div>
 
-                <%-- Các trường động --%>
                 <div id="dynamicFieldsContainer">
                     <div class="form-card">
                         <h3 class="form-card__title">Category & Brand</h3>
@@ -228,7 +216,7 @@
 
                 if (type === 'game') {
                     document.getElementById('gameFields').style.display = 'block';
-                    brandContainer.style.display = 'block'; // Game can also have a brand/publisher
+                    brandContainer.style.display = 'block';
                 } else if (type) {
                     document.getElementById('accessoryFields').style.display = 'block';
                     brandContainer.style.display = 'block';
@@ -238,7 +226,7 @@
                         specificFields.style.display = 'block';
                     }
                 } else {
-                    brandContainer.style.display = 'block'; // Show by default if nothing selected
+                    brandContainer.style.display = 'block';
                 }
             }
 
@@ -278,10 +266,9 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
-                // Initial setup when the page loads
+
                 handleProductTypeChange();
 
-                // Setup all 6 image uploaders
                 for (let i = 1; i <= 6; i++) {
                     setupImageUploader(i);
                 }
