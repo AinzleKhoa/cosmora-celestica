@@ -485,15 +485,15 @@ $(document).ready(function () {
 
 function validateForm(event, formType) {
     let errors = [];
-    
+
     // Get form inputs
     const username = document.getElementById('username') ? document.getElementById('username').value : null; // for registration
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword') ? document.getElementById('confirmPassword').value : null; // for registration
-    
+
     // Validate username (only for registration)
-    if (formType === 'register') {
+    if (formType === 'register' || formType === 'login') {
         const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
         if (!username || !usernameRegex.test(username)) {
             errors.push("Username must be 3-20 characters long and can only contain letters, numbers, and underscores.");
@@ -506,16 +506,18 @@ function validateForm(event, formType) {
         errors.push("Please enter a valid email address.");
     }
 
-    // Validate password (both for login and registration)
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (password.length < 8) {
-        errors.push("Password must be at least 8 characters long.");
-    } else if (!passwordRegex.test(password)) {
-        errors.push("Password must contain at least 1 letter and 1 number.");
+    if (formType === 'register' || formType === 'login') {
+        // Validate password (both for login and registration)
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (password.length < 8) {
+            errors.push("Password must be at least 8 characters long.");
+        } else if (!passwordRegex.test(password)) {
+            errors.push("Password must contain at least 1 letter and 1 number.");
+        }
     }
 
     // Validate confirm password (only for registration)
-    if (formType === 'register' && password !== confirmPassword) {
+    if ((formType === 'register' || formType === 'login') && password !== confirmPassword) {
         errors.push("Passwords do not match.");
     }
 
@@ -527,7 +529,7 @@ function validateForm(event, formType) {
         // Display errors
         const errorContainer = document.getElementById('errorMessages');
         errorContainer.innerHTML = "";  // Clear previous errors
-        errors.forEach(function(error) {
+        errors.forEach(function (error) {
             const errorMessage = document.createElement('p');
             errorMessage.classList.add('error-message');
             errorMessage.textContent = error;
@@ -540,3 +542,83 @@ function validateForm(event, formType) {
     // If all checks pass
     return true; // This allows the form to submit
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    let countdown = 30;
+    let countdownInterval;
+
+    const sendBtn = document.getElementById('sendOtpBtn');
+    const emailInput = document.getElementById('emailInput');
+    const cooldownText = document.getElementById('cooldownText');
+
+    sendBtn.addEventListener('click', function () {
+        const email = emailInput.value.trim();
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        clearMessages();
+
+        if (!email) {
+            showError("Please enter your email.");
+            emailInput.focus();
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            showError("Please enter a valid email address.");
+            emailInput.focus();
+            return;
+        }
+
+        this.disabled = true;
+
+        fetch('./forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'email=' + encodeURIComponent(email)
+        })
+        .then(res => {
+            if (res.ok) {
+                showSuccess("OTP has been sent to your email.");
+            } else {
+                showError("Failed to send OTP. Please try again.");
+                this.disabled = false;
+            }
+        })
+        .catch(() => {
+            showError("An error occurred. Please try again.");
+            this.disabled = false;
+        });
+
+        startCountdown();
+    });
+
+    function startCountdown() {
+        countdown = 30;
+        cooldownText.textContent = `You can resend OTP in ${countdown}s`;
+
+        countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                cooldownText.textContent = '';
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Resend OTP';
+            } else {
+                cooldownText.textContent = `You can resend OTP in ${countdown}s`;
+            }
+        }, 1000);
+    }
+
+    function showSuccess(message) {
+        document.getElementById('successMessage').innerHTML = `<p>${message}</p>`;
+    }
+
+    function showError(message) {
+        document.getElementById('errorMessages').innerHTML = `<p>${message}</p>`;
+    }
+
+    function clearMessages() {
+        document.getElementById('successMessage').innerHTML = '';
+        document.getElementById('errorMessages').innerHTML = '';
+    }
+});

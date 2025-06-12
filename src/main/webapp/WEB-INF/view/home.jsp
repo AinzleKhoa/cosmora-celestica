@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/home-header.jsp" %>
-
 <section class="section section--bg section__ad--bg section--first" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
     <div class="owl-carousel section__carousel--ad" id="carousel00">
 

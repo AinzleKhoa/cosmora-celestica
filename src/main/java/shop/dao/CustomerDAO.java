@@ -6,6 +6,7 @@ package shop.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shop.db.DBContext;
@@ -71,6 +72,17 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
+    public int storeOtpForEmail(String email, String otp, Timestamp expiry) {
+        try {
+            String query = "UPDATE customer SET email_verification_token = ?, email_verification_expiry = ? WHERE email = ?";
+            Object[] params = {otp, expiry, email};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
     public int register(Customer customer) {
         try {
             String query = "INSERT INTO customer (username, email, password_hash, avatar_url, created_at)\n"
@@ -86,6 +98,10 @@ public class CustomerDAO extends DBContext {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
+    }
+
+    public boolean saveOtp() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }
