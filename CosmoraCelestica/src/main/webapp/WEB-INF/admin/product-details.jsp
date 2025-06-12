@@ -51,7 +51,7 @@
             <% if (product != null) { %>
                 <div class="row g-4">
                     <div class="col-lg-4">
-                        <img src="<%= request.getContextPath() %>/<%= (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) ? product.getImageUrl() : "assets/img/default-product.png" %>" 
+                        <img src="<%= request.getContextPath() %>/assets/img/<%= (product.getImageUrls() != null && !product.getImageUrls().isEmpty()) ? product.getImageUrls() : "assets/img/default-product.png" %>" 
                              alt="<%= product.getName() %>" class="img-fluid rounded shadow-sm">
                     </div>
 

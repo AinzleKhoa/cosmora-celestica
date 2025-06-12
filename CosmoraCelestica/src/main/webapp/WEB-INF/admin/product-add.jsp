@@ -32,7 +32,6 @@
         <meta name="keywords" content="">
         <title>Create New Product - Cosmora Celestica</title>
 
-
     </head>
 
     <body>
@@ -115,6 +114,8 @@
             </div>
 
             <form action="<%= request.getContextPath()%>/products?action=add" method="post" enctype="multipart/form-data">
+                
+                <input type="hidden" id="productType" name="productType" value="">
 
                 <%-- NOTIFICATION MESSAGES --%>
                 <%
@@ -290,7 +291,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label admin-manage-label">Brand</label>
-                                    <select class="form-select admin-manage-input" name="brandId" required>
+                                    <select class="form-select admin-manage-input" name="brandId">
                                         <option value="">-- Select Brand --</option>
                                         <%
                                             List<Brand> brands = (List<Brand>) request.getAttribute("brandsList");
@@ -304,8 +305,6 @@
                         </div>
 
                     </div>
-
-
 
                     <div id="headphoneFields" style="display: none;">
                         <div class="form-card">
@@ -381,8 +380,6 @@
                         </div>
                     </div>
 
-
-
                 </div>
 
                 <div class="d-flex justify-content-end align-items-center mt-4">
@@ -403,73 +400,94 @@
         <script src="<%= request.getContextPath()%>/assets/js/main.js"></script>
 
         <script>
-                        function handleProductTypeChange() {
-                            const productTypeSelect = document.getElementById('categoryId');
-                            const selectedOption = productTypeSelect.options[productTypeSelect.selectedIndex];
-                            const selectedType = selectedOption ? selectedOption.dataset.normalizedName : '';
-                            const allFieldIds = ['gameFields', 'accessoryFields', 'headphoneFields', 'keyboardFields', 'mouseFields', 'controllerFields'];
-                            allFieldIds.forEach(id => {
-                                const element = document.getElementById(id);
-                                if (element)
-                                    element.style.display = 'none';
-                            });
-                            if (!selectedType)
-                                return;
-                            if (selectedType === 'game') {
-                                document.getElementById('gameFields').style.display = 'block';
-                            } else {
-                                const accessoryFields = document.getElementById('accessoryFields');
-                                if (accessoryFields)
-                                    accessoryFields.style.display = 'block';
+            // ==================================================================
+            // SỬA LỖI 2: Cập nhật Javascript để gán giá trị cho trường ẩn
+            // ==================================================================
+            function handleProductTypeChange() {
+                const productTypeSelect = document.getElementById('categoryId');
+                const selectedOption = productTypeSelect.options[productTypeSelect.selectedIndex];
+                const selectedType = selectedOption ? selectedOption.dataset.normalizedName : '';
+                
+                // Cập nhật giá trị của trường ẩn
+                document.getElementById('productType').value = selectedType;
 
-                                const specificFieldId = selectedType + 'Fields';
-                                const specificFields = document.getElementById(specificFieldId);
-                                if (specificFields) {
-                                    specificFields.style.display = 'block';
-                                }
-                            }
-                        }
-                        function setupImageUploader(index) {
-                            const input = document.getElementById('productImage' + index);
-                            const uploader = document.getElementById('uploader' + index);
-                            if (!input || !uploader)
-                                return;
-                            const preview = document.getElementById('preview' + index);
-                            const removeBtn = document.getElementById('removeBtn' + index);
-                            const uploaderContent = uploader.querySelector('.image-uploader__content');
-                            input.addEventListener('change', function (event) {
-                                const file = event.target.files[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = function (e) {
-                                        preview.src = e.target.result;
-                                        preview.style.display = 'block';
-                                        removeBtn.style.display = 'flex';
-                                        uploaderContent.style.display = 'none';
-                                    }
-                                    reader.readAsDataURL(file);
-                                }
-                            });
-                            removeBtn.addEventListener('click', function (event) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                input.value = '';
-                                preview.src = '';
-                                preview.style.display = 'none';
-                                removeBtn.style.display = 'none';
-                                uploaderContent.style.display = 'block';
-                            });
-                        }
-                        document.addEventListener('DOMContentLoaded', function () {
-                            for (let i = 1; i <= 6; i++) {
-                                setupImageUploader(i);
-                            }
-                            handleProductTypeChange();
-                        });
+                const allFieldIds = ['gameFields', 'accessoryFields', 'headphoneFields', 'keyboardFields', 'mouseFields', 'controllerFields'];
+                allFieldIds.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element)
+                        element.style.display = 'none';
+                });
+                
+                if (!selectedType) return;
 
-                        function toggleDropdown() {
-                            document.getElementById("adminDropdown").classList.toggle("show");
+                const brandSelect = document.querySelector('select[name="brandId"]');
+
+                if (selectedType === 'game') {
+                    document.getElementById('gameFields').style.display = 'block';
+                    // Game không cần Brand, nên bỏ yêu cầu bắt buộc
+                    if (brandSelect) {
+                        brandSelect.required = false;
+                    }
+                } else {
+                    const accessoryFields = document.getElementById('accessoryFields');
+                    if (accessoryFields)
+                        accessoryFields.style.display = 'block';
+
+                    const specificFieldId = selectedType + 'Fields';
+                    const specificFields = document.getElementById(specificFieldId);
+                    if (specificFields) {
+                        specificFields.style.display = 'block';
+                    }
+                    // Phụ kiện cần Brand, đặt là bắt buộc
+                    if (brandSelect) {
+                        brandSelect.required = true;
+                    }
+                }
+            }
+            
+            function setupImageUploader(index) {
+                const input = document.getElementById('productImage' + index);
+                const uploader = document.getElementById('uploader' + index);
+                if (!input || !uploader)
+                    return;
+                const preview = document.getElementById('preview' + index);
+                const removeBtn = document.getElementById('removeBtn' + index);
+                const uploaderContent = uploader.querySelector('.image-uploader__content');
+                input.addEventListener('change', function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                            removeBtn.style.display = 'flex';
+                            uploaderContent.style.display = 'none';
                         }
+                        reader.readAsDataURL(file);
+                    }
+                });
+                removeBtn.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    input.value = '';
+                    preview.src = '';
+                    preview.style.display = 'none';
+                    removeBtn.style.display = 'none';
+                    uploaderContent.style.display = 'block';
+                });
+            }
+            
+            document.addEventListener('DOMContentLoaded', function () {
+                for (let i = 1; i <= 6; i++) {
+                    setupImageUploader(i);
+                }
+                // Gọi hàm khi tải trang để đảm bảo trạng thái form đúng
+                handleProductTypeChange();
+            });
+
+            function toggleDropdown() {
+                document.getElementById("adminDropdown").classList.toggle("show");
+            }
         </script>
     </body>
 </html>

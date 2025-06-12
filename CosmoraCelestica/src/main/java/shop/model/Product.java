@@ -20,37 +20,21 @@ public class Product {
     private BigDecimal price;
     private int quantity;
     private BigDecimal salePrice;
-    private int categoryId;
-    private int brandId;
+    private Integer categoryId; // Nếu categoryId cũng có thể null thì đổi, nếu không thì giữ int
+    private Integer brandId;
     private Integer gameDetailsId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String categoryName;
     private String brandName;
-    private String imageUrl;
     private GameDetails gameDetails;
     private List<ProductAttribute> attributes;
-
-    public List<ProductAttribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<ProductAttribute> attributes) {
-        this.attributes = attributes;
-    }
-
-    public GameDetails getGameDetails() {
-        return gameDetails;
-    }
-
-    public void setGameDetails(GameDetails gameDetails) {
-        this.gameDetails = gameDetails;
-    }
+    private List<String> imageUrls; 
 
     public Product() {
     }
 
-    public Product(int productId, String name, String description, BigDecimal price, int quantity, BigDecimal salePrice, int categoryId, int brandId, Integer gameDetailsId, Timestamp createdAt, Timestamp updatedAt, String categoryName, String brandName, String imageUrl) {
+    public Product(int productId, String name, String description, BigDecimal price, int quantity, BigDecimal salePrice, Integer categoryId, Integer brandId, Integer gameDetailsId, Timestamp createdAt, Timestamp updatedAt, String categoryName, String brandName, GameDetails gameDetails, List<ProductAttribute> attributes, List<String> imageUrls) {
         this.productId = productId;
         this.name = name;
         this.description = description;
@@ -64,7 +48,9 @@ public class Product {
         this.updatedAt = updatedAt;
         this.categoryName = categoryName;
         this.brandName = brandName;
-        this.imageUrl = imageUrl;
+        this.gameDetails = gameDetails;
+        this.attributes = attributes;
+        this.imageUrls = imageUrls;
     }
 
     public int getProductId() {
@@ -115,19 +101,19 @@ public class Product {
         this.salePrice = salePrice;
     }
 
-    public int getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
-    public int getBrandId() {
+    public Integer getBrandId() {
         return brandId;
     }
 
-    public void setBrandId(int brandId) {
+    public void setBrandId(Integer brandId) {
         this.brandId = brandId;
     }
 
@@ -171,12 +157,29 @@ public class Product {
         this.brandName = brandName;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public GameDetails getGameDetails() {
+        return gameDetails;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setGameDetails(GameDetails gameDetails) {
+        this.gameDetails = gameDetails;
     }
+
+    public List<ProductAttribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<ProductAttribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
 
 }

@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import shop.db.DBContext;
@@ -17,13 +18,13 @@ import shop.model.Category;
  *
  * @author HoangSang
  */
-public class CategoryDAO extends DBContext{
-   public List<Category> getAllCategories() throws SQLException {
+public class CategoryDAO extends DBContext {
+
+    public List<Category> getAllCategories() throws SQLException {
         List<Category> categories = new ArrayList<>();
-        String sql = "SELECT category_id, name FROM category ORDER BY name";
+        String sql = "SELECT category_id, name FROM category ORDER BY category_id";
         try (
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                 PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Category category = new Category();
@@ -34,4 +35,5 @@ public class CategoryDAO extends DBContext{
         }
         return categories;
     }
+
 }

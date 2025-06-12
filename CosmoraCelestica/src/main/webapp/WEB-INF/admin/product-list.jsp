@@ -202,8 +202,8 @@
                         <tr>
                             <td><%= p.getProductId() %></td>
                             <td>
-                                <% if (p.getImageUrl() != null && !p.getImageUrl().isEmpty()) { %>
-                                <img src="<%= contextPath %>/<%= p.getImageUrl() %>" alt="<%= p.getName() %>" class="table-product-img">
+                                <% if (p.getImageUrls() != null && !p.getImageUrls().isEmpty()) { %>
+                                <img src="<%= contextPath %>/<%= p.getImageUrls() %>" alt="<%= p.getName() %>" class="table-product-img">
                                 <% } else { %>
                                 <span>No Image</span>
                                 <% } %>
