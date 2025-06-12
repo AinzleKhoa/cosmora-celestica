@@ -60,7 +60,7 @@ public class RegisterServlet extends HttpServlet {
             if (cDAO.register(new Customer(username, email, hashedPassword)) > 0) {
                 // Store success message in the session
                 HttpSession session = request.getSession();
-                request.setAttribute("successMessage", "Register successful! Please log in.");
+                session.setAttribute("successMessage", "Register successful! Please log in.");
                 response.sendRedirect(request.getContextPath() + "/login");
             } else {
                 request.setAttribute("errorMessage", "Something went wrong. Please try again.");

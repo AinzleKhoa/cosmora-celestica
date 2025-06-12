@@ -71,7 +71,7 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.login(email);
+        Customer customer = cDAO.getAccountByEmail(email);
 
         if (customer != null) {
             if (!customer.isIsDeactivated()) {

@@ -21,7 +21,7 @@ public class Customer {
     private String phone;
     private String gender;
     private String address;
-    private String avatarUri;
+    private String avatarUrl;
     private Date dateOfBirth;
     private boolean isDeactivated;
     private Timestamp lastLogin;
@@ -35,7 +35,7 @@ public class Customer {
     private Timestamp updatedAt;
     private Timestamp createdAt;
 
-    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUri, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp updatedAt, Timestamp createdAt) {
+    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp updatedAt, Timestamp createdAt) {
         this.customerId = customerId;
         this.username = username;
         this.email = email;
@@ -44,7 +44,7 @@ public class Customer {
         this.phone = phone;
         this.gender = gender;
         this.address = address;
-        this.avatarUri = avatarUri;
+        this.avatarUrl = avatarUrl;
         this.dateOfBirth = dateOfBirth;
         this.isDeactivated = isDeactivated;
         this.lastLogin = lastLogin;
@@ -105,7 +105,7 @@ public class Customer {
     }
 
     public String getAvatarUri() {
-        return avatarUri;
+        return avatarUrl;
     }
 
     public Date getDateOfBirth() {
