@@ -86,13 +86,13 @@ public class OrderDashboard extends HttpServlet {
             int order_id = Integer.parseInt(o_id);
             try {
                 Customer customer = OD.getCustomerById(customer_id);
-                ArrayList<OrderDetail> orderDetails =OD.getOrderDetail(order_id);
+                ArrayList<OrderDetail> orderDetails = OD.getOrderDetail(order_id);
                 Order order = OD.getOneOrder(order_id);
                 request.setAttribute("order", order);
                 request.setAttribute("customer", customer);
                 request.setAttribute("orderdetail", orderDetails);
                 request.getRequestDispatcher("/WEB-INF/view/dashboard-order-detail.jsp").forward(request, response);
-                
+
             } catch (SQLException ex) {
                 Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -111,7 +111,23 @@ public class OrderDashboard extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setContentType("text/plain");
+        String action = request.getParameter("action");
+        if (action.equals("update")) {
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            String status = request.getParameter("status");
+            OrderDashboardDAO OD = new OrderDashboardDAO();
+            try {
+                if (OD.updateOrderStatus(status, orderId) == 1) {
+                    response.sendRedirect(request.getContextPath() + "/orderdashboard");
+
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+        }
     }
 
     /**
