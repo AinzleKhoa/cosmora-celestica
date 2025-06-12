@@ -13,7 +13,7 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- authorization form -->
-                    <form action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" class="sign__form" onsubmit="return validateForm(event, 'forgot')">
+                    <div class="sign__form">
                         <a href="/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
@@ -32,26 +32,30 @@
                             </c:if>
                         </div>
 
-                        <div class="sign__group sign__group--otp">
-                            <input type="email" class="sign__input" placeholder="Email" name="email" id="emailInput" required>
-                            <button type="button" id="sendOtpBtn" class="send-otp-link">Send OTP</button>
-                        </div>
+                        <!-- Send OTP Form -->
+                        <form id="sendOtpForm" action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" class="sign__group">
+                            <div class="sign__group sign__group--otp">
+                                <input type="email" class="sign__input" placeholder="Email" name="email" id="emailInput" value="${currentForgotEmail}" required>
+                                <button type="button" id="sendOtpBtn" class="send-otp-link">Send OTP</button>
+                            </div>
+                            <p id="cooldownText" style="text-align: right; font-size: 12px; color: #999;"></p>
+                        </form>
 
-                        <div class="sign__group" id="otpSection">
-                            <input type="text" class="sign__input" name="otp" placeholder="Enter OTP" required>
-                        </div>
-
-                        <p id="cooldownText" style="text-align: right; font-size: 12px; color: #999;"></p>
-
-                        <button class="sign__btn" type="submit">Verify</button>
+                        <!-- OTP Verification Form (Initially Hidden) -->
+                        <form id="verifyOtpForm" action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" class="sign__group">
+                            <div class="sign__group" id="otpSection">
+                                <input type="text" class="sign__input" name="otp" placeholder="Enter OTP" required>
+                            </div>
+                            <button type="submit" class="sign__btn">Verify OTP</button>
+                        </form>
 
                         <span class="sign__text">We will send a password to your Email</span>
-                    </form>
-                    <!-- end authorization form -->
+                        <a type="button" href="${pageContext.servletContext.contextPath}/login" class="sign__goback">Go Back</a>
+                        <!-- end authorization form -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- end sign in -->
-<%@include file="/WEB-INF/include/home-footer.jsp" %>
+    <!-- end sign in -->
+    <%@include file="/WEB-INF/include/home-footer.jsp" %>

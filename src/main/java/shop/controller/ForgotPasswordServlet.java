@@ -91,24 +91,22 @@ public class ForgotPasswordServlet extends HttpServlet {
                     String subject = "Your Cosmora Celestica OTP Code";
                     String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
                     if (EmailUtils.sendEmail(to, subject, content)) {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("currentForgotEmail", email);
-                        session.setAttribute("successMessage", "Sending OTP successful!");
-                        response.sendRedirect(request.getContextPath() + "/forgot-password");
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"success\": true, \"message\": \"OTP sent successfully!\"}");
                     } else {
                         // If 
-                        request.setAttribute("errorMessage", "Sending otp to email unsucessful");
-                        request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp").forward(request, response);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"success\": false, \"message\": \"Failed to send OTP to email.\"}");
                     }
                 } else {
                     // If 
-                    request.setAttribute("errorMessage", "OTP Storing unsucessful");
-                    request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp").forward(request, response);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"success\": false, \"message\": \"storing OTP unsuccessfully.\"}");
                 }
             } else {
                 // If account is deactivated, set error message and forward
-                request.setAttribute("errorMessage", "Your account is locked. Contacts us for more informations");
-                request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp").forward(request, response);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Contacts us for more informations.\"}");
             }
         } else {
             // If email doesn't exist, set error message and forward

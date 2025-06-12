@@ -5882,6 +5882,16 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     cursor: not-allowed;
 }
 
+.sign__goback {
+    color: #3d7fff;          /* Set text color to blue */
+    text-decoration: underline;  /* Underline the text */
+    font-size: 16px;      /* Adjust the font size (optional) */
+    cursor: pointer;     /* Show pointer cursor on hover */
+}
+
+.sign__goback:hover {
+    color: blue;      /* Darker blue when hovering */
+}
 /*==============================
         Sign
 ==============================*/
