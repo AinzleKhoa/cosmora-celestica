@@ -68,7 +68,6 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -155,11 +154,10 @@ public class ProductServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/products?action=list");
             return;
         }
-
         try {
             switch (action) {
                 case "add": {
-                    // Lấy productType từ trường ẩn đã thêm
+
                     String productType = request.getParameter("productType");
 
                     // Kiểm tra null để tránh lỗi
@@ -243,10 +241,7 @@ public class ProductServlet extends HttpServlet {
                     }
                     break;
                 }
-                // File: shop/controller/ProductServlet.java
-// Bên trong phương thức doPost( ... )
 
-// ...
                 case "update": {
                     try {
                         // --- 1. Lấy thông tin chung của sản phẩm ---
@@ -351,45 +346,6 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-//    private List<ProductAttribute> createAttributeListFromRequest(HttpServletRequest request, String productType) {
-//        List<ProductAttribute> attributes = new ArrayList<>();
-//        attributes.add(createAttribute("warranty_months", request.getParameter("warrantyMonths")));
-//        attributes.add(createAttribute("weight_grams", request.getParameter("weightGrams")));
-//        attributes.add(createAttribute("connection_type", request.getParameter("connectionType")));
-//        attributes.add(createAttribute("usage_time_hours", request.getParameter("usageTimeHours")));
-//        switch (productType) {
-//            case "headphone":
-//                attributes.add(createAttribute("headphone_type", request.getParameter("headphoneType")));
-//                attributes.add(createAttribute("material", request.getParameter("headphoneMaterial")));
-//                attributes.add(createAttribute("battery_capacity_mah", request.getParameter("headphoneBattery")));
-//                attributes.add(createAttribute("features", request.getParameter("headphoneFeatures")));
-//                break;
-//            case "keyboard":
-//                attributes.add(createAttribute("size", request.getParameter("keyboardSize")));
-//                attributes.add(createAttribute("material", request.getParameter("keyboardMaterial")));
-//                attributes.add(createAttribute("keyboard_type", request.getParameter("keyboardType")));
-//                break;
-//            case "mouse":
-//                attributes.add(createAttribute("mouse_type", request.getParameter("mouseType")));
-//                break;
-//            case "controller":
-//                attributes.add(createAttribute("material", request.getParameter("controllerMaterial")));
-//                attributes.add(createAttribute("battery_capacity_mah", request.getParameter("controllerBattery")));
-//                attributes.add(createAttribute("ChargingTimeHours", request.getParameter("controllerChargingTime")));
-//                break;
-//        }
-//        return attributes;
-//    }
-//
-//    private ProductAttribute createAttribute(String attributeName, String value) {
-//        if (value != null && !value.trim().isEmpty()) {
-//            ProductAttribute pa = new ProductAttribute();
-//            pa.setAttributeName(attributeName);
-//            pa.setValue(value);
-//            return pa;
-//        }
-//        return null;
-//    }
     /**
      * Phương thức trợ giúp để thêm thuộc tính vào danh sách nếu giá trị tồn
      * tại.

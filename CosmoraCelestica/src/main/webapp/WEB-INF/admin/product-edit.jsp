@@ -1,7 +1,8 @@
 <%--
     Document   : product-edit
     Created on : Jun 12, 2025
-    Author     : HoangSang 
+    Author     : HoangSang (Revised by Gemini)
+    Description: A complete and dynamic product editing form.
 --%>
 
 <%@page import="java.util.List"%>
@@ -41,9 +42,17 @@
                     attributeMap.put(attr.getAttributeName(), attr.getValue());
                 }
             }
-            
+
             // Giả sử product.getImageUrls() trả về List<String> từ DAO của bạn
-            List<String> imageUrls = (product != null && product. getImageUrls() != null) ? product.getImageUrls(): new ArrayList<>();
+            // Khai báo và khởi tạo một danh sách rỗng trước
+            List<String> imageUrls = new ArrayList<>();
+
+// Kiểm tra xem product và danh sách ảnh của nó có tồn tại không
+            if (product != null && product.getImageUrls() != null) {
+                // Nếu có, gán lại biến imageUrls bằng danh sách thật
+                imageUrls = product.getImageUrls();
+            }
+// Nếu không, biến imageUrls sẽ giữ nguyên là một danh sách rỗng đã tạo ở trên.
             GameDetails gameDetails = (product != null && product.getGameDetails() != null) ? product.getGameDetails() : new GameDetails();
         %>
 
@@ -110,7 +119,8 @@
                                                 boolean isSelected = product.getCategoryId() == cat.getCategoryId();
                                     %>
                                     <option value="<%= cat.getCategoryId()%>" data-normalized-name="<%= normalizedName%>" <%= isSelected ? "selected" : ""%>><%= cat.getName()%></option>
-                                    <% } }%>
+                                    <% }
+                                        }%>
                                 </select>
                             </div>
                             <div class="col-md-6" id="brandFieldContainer">
@@ -123,7 +133,8 @@
                                                 boolean isSelected = productBrandId != null && productBrandId.equals(brand.getBrandId());
                                     %>
                                     <option value="<%= brand.getBrandId()%>" <%= isSelected ? "selected" : ""%>><%= brand.getBrandName()%></option>
-                                    <% } }%>
+                                    <% }
+                                        }%>
                                 </select>
                             </div>
                         </div>
@@ -206,13 +217,13 @@
                 const select = document.getElementById('categoryId');
                 const selectedOption = select.options[select.selectedIndex];
                 const type = selectedOption ? selectedOption.dataset.normalizedName : '';
-                
+
                 document.getElementById('productType').value = type;
 
                 ['gameFields', 'accessoryFields', 'headphoneFields', 'keyboardFields', 'mouseFields', 'controllerFields'].forEach(id => {
                     document.getElementById(id).style.display = 'none';
                 });
-                
+
                 const brandContainer = document.getElementById('brandFieldContainer');
 
                 if (type === 'game') {
@@ -221,20 +232,21 @@
                 } else if (type) {
                     document.getElementById('accessoryFields').style.display = 'block';
                     brandContainer.style.display = 'block';
-                    
+
                     const specificFields = document.getElementById(type + 'Fields');
                     if (specificFields) {
                         specificFields.style.display = 'block';
                     }
                 } else {
-                     brandContainer.style.display = 'block'; // Show by default if nothing selected
+                    brandContainer.style.display = 'block'; // Show by default if nothing selected
                 }
             }
-            
+
             function setupImageUploader(index) {
                 const input = document.getElementById('productImage' + index);
                 const uploader = document.getElementById('uploader' + index);
-                if (!input || !uploader) return;
+                if (!input || !uploader)
+                    return;
 
                 const preview = document.getElementById('preview' + index);
                 const removeBtn = document.getElementById('removeBtn' + index);
@@ -257,18 +269,18 @@
                 removeBtn.addEventListener('click', function (event) {
                     event.preventDefault();
                     event.stopPropagation();
-                    input.value = ''; 
+                    input.value = '';
                     preview.src = '';
                     preview.style.display = 'none';
                     removeBtn.style.display = 'none';
                     uploaderContent.style.display = 'block';
                 });
             }
-            
+
             document.addEventListener('DOMContentLoaded', function () {
                 // Initial setup when the page loads
                 handleProductTypeChange();
-                
+
                 // Setup all 6 image uploaders
                 for (let i = 1; i <= 6; i++) {
                     setupImageUploader(i);
