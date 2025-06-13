@@ -156,7 +156,7 @@
                                 <th>ID</th>
                                 <th>Image Staff</th>
                                 <th>Full Name</th>
-                                
+
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Status</th>
@@ -177,9 +177,14 @@
                             %>
                             <tr>
                                 <td><%= s.getId()%></td>
-                                <td><%= s.getAvatarUrl()%></td>
-                                <td><img src="/assets/img/staff/<%= s.getAvatarUrl()%>" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;"></td>
-                               
+
+                                <td>
+                                    <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
+                                         alt="Avatar" 
+                                         style="width: 50px; height: 50px; border-radius: 50%;">
+
+                                </td>
+                                <td><%= s.getUserName()%></td>
                                 <td><%= s.getEmail()%></td>
                                 <td><%= s.getRole()%></td>
                                 <td><span class="badge-status">Active</span></td>
@@ -197,6 +202,7 @@
                                 }
                             %>
                         </tbody>
+
                     </table>
                 </div>
 

@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Properties;
 import shop.dao.StaffDAO;
 import shop.model.Staff;
 
@@ -93,16 +95,16 @@ public class staffManagement extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        String act = request.getParameter("action");
-        if (act != null) {
-            StaffDAO sDAO = new StaffDAO();
-            switch (act) {
-                case "create":
+   protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    response.setContentType("text/html;charset=UTF-8");
+    String act = request.getParameter("action");
 
-          try ( PrintWriter out = response.getWriter()) {
+    if (act != null) {
+        StaffDAO sDAO = new StaffDAO();
+        switch (act) {
+            case "create":
+                try (PrintWriter out = response.getWriter()) {
                     String username = request.getParameter("username");
                     String email = request.getParameter("email");
                     String password = request.getParameter("password");
@@ -110,52 +112,54 @@ public class staffManagement extends HttpServlet {
                     String role = request.getParameter("role");
                     String dobStr = request.getParameter("date_of_birth");
 
-                    // Convert date string to java.sql.Date
                     Date dateOfBirth = null;
                     if (dobStr != null && !dobStr.isEmpty()) {
                         dateOfBirth = Date.valueOf(dobStr);
                     }
 
                     Part img = request.getPart("avatar_url");
+                    String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
+
                    
+                    String realPath = request.getServletContext().getRealPath("/img/staff");
 
-        
-                    String realPath = request.getServletContext().getRealPath("/assets/img/staff");
 
-                    // Đường dẫn lưu file
-                    // Nếu thư mục chưa tồn tại thì tạo mới
-                    if (!Files.exists(Paths.get(realPath))) {
-                        Files.createDirectories(Paths.get(realPath));
+                    
+
+                    if (realPath == null) {
+                        out.println("<h2>Error: No valid upload path found.</h2>");
+                        return;
                     }
 
-                    // Lấy tên file
-                    String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
-                    
+                    // Tạo thư mục nếu chưa tồn tại
+                    File uploadDir = new File(realPath);
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
 
-                    // Ghi file vào thư mục
-                    img.write(realPath + File.separator + filename);
-                    
+                    // Ghi file
+                    File fileToSave = new File(uploadDir, filename);
+                    img.write(fileToSave.getAbsolutePath());
 
-                    // Lưu vào database
-                   
-                   
+                    // Lưu thông tin vào DB (chỉ lưu tên file)
                     Staff staff = new Staff(username, email, password, phone, role, dateOfBirth, filename);
                     int isCreated = sDAO.create(staff);
 
                     if (isCreated == 1) {
-                        response.sendRedirect(request.getContextPath() + "/staffmanagement");//load lại trang
+                        response.sendRedirect(request.getContextPath() + "/staffmanagement");
                     } else {
-                        out.println("<h2>Error: Can't add product into database.</h2>");
+                        out.println("<h2>Error: Can't add staff into database.</h2>");
                     }
+
                 } catch (Exception e) {
                     response.getWriter().println("<h2>Upload failed!</h2>");
                     e.printStackTrace(response.getWriter());
                 }
-
                 break;
-            }
         }
     }
+}
+
 
     /**
      * Returns a short description of the servlet.
