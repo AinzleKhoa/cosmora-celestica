@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -56,7 +57,10 @@ public class ForgotPasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
 
+        // Action SendOtp
         if (action != null && action.equals("sendOtp")) {
             String email = request.getParameter("email");
 
@@ -77,28 +81,29 @@ public class ForgotPasswordServlet extends HttpServlet {
 
                         // Try sending the OTP email
                         if (EmailUtils.sendEmail(to, subject, content)) {
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"success\": true, \"message\": \"OTP sent successfully!\"}");
+                            jsonResponse.addProperty("success", true);
+                            jsonResponse.addProperty("message", "OTP sent successfully!");
                         } else {
                             // If sending OTP email fails
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"success\": false, \"message\": \"Failed to send OTP to the email.\"}");
+                            jsonResponse.addProperty("success", false);
+                            jsonResponse.addProperty("message", "Failed to send OTP to the email.");
                         }
                     } else {
                         // If storing the OTP in the database fails
-                        response.setContentType("application/json");
-                        response.getWriter().write("{\"success\": false, \"message\": \"Failed to store OTP.\"}");
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "Failed to store OTP.");
                     }
                 } else {
                     // If the account is deactivated
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Please contact us for more information.\"}");
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
                 }
             } else {
                 // If the email doesn't exist
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"message\": \"Email does not exist.\"}");
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Email does not exist.");
             }
+            // Action VerifyOtp
         } else {
             String email = request.getParameter("email");
             String otp = request.getParameter("otp");
@@ -111,26 +116,29 @@ public class ForgotPasswordServlet extends HttpServlet {
                 if (!customer.isIsDeactivated()) {
                     // Check if the OTP matches
                     if (cDAO.checkOtpForEmail(email, otp)) {
-                        response.setContentType("application/json");
                         HttpSession session = request.getSession();
                         session.setAttribute("currentForgotCustomer", customer);
-                        response.getWriter().write("{\"success\": true, \"message\": \"OTP verified successfully! Redirecting...\", \"redirectUrl\": \"" + request.getContextPath() + "/reset-password\"}");
+
+                        jsonResponse.addProperty("success", true);
+                        jsonResponse.addProperty("message", "OTP verified successfully! Redirecting...");
+                        jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/reset-password");
                     } else {
                         // If OTP is incorrect
-                        response.setContentType("application/json");
-                        response.getWriter().write("{\"success\": false, \"message\": \"The OTP is incorrect or has expired. Please try again.\"}");
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "The OTP is incorrect or has expired. Please try again.");
                     }
                 } else {
                     // If the account is deactivated
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Please contact us for more information.\"}");
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
                 }
             } else {
                 // If the email doesn't exist
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"message\": \"Email does not exist.\"}");
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Email does not exist.");
             }
         }
+        response.getWriter().write(jsonResponse.toString());
     }
 
     /**

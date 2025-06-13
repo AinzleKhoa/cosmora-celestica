@@ -13,7 +13,7 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- authorization form -->
-                    <form action="${pageContext.servletContext.contextPath}/login" method="POST" class="sign__form" onsubmit="return validateForm(event, 'login')">
+                    <form action="${pageContext.servletContext.contextPath}/login" method="POST" id="loginForm" class="sign__form">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="sign__group">
-                            <input type="email" class="sign__input" placeholder="Email" name="email" autocomplete="username">
+                            <input type="email" class="sign__input" placeholder="Email" name="email" id="loginEmailInput" autocomplete="username">
                         </div>
 
                         <div class="sign__group">

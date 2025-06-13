@@ -220,20 +220,23 @@ $(document).ready(function () {
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 document.addEventListener('DOMContentLoaded', function () {
     /*==============================
+     Login
+     ==============================*/
+
+    /*==============================
      Send OTP + Verify OTP
      ==============================*/
     let countdown = 30;
     let countdownInterval;
-    let otpSent = false;
 
-    const sendBtn = document.getElementById('sendOtpBtn');
-    const verifyBtn = document.getElementById('verifyOtpBtn');
-    const emailInput = document.getElementById('emailInput');
-    const otpInput = document.getElementById('otpInput');
+    const sendOtpForgotBtn = document.getElementById('sendOtpForgotBtn');
+    const verifyOtpForgotBtn = document.getElementById('verifyOtpForgotBtn');
+    const emailForgotInput = document.getElementById('emailForgotInput');
+    const otpForgotInput = document.getElementById('otpForgotInput');
     const cooldownText = document.getElementById('cooldownText');
 
-    sendBtn.addEventListener('click', function () {
-        const email = emailInput.value.trim();
+    sendOtpForgotBtn.addEventListener('click', function () {
+        const email = emailForgotInput.value.trim();
 
         clearMessages();
 
@@ -250,13 +253,13 @@ document.addEventListener('DOMContentLoaded', function () {
         startCountdown();
     });
 
-    verifyBtn.addEventListener('click', function () {
-        const email = emailInput.value.trim();
-        const otp = otpInput.value.trim();
+    verifyOtpForgotBtn.addEventListener('click', function () {
+        const email = emailForgotInput.value.trim();
+        const otp = otpForgotInput.value.trim();
 
         clearMessages();
 
-        const errorMessage = validateForm(email, otp);
+        const errorMessage = validateFormForgotPassword(email, otp);
         if (errorMessage) {
             showError(errorMessage);
             return;
@@ -265,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sendOtpForVerification(email, otp);
     });
 
-    function validateForm(email, otp) {
+    function validateFormForgotPassword(email, otp) {
         const emailError = isValidEmail(email);
         if (emailError)
             return emailError;
@@ -280,12 +283,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function isValidEmail(email) {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!email) {
-            emailInput.focus();
+            emailForgotInput.focus();
             return "Please enter your email.";
         }
 
         if (!emailRegex.test(email)) {
-            emailInput.focus();
+            emailForgotInput.focus();
             return "Please enter a valid email address (example@gmail.com).";
         }
         return null;
@@ -294,11 +297,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function isValidOtp(otp) {
         const otpRegex = /^[0-9]+$/;
         if (!otp) {
-            otpInput.focus();
+            otpForgotInput.focus();
             return "Please enter your otp.";
         }
         if (!otpRegex.test(otp) || otp.length !== 6) {
-            otpInput.focus();
+            otpForgotInput.focus();
             return "Please enter a valid otp (6-digit).";
         }
     }
@@ -313,17 +316,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.success) {
                         showSuccess(data.message);
-                        otpSent = true; // Mark OTP as sent
                     } else {
                         showError(data.message);
-                        sendBtn.disabled = false;
+                        sendOtpForgotBtn.disabled = false;
                         clearInterval(countdownInterval);
                         cooldownText.textContent = '';
                     }
                 })
                 .catch(() => {
                     showError("An error occurred. Please try again.");
-                    sendBtn.disabled = false;
+                    sendOtpForgotBtn.disabled = false;
                     clearInterval(countdownInterval);
                     cooldownText.textContent = '';
                 });
@@ -360,8 +362,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (countdown <= 0) {
                 clearInterval(countdownInterval);
                 cooldownText.textContent = '';
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'Resend OTP';
+                sendOtpForgotBtn.disabled = false;
+                sendOtpForgotBtn.textContent = 'Resend OTP';
             } else {
                 cooldownText.textContent = `You can resend OTP in ${countdown}s`;
             }

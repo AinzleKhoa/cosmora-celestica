@@ -35,15 +35,15 @@
                         <!-- Send OTP Form -->
                         <form id="sendOtpForm" class="sign__group">
                             <div class="sign__group sign__group--otp">
-                                <input type="email" class="sign__input" placeholder="Email" name="email" id="emailInput" value="${currentForgotEmail}" required>
-                                <button type="button" id="sendOtpBtn" class="send-otp-link">Send OTP</button>
+                                <input type="email" class="sign__input" placeholder="Email" name="email" id="emailForgotInput" value="${currentForgotEmail}" required>
+                                <button type="button" id="sendOtpForgotBtn" class="send-otp-link">Send OTP</button>
                             </div>
                             <p id="cooldownText" style="text-align: right; font-size: 12px; color: #999;"></p>
 
 
                             <div class="sign__group" id="otpSection">
-                                <input type="text" class="sign__input" name="otp" id="otpInput" placeholder="Enter OTP" required>
-                                <button type="button" id="verifyOtpBtn" class="sign__btn">Verify OTP</button>
+                                <input type="text" class="sign__input" name="otp" id="otpForgotInput" placeholder="Enter OTP" required>
+                                <button type="button" id="verifyOtpForgotBtn" class="sign__btn">Verify OTP</button>
                             </div>
                         </form>
                         <span class="sign__text">We will send a password to your Email</span>
