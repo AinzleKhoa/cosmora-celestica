@@ -40,27 +40,6 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false); // Get the current session (if it exists)
-
-        if (session != null) {
-            // Retrieve the success message from the session
-            String successMessage = (String) session.getAttribute("successMessage");
-            if (successMessage != null) {
-                // Add the message to the request to be displayed on the login page
-                request.setAttribute("successMessage", successMessage);
-                // Remove the message from the session after it has been used
-                session.removeAttribute("successMessage");
-            }
-            // Retrieve the email message from the session
-            String currentForgotEmail = (String) session.getAttribute("currentForgotEmail");
-            if (currentForgotEmail != null) {
-                // Add the message to the request to be displayed on the login page
-                request.setAttribute("currentForgotEmail", currentForgotEmail);
-                // Remove the message from the session after it has been used
-                session.removeAttribute("currentForgotEmail");
-            }
-        }
-
         request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp")
                 .forward(request, response);
     }
@@ -85,43 +64,72 @@ public class ForgotPasswordServlet extends HttpServlet {
             Customer customer = cDAO.getAccountByEmail(email);
 
             if (customer != null) {
+                // Check if the account is not deactivated
                 if (!customer.isIsDeactivated()) {
                     String otp = SecurityTokenUtils.generateOTP(6);
                     Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
 
+                    // Attempt to store OTP in the database
                     if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
                         String to = email;
                         String subject = "Your Cosmora Celestica OTP Code";
                         String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
+
+                        // Try sending the OTP email
                         if (EmailUtils.sendEmail(to, subject, content)) {
                             response.setContentType("application/json");
                             response.getWriter().write("{\"success\": true, \"message\": \"OTP sent successfully!\"}");
                         } else {
-                            // If 
+                            // If sending OTP email fails
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"success\": false, \"message\": \"Failed to send OTP to email.\"}");
+                            response.getWriter().write("{\"success\": false, \"message\": \"Failed to send OTP to the email.\"}");
                         }
                     } else {
-                        // If 
+                        // If storing the OTP in the database fails
                         response.setContentType("application/json");
-                        response.getWriter().write("{\"success\": false, \"message\": \"storing OTP unsuccessfully.\"}");
+                        response.getWriter().write("{\"success\": false, \"message\": \"Failed to store OTP.\"}");
                     }
                 } else {
-                    // If account is deactivated, set error message and forward
+                    // If the account is deactivated
                     response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Contacts us for more informations.\"}");
+                    response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Please contact us for more information.\"}");
                 }
             } else {
-                // If email doesn't exist, set error message and forward
+                // If the email doesn't exist
                 response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"message\": \"Email doesn't exist.\"}");
+                response.getWriter().write("{\"success\": false, \"message\": \"Email does not exist.\"}");
             }
         } else {
             String email = request.getParameter("email");
             String otp = request.getParameter("otp");
 
-            System.out.println("email: " + email);
-            System.out.println("otp: " + otp);
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer customer = cDAO.getAccountByEmail(email);
+
+            if (customer != null) {
+                // Check if the account is not deactivated
+                if (!customer.isIsDeactivated()) {
+                    // Check if the OTP matches
+                    if (cDAO.checkOtpForEmail(email, otp)) {
+                        response.setContentType("application/json");
+                        HttpSession session = request.getSession();
+                        session.setAttribute("currentForgotCustomer", customer);
+                        response.getWriter().write("{\"success\": true, \"message\": \"OTP verified successfully! Redirecting...\", \"redirectUrl\": \"" + request.getContextPath() + "/reset-password\"}");
+                    } else {
+                        // If OTP is incorrect
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"success\": false, \"message\": \"The OTP is incorrect or has expired. Please try again.\"}");
+                    }
+                } else {
+                    // If the account is deactivated
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Please contact us for more information.\"}");
+                }
+            } else {
+                // If the email doesn't exist
+                response.setContentType("application/json");
+                response.getWriter().write("{\"success\": false, \"message\": \"Email does not exist.\"}");
+            }
         }
     }
 

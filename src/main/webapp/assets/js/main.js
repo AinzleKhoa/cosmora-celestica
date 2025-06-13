@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         showError(data.message);
                         sendBtn.disabled = false;
                         clearInterval(countdownInterval);
-                        cooldownText.textContent = ''; 
+                        cooldownText.textContent = '';
                     }
                 })
                 .catch(() => {
@@ -663,6 +663,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.success) {
                         showSuccess(data.message);
+                        window.location.href = data.redirectUrl;
                     } else {
                         showError(data.message);
                     }

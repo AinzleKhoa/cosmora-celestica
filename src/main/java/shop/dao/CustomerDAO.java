@@ -58,7 +58,7 @@ public class CustomerDAO extends DBContext {
 
     public boolean isEmailExists(String email) {
         try {
-            String query = "SELECT *\n"
+            String query = "SELECT customer_id\n"
                     + "FROM customer c\n"
                     + "WHERE c.email = ?";
             Object[] params = {email};
@@ -83,6 +83,24 @@ public class CustomerDAO extends DBContext {
         return 0;
     }
 
+    public boolean checkOtpForEmail(String email, String otp) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.email = ?\n"
+                    + "  AND c.email_verification_token = ?\n"
+                    + "  AND c.email_verification_expiry > GETDATE();";
+            Object[] params = {email, otp};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public int register(Customer customer) {
         try {
             String query = "INSERT INTO customer (username, email, password_hash, avatar_url, created_at)\n"
@@ -98,10 +116,6 @@ public class CustomerDAO extends DBContext {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
-    }
-
-    public boolean saveOtp() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

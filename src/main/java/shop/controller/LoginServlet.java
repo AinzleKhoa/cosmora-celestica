@@ -35,15 +35,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false); // Get the current session (if it exists)
-
+        HttpSession session = request.getSession(false);
         if (session != null) {
-            // Retrieve the success message from the session
             String successMessage = (String) session.getAttribute("successMessage");
             if (successMessage != null) {
-                // Add the message to the request to be displayed on the login page
                 request.setAttribute("successMessage", successMessage);
-                // Remove the message from the session after it has been used
                 session.removeAttribute("successMessage");
             }
         }
@@ -78,7 +74,6 @@ public class LoginServlet extends HttpServlet {
                 // Check password match before setting session
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
                 if (isPasswordMatched) {
-                    // Create a new session and set the customer attribute
                     session = request.getSession(true);
                     session.setAttribute("currentCustomer", customer);
                     response.sendRedirect(request.getContextPath() + "/home");
