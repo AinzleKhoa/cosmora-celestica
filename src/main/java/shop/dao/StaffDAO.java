@@ -28,11 +28,11 @@ public class StaffDAO extends DBContext {
                         rs.getString(2), // username
                         rs.getString(3), // email
                         rs.getString(4), // password_hash
-                        rs.getString(5), // full_name
-                        rs.getString(6), // phone
-                        rs.getString(7), // role
-                        rs.getDate(8), // date_of_birth
-                        rs.getString(9) // avatar_url
+                       
+                        rs.getString(5), // phone
+                        rs.getString(6), // role
+                        rs.getDate(7), // date_of_birth
+                        rs.getString(8) // avatar_url
                 ));
             }
         } catch (SQLException ex) {
@@ -40,4 +40,32 @@ public class StaffDAO extends DBContext {
         }
         return staffs;
     }
+
+    public int create(Staff staff) {
+        try {
+            String sql
+                    = "INSERT INTO staff (\n"
+                    + "    username,\n"
+                    + "    email,\n"
+                    + "    password_hash,\n"
+                    + "    phone,\n"
+                    + "    role,\n"
+                    + "    date_of_birth,\n"
+                    + "    avatar_url\n"
+                    + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+            Object[] params = {
+                staff.getUserName(),
+                staff.getEmail(),
+                staff.getPassword(),
+                staff.getPhone(),
+                staff.getRole(),
+                staff.getDateOfBirth(),
+                staff.getAvatarUrl()};
+            return execQuery(sql, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
 }

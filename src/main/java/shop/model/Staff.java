@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package shop.model;
+
 import java.sql.Date;
 
 /**
@@ -10,27 +11,40 @@ import java.sql.Date;
  * @author Victus
  */
 public class Staff {
+
     private int Id;
     private String userName;
     private String email;
     private String password;
-    private String fullName;
+
     private String phone;
     private String role;
     private Date dateOfBirth;
     private String avatarUrl;
 
-    public Staff(int Id, String userName, String email, String password, String fullName, String phone, String role, Date dateOfBirth, String avatarUrl) {
+    public Staff(int Id, String userName, String email, String password, String phone, String role, Date dateOfBirth, String avatarUrl) {
         this.Id = Id;
         this.userName = userName;
         this.email = email;
         this.password = password;
-        this.fullName = fullName;
+      
         this.phone = phone;
         this.role = role;
         this.dateOfBirth = dateOfBirth;
         this.avatarUrl = avatarUrl;
     }
+
+    public Staff(String userName, String email, String password, String phone, String role, Date dateOfBirth, String avatarUrl) {
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+        this.dateOfBirth = dateOfBirth;
+        this.avatarUrl = avatarUrl;
+    }
+
+
 
     public int getId() {
         return Id;
@@ -64,13 +78,7 @@ public class Staff {
         this.password = password;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
 
     public String getPhone() {
         return phone;
@@ -103,8 +111,5 @@ public class Staff {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
-    
 
-    
 }
-

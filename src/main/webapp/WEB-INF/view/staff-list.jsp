@@ -123,7 +123,7 @@
 
             <section class="admin-header">
                 <div class="admin-header-top">
-                    <a class="btn-admin-add" href="./admin-staff-create.html">+ Add New Staff</a>
+                    <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/staffmanagement?view=create">+ Add New Staff</a>
                     <div class="search-filter-wrapper">
                         <input type="text" class="search-input" placeholder="Enter staff name...">
                         <button class="search-btn">Search</button>
@@ -155,8 +155,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Image Staff</th>
-                                <th>Fullname</th>
-                                <th>Username</th>
+                                <th>Full Name</th>
+                                
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Status</th>
@@ -177,8 +177,9 @@
                             %>
                             <tr>
                                 <td><%= s.getId()%></td>
-                                <<td><%= s.getAvatarUrl()%></td>
-                                <td><%= s.getFullName()%></td>
+                                <td><%= s.getAvatarUrl()%></td>
+                                <td><img src="/assets/img/staff/<%= s.getAvatarUrl()%>" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;"></td>
+                               
                                 <td><%= s.getEmail()%></td>
                                 <td><%= s.getRole()%></td>
                                 <td><span class="badge-status">Active</span></td>
