@@ -13,7 +13,7 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- authorization form -->
-                    <form action="${pageContext.servletContext.contextPath}/login" method="POST" id="loginForm" class="sign__form">
+                    <form id="loginForm" class="sign__form">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>

@@ -14,17 +14,25 @@
             <div class="col-12">
                 <div class="sign__content">
                     <!-- registration form -->
-                    <form action="${pageContext.servletContext.contextPath}/register" method="POST" class="sign__form" onsubmit="return validateForm(event, 'register')">
+                    <form class="sign__form" id="registerForm">
                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                         </a>
 
+                        <!-- Success Message Container -->
+                        <div id="successMessage" style="color: green; margin-bottom: 15px;">
+                            <c:if test="${not empty successMessage}">
+                                <p>${successMessage}</p>
+                            </c:if>
+                        </div>
+
                         <!-- Error Message Container -->
-                        <div id="errorMessages" style="color: red; margin-bottom: 20px;">
+                        <div id="errorMessages" style="color: red; margin-bottom: 15px;">
                             <c:if test="${not empty requestScope.errorMessage}">
                                 <p>${requestScope.errorMessage}</p>
                             </c:if>
                         </div>
+
 
                         <div class="sign__group">
                             <input type="text" class="sign__input" placeholder="Username" id="username" name="username" required>

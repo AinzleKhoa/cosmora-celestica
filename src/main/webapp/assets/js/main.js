@@ -247,22 +247,70 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 body: new URLSearchParams(new FormData(this)).toString()
             })
-                .then(res => res.json())  // Parse response as JSON
-                .then(data => {
-                    if (data.success) {
-                        showSuccess(data.message);
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        showError(data.message);
-                    }
-                })
-                .catch(() => {
-                    showError("An error occurred. Please try again.");
-                });
+                    .then(res => res.json())  // Parse response as JSON
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess(data.message);
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            showError(data.message);
+                        }
+                    })
+                    .catch(() => {
+                        showError("An error occurred. Please try again.");
+                    });
         });
     }
 
-    function isValidLogin(email, password) {
+    /*==============================
+     Register
+     ==============================*/
+    const registerForm = document.getElementById("registerForm");
+
+    if (registerForm) {
+        registerForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            clearMessages();
+
+            // Get the values when the form is submitted
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            const errorMessage = isValidRegister(username, email, password, confirmPassword);
+            if (errorMessage) {
+                showError(errorMessage);
+                return;
+            }
+
+            // Use AJAX via fetch
+            fetch(`/${contextPath}/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams(new FormData(this)).toString()
+            })
+                    .then(res => res.json())  // Parse response as JSON
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess(data.message);
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            showError(data.message);
+                        }
+                    })
+                    .catch(() => {
+                        showError("An error occurred. Please try again.");
+                    });
+        });
+    }
+
+    function isValidRegister(username, email, password, confirmPassword) {
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!username || !usernameRegex.test(username)) {
+            return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
+        }
         // Validate Email
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
@@ -274,6 +322,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Password must be at least 8 characters long.";
         } else if (!passwordRegex.test(password)) {
             return "Password must contain at least 1 letter and 1 number.";
+        }
+        if (password !== confirmPassword) {
+            return "Passwords do not match.";
         }
     }
 

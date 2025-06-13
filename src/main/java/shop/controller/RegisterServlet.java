@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -49,6 +50,9 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
+
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -59,16 +63,18 @@ public class RegisterServlet extends HttpServlet {
 
         if (!cDAO.isEmailExists(email)) {
             if (cDAO.register(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
-                request.setAttribute("successMessage", "Register successful! Please log in.");
-                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("message", "Registration successful! Please log in.");
+                jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/login");
             } else {
-                request.setAttribute("errorMessage", "Something went wrong. Please try again.");
-                request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Something went wrong. Please try again.");
             }
         } else {
-            request.setAttribute("errorMessage", "The email already exists. Please try again.");
-            request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "The email already exists. Please try again.");
         }
+        response.getWriter().write(jsonResponse.toString());
     }
 
     /**
@@ -77,6 +83,7 @@ public class RegisterServlet extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
+
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
