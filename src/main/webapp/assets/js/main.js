@@ -546,51 +546,131 @@ function validateForm(event, formType) {
 document.addEventListener('DOMContentLoaded', function () {
     let countdown = 30;
     let countdownInterval;
+    let otpSent = false;
 
     const sendBtn = document.getElementById('sendOtpBtn');
+    const verifyBtn = document.getElementById('verifyOtpBtn');
     const emailInput = document.getElementById('emailInput');
+    const otpInput = document.getElementById('otpInput');
     const cooldownText = document.getElementById('cooldownText');
 
     sendBtn.addEventListener('click', function () {
         const email = emailInput.value.trim();
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         clearMessages();
 
-        if (!email) {
-            showError("Please enter your email.");
-            emailInput.focus();
-            return;
-        }
-
-        if (!emailRegex.test(email)) {
-            showError("Please enter a valid email address.");
-            emailInput.focus();
+        const errorMessage = isValidEmail(email);
+        if (errorMessage) {
+            showError(errorMessage);
             return;
         }
 
         this.disabled = true;
 
-        fetch('./forgot-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'email=' + encodeURIComponent(email)
-        })
-        .then(res => {
-            if (res.ok) {
-                showSuccess("OTP has been sent to your email.");
-            } else {
-                showError("Failed to send OTP. Please try again.");
-                this.disabled = false;
-            }
-        })
-        .catch(() => {
-            showError("An error occurred. Please try again.");
-            this.disabled = false;
-        });
+        sendOtpToBackend(email);
 
         startCountdown();
     });
+
+    verifyBtn.addEventListener('click', function () {
+        const email = emailInput.value.trim();
+        const otp = otpInput.value.trim();
+
+        clearMessages();
+
+        const errorMessage = validateForm(email, otp);
+        if (errorMessage) {
+            showError(errorMessage);
+            return;
+        }
+
+        sendOtpForVerification(email, otp);
+    });
+
+    function validateForm(email, otp) {
+        const emailError = isValidEmail(email);
+        if (emailError)
+            return emailError;
+
+        const otpError = isValidOtp(otp);
+        if (otpError)
+            return otpError;
+
+        return null;
+    }
+
+    function isValidEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email) {
+            emailInput.focus();
+            return "Please enter your email.";
+        }
+
+        if (!emailRegex.test(email)) {
+            emailInput.focus();
+            return "Please enter a valid email address (example@gmail.com).";
+        }
+        return null;
+    }
+
+    function isValidOtp(otp) {
+        const otpRegex = /^[0-9]+$/;
+        if (!otp) {
+            otpInput.focus();
+            return "Please enter your otp.";
+        }
+        if (!otpRegex.test(otp) || otp.length !== 6) {
+            otpInput.focus();
+            return "Please enter a valid otp (6-digit).";
+        }
+    }
+
+    function sendOtpToBackend(email) {
+        fetch('./forgot-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'email=' + encodeURIComponent(email) + '&action=sendOtp'
+        })
+                .then(res => res.json())  // Parse response as JSON
+                .then(data => {
+                    if (data.success) {
+                        showSuccess(data.message);
+                        otpSent = true; // Mark OTP as sent
+                    } else {
+                        showError(data.message);
+                        sendBtn.disabled = false;
+                        clearInterval(countdownInterval);
+                        cooldownText.textContent = ''; 
+                    }
+                })
+                .catch(() => {
+                    showError("An error occurred. Please try again.");
+                    sendBtn.disabled = false;
+                    clearInterval(countdownInterval);
+                    cooldownText.textContent = '';
+                });
+    }
+
+    function sendOtpForVerification(email, otp) {
+        fetch('./forgot-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'email=' + encodeURIComponent(email) +
+                    '&otp=' + encodeURIComponent(otp) +
+                    '&action=verifyOtp'
+        })
+                .then(res => res.json())  // Parse response as JSON
+                .then(data => {
+                    if (data.success) {
+                        showSuccess(data.message);
+                    } else {
+                        showError(data.message);
+                    }
+                })
+                .catch(() => {
+                    showError("An error occurred. Please try again.");
+                });
+    }
 
     function startCountdown() {
         countdown = 30;

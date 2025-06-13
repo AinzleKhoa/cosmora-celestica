@@ -33,22 +33,19 @@
                         </div>
 
                         <!-- Send OTP Form -->
-                        <form id="sendOtpForm" action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" class="sign__group">
+                        <form id="sendOtpForm" class="sign__group">
                             <div class="sign__group sign__group--otp">
                                 <input type="email" class="sign__input" placeholder="Email" name="email" id="emailInput" value="${currentForgotEmail}" required>
                                 <button type="button" id="sendOtpBtn" class="send-otp-link">Send OTP</button>
                             </div>
                             <p id="cooldownText" style="text-align: right; font-size: 12px; color: #999;"></p>
-                        </form>
 
-                        <!-- OTP Verification Form (Initially Hidden) -->
-                        <form id="verifyOtpForm" action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" class="sign__group">
+
                             <div class="sign__group" id="otpSection">
-                                <input type="text" class="sign__input" name="otp" placeholder="Enter OTP" required>
+                                <input type="text" class="sign__input" name="otp" id="otpInput" placeholder="Enter OTP" required>
+                                <button type="button" id="verifyOtpBtn" class="sign__btn">Verify OTP</button>
                             </div>
-                            <button type="submit" class="sign__btn">Verify OTP</button>
                         </form>
-
                         <span class="sign__text">We will send a password to your Email</span>
                         <a type="button" href="${pageContext.servletContext.contextPath}/login" class="sign__goback">Go Back</a>
                         <!-- end authorization form -->

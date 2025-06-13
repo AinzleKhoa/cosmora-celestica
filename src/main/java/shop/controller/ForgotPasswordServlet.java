@@ -76,42 +76,52 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String email = request.getParameter("email");
+        String action = request.getParameter("action");
 
-        CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.getAccountByEmail(email);
+        if (action != null && action.equals("sendOtp")) {
+            String email = request.getParameter("email");
 
-        if (customer != null) {
-            if (!customer.isIsDeactivated()) {
-                String otp = SecurityTokenUtils.generateOTP(6);
-                Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer customer = cDAO.getAccountByEmail(email);
 
-                if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
-                    String to = email;
-                    String subject = "Your Cosmora Celestica OTP Code";
-                    String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
-                    if (EmailUtils.sendEmail(to, subject, content)) {
-                        response.setContentType("application/json");
-                        response.getWriter().write("{\"success\": true, \"message\": \"OTP sent successfully!\"}");
+            if (customer != null) {
+                if (!customer.isIsDeactivated()) {
+                    String otp = SecurityTokenUtils.generateOTP(6);
+                    Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
+
+                    if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
+                        String to = email;
+                        String subject = "Your Cosmora Celestica OTP Code";
+                        String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
+                        if (EmailUtils.sendEmail(to, subject, content)) {
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"success\": true, \"message\": \"OTP sent successfully!\"}");
+                        } else {
+                            // If 
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"success\": false, \"message\": \"Failed to send OTP to email.\"}");
+                        }
                     } else {
                         // If 
                         response.setContentType("application/json");
-                        response.getWriter().write("{\"success\": false, \"message\": \"Failed to send OTP to email.\"}");
+                        response.getWriter().write("{\"success\": false, \"message\": \"storing OTP unsuccessfully.\"}");
                     }
                 } else {
-                    // If 
+                    // If account is deactivated, set error message and forward
                     response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": false, \"message\": \"storing OTP unsuccessfully.\"}");
+                    response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Contacts us for more informations.\"}");
                 }
             } else {
-                // If account is deactivated, set error message and forward
+                // If email doesn't exist, set error message and forward
                 response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"message\": \"Your account is locked. Contacts us for more informations.\"}");
+                response.getWriter().write("{\"success\": false, \"message\": \"Email doesn't exist.\"}");
             }
         } else {
-            // If email doesn't exist, set error message and forward
-            request.setAttribute("errorMessage", "Email doesn't exist.");
-            request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp").forward(request, response);
+            String email = request.getParameter("email");
+            String otp = request.getParameter("otp");
+
+            System.out.println("email: " + email);
+            System.out.println("otp: " + otp);
         }
     }
 
