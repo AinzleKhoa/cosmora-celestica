@@ -33,11 +33,11 @@
                         </div>
 
                         <div class="sign__group">
-                            <input type="email" class="sign__input" placeholder="Email" name="email" id="loginEmailInput" autocomplete="username">
+                            <input type="email" class="sign__input" placeholder="Email" name="email" id="email" autocomplete="username">
                         </div>
 
                         <div class="sign__group">
-                            <input type="password" class="sign__input" name="password" placeholder="Password"
+                            <input type="password" class="sign__input" name="password" id="password" placeholder="Password"
                                    autocomplete="new-password">
                         </div>
 

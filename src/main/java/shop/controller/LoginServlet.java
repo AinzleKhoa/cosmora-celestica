@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -49,10 +50,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -65,24 +65,28 @@ public class LoginServlet extends HttpServlet {
                 // Check password match before setting session
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
                 if (isPasswordMatched) {
-                    session = request.getSession(true);
+                    HttpSession session = request.getSession(true);
                     session.setAttribute("currentCustomer", customer);
-                    response.sendRedirect(request.getContextPath() + "/home");
+
+                    jsonResponse.addProperty("success", true);
+                    jsonResponse.addProperty("message", "Login successfully! Redirecting...");
+                    jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/home");
                 } else {
                     // If password doesn't match, set error message and forward
-                    request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
-                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Email or password is incorrect. Try again.");
                 }
             } else {
                 // If account is deactivated, set error message and forward
-                request.setAttribute("errorMessage", "Your account is locked. Contacts us for more informations");
-                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
             }
         } else {
             // If email doesn't exist, set error message and forward
-            request.setAttribute("errorMessage", "Email doesn't exist.");
-            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Email doesn't exist.");
         }
+        response.getWriter().write(jsonResponse.toString());
     }
 
     /**

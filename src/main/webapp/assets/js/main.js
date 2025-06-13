@@ -219,9 +219,63 @@ $(document).ready(function () {
  New JS code
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 document.addEventListener('DOMContentLoaded', function () {
+    const contextPath = window.location.pathname.split('/')[1]; // Get the context path dynamically
     /*==============================
      Login
      ==============================*/
+    const loginForm = document.getElementById("loginForm");
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            clearMessages();
+
+            // Get the values when the form is submitted
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            const errorMessage = isValidLogin(email, password);
+            if (errorMessage) {
+                showError(errorMessage);
+                return;
+            }
+
+            // Use AJAX via fetch
+            fetch(`/${contextPath}/login`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams(new FormData(this)).toString()
+            })
+                .then(res => res.json())  // Parse response as JSON
+                .then(data => {
+                    if (data.success) {
+                        showSuccess(data.message);
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        showError(data.message);
+                    }
+                })
+                .catch(() => {
+                    showError("An error occurred. Please try again.");
+                });
+        });
+    }
+
+    function isValidLogin(email, password) {
+        // Validate Email
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            return "Please enter a valid email address.";
+        }
+        // Validate Password
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long.";
+        } else if (!passwordRegex.test(password)) {
+            return "Password must contain at least 1 letter and 1 number.";
+        }
+    }
 
     /*==============================
      Send OTP + Verify OTP
@@ -235,38 +289,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const otpForgotInput = document.getElementById('otpForgotInput');
     const cooldownText = document.getElementById('cooldownText');
 
-    sendOtpForgotBtn.addEventListener('click', function () {
-        const email = emailForgotInput.value.trim();
+// Only add event listeners if the buttons exist on the page
+    if (sendOtpForgotBtn) {
+        sendOtpForgotBtn.addEventListener('click', function () {
+            const email = emailForgotInput.value.trim();
 
-        clearMessages();
+            clearMessages();
 
-        const errorMessage = isValidEmail(email);
-        if (errorMessage) {
-            showError(errorMessage);
-            return;
-        }
+            const errorMessage = isValidEmail(email);
+            if (errorMessage) {
+                showError(errorMessage);
+                return;
+            }
 
-        this.disabled = true;
+            this.disabled = true;
 
-        sendOtpToBackend(email);
+            sendOtpToBackend(email);
 
-        startCountdown();
-    });
+            startCountdown();
+        });
+    }
 
-    verifyOtpForgotBtn.addEventListener('click', function () {
-        const email = emailForgotInput.value.trim();
-        const otp = otpForgotInput.value.trim();
+    if (verifyOtpForgotBtn) {
+        verifyOtpForgotBtn.addEventListener('click', function () {
+            const email = emailForgotInput.value.trim();
+            const otp = otpForgotInput.value.trim();
 
-        clearMessages();
+            clearMessages();
 
-        const errorMessage = validateFormForgotPassword(email, otp);
-        if (errorMessage) {
-            showError(errorMessage);
-            return;
-        }
+            const errorMessage = validateFormForgotPassword(email, otp);
+            if (errorMessage) {
+                showError(errorMessage);
+                return;
+            }
 
-        sendOtpForVerification(email, otp);
-    });
+            sendOtpForVerification(email, otp);
+        });
+    }
 
     function validateFormForgotPassword(email, otp) {
         const emailError = isValidEmail(email);
@@ -307,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function sendOtpToBackend(email) {
-        fetch('./forgot-password', {
+        fetch(`/${contextPath}/forgot-password`, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: 'email=' + encodeURIComponent(email) + '&action=sendOtp'
@@ -332,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function sendOtpForVerification(email, otp) {
-        fetch('./forgot-password', {
+        fetch(`/${contextPath}/forgot-password`, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: 'email=' + encodeURIComponent(email) +
@@ -421,24 +480,6 @@ function validateForm(event, formType) {
     // Validate confirm password (only for registration)
     if ((formType === 'register' || formType === 'login') && password !== confirmPassword) {
         errors.push("Passwords do not match.");
-    }
-
-    // If there are errors, show them on the page
-    if (errors.length > 0) {
-        // Prevent form submission
-        event.preventDefault();
-
-        // Display errors
-        const errorContainer = document.getElementById('errorMessages');
-        errorContainer.innerHTML = "";  // Clear previous errors
-        errors.forEach(function (error) {
-            const errorMessage = document.createElement('p');
-            errorMessage.classList.add('error-message');
-            errorMessage.textContent = error;
-            errorContainer.appendChild(errorMessage);
-        });
-
-        return false;
     }
 
     // If all checks pass
