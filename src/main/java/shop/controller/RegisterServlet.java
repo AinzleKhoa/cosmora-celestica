@@ -59,10 +59,8 @@ public class RegisterServlet extends HttpServlet {
 
         if (!cDAO.isEmailExists(email)) {
             if (cDAO.register(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
-                // Store success message in the session
-                HttpSession session = request.getSession();
-                session.setAttribute("successMessage", "Register successful! Please log in.");
-                response.sendRedirect(request.getContextPath() + "/login");
+                request.setAttribute("successMessage", "Register successful! Please log in.");
+                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
             } else {
                 request.setAttribute("errorMessage", "Something went wrong. Please try again.");
                 request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);

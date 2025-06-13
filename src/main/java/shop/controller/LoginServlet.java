@@ -35,15 +35,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            String successMessage = (String) session.getAttribute("successMessage");
-            if (successMessage != null) {
-                request.setAttribute("successMessage", successMessage);
-                session.removeAttribute("successMessage");
-            }
-        }
-
         request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
     }
 
