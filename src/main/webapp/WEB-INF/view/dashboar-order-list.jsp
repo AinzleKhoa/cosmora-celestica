@@ -1,0 +1,254 @@
+<%-- 
+    Document   : dashboar-order-list
+    Created on : Jun 11, 2025, 1:27:27 PM
+    Author     : ADMIN
+--%>
+
+<%@page import="shop.dao.OrderDashboardDAO"%>
+<%@page import="shop.model.Customer"%>
+<%@page import="shop.model.Order"%>
+<%@page import="java.util.ArrayList"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/bootstrap-reboot.min.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/bootstrap-grid.min.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/owl.carousel.min.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/magnific-popup.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/nouislider.min.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+        <!-- Favicons -->
+        <link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">
+        <link rel="apple-touch-icon" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png">
+
+        <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
+        <meta name="keywords" content="">
+        <title>Cosmora Celestica – Games and Accessories</title>
+
+    </head>
+
+    <body>
+        <!-- header -->
+        <header class="header">
+            <div class="header__wrap">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="header__content">
+                                <a href="${pageContext.servletContext.contextPath}/WEB-INF/view.jsp" class="header__logo">
+                                    <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
+                                </a>
+
+                                <div class="admin-dropdown" onclick="toggleDropdown()">
+                                    <div class="admin-profile">
+                                        <img src="${pageContext.servletContext.contextPath}/assets/img/user.svg" alt="Avatar" class="admin-avatar">
+                                        <div>
+                                            <p class="admin-name">Jiue Anderson</p>
+                                            <span class="admin-role">Manager</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-menu" id="adminDropdown">
+                                        <div class="admin-user">
+                                            <span class="admin-role">Manager</span>
+                                            <p class="admin-name">Jiue Anderson</p>
+                                        </div>
+                                        <ul class="admin-links">
+                                            <li><a href="#">Dashboard</a></li>
+                                            <li><a href="#">My Profile</a></li>
+                                            <li><a href="#">Settings</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- end header -->
+        <button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">☰
+            Menu</button>
+
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar__logo">Dashboard</div>
+            <ul class="admin-sidebar__nav">
+                <li class="admin-sidebar__item">
+                    <a href="admin-products.html" class="admin-sidebar__link">
+                        <i class="fas fa-box"></i> Manage Products
+                    </a>
+                </li>
+                <li class="admin-sidebar__item">
+                    <a href="admin-staff.html" class="admin-sidebar__link">
+                        <i class="fas fa-briefcase"></i> Manage Staffs
+                    </a>
+                </li>
+                <li class="admin-sidebar__item">
+                    <a href="admin-customer.html" class="admin-sidebar__link">
+                        <i class="fas fa-users"></i> Manage Customers
+                    </a>
+                </li>
+                <li class="admin-sidebar__item">
+                    <a href="admin-order.html" class="admin-sidebar__link active">
+                        <i class="fas fa-clipboard-list"></i> Manage Orders
+                    </a>
+                </li>
+                <li class="admin-sidebar__item">
+                    <a href="admin-voucher.html" class="admin-sidebar__link">
+                        <i class="fas fa-tag"></i> Manage Vouchers
+                    </a>
+                </li>
+                <li class="admin-sidebar__item">
+                    <a href="admin-discount.html" class="admin-sidebar__link">
+                        <i class="fas fa-percent"></i> Manage Discounts
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="admin-main">
+
+            <div class="table-header">
+                <h2 class="table-title">Manage Orders</h2>
+            </div>
+
+            <section class="admin-header">
+                <div class="admin-header-top">
+                    <div class="search-filter-wrapper" style="display: flex; margin-left: auto;">
+                        <input type="text" class="search-input" placeholder="Enter order name...">
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+                <div class="main-filter">
+                    <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
+                    <select class="admin-filter-select">
+                        <option value="ascending">A-Z</option>
+                        <option value="descending">Z-A</option>
+                    </select>
+                    <select class="admin-filter-select">
+                        <option value="all">All Dates</option>
+                        <option value="last30">Last 30 Days</option>
+                        <option value="lastYear">Last Year</option>
+                    </select>
+                    <select class="admin-filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                    <select class="admin-filter-select">
+                        <option value="all">All Order Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </section>
+
+            <%
+                ArrayList<Order> orderlist = (ArrayList) request.getAttribute("orderlist");
+                for (Order order : orderlist) {
+
+
+            %>
+
+            <section class="admin-table-wrapper">
+                <div class="table-responsive shadow-sm rounded overflow-hidden">
+                    <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light text-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>CustomerID</th>
+                                <th>Order Date</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><%= order.getOrderId()%></td>
+                                <td><%= order.getCustomerId()%></td>
+                                <td><%= order.getOrderDate()%></td>
+                                <td><%= order.getTotalAmount()%></td>
+                                <td>
+                                    <form action="orderdashboard" method="post">
+                                        <input type="hidden" name="action" value="update" />
+                                        <input type="hidden" name="orderId" value="<%= order.getOrderId()%>" />
+                                        <select name="status" class="admin-filter-select" onchange="this.form.submit()">
+                                            <option value="Pending" <%= order.getStatus().equals("Pending") ? "selected" : ""%>>Pending</option>
+                                            <option value="Confirmed" <%= order.getStatus().equals("Confirmed") ? "selected" : ""%>>Confirmed</option>
+                                            <option value="Shipped" <%= order.getStatus().equals("Shipped") ? "selected" : ""%>>Shipped</option>
+                                            <option value="Delivered" <%= order.getStatus().equals("Delivered") ? "selected" : ""%>>Delivered</option>
+                                        </select>
+                                    </form>
+
+
+
+                                </td>
+                                <td>
+                                    <div class="table-actions-center">
+                                        <button class="btn-action btn-details"
+                                                onclick="location.href = '<%= request.getContextPath()%>/orderdashboard?view=detail&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
+                                            Details
+                                        </button>
+                                        <button class="btn-action btn-edit" href="./admin-order-edit.html">Edit</button>
+                                        <button class="btn-action btn-delete">Cancel</button>
+                                        <button class="btn-action btn-history">Customer Details</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <%}%>
+
+            <!-- Pagination -->
+            <nav class="admin-pagination">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">«</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">»</a>
+                    </li>
+                </ul>
+            </nav>
+        </main>
+
+        <!-- JS -->
+        <script src="js/jquery-3.5.1.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/owl.carousel.min.js"></script>
+        <script src="js/jquery.magnific-popup.min.js"></script>
+        <script src="js/wNumb.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/jquery.mousewheel.min.js"></script>
+        <script src="js/jquery.mCustomScrollbar.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+
+</html>
