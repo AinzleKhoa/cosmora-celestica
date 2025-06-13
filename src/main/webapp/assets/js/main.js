@@ -244,7 +244,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Use AJAX via fetch
             fetch(`/${contextPath}/login`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Include CSRF Token
+                },
                 body: new URLSearchParams(new FormData(this)).toString()
             })
                     .then(res => res.json())  // Parse response as JSON
@@ -260,6 +263,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         showError("An error occurred. Please try again.");
                     });
         });
+    }
+
+    function isValidLogin(email, password) {
+        // Validate Email
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
+        if (!emailRegex.test(email)) {
+            return "Please enter a valid Google email address (gmail.com or googlemail.com).";
+        }
+        // Validate Password
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long.";
+        } else if (!passwordRegex.test(password)) {
+            return "Password must contain at least 1 letter and 1 number.";
+        }
     }
 
     /*==============================
@@ -288,7 +306,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Use AJAX via fetch
             fetch(`/${contextPath}/register`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Include CSRF Token
+                },
                 body: new URLSearchParams(new FormData(this)).toString()
             })
                     .then(res => res.json())  // Parse response as JSON
@@ -312,9 +333,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
         }
         // Validate Email
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
         if (!emailRegex.test(email)) {
-            return "Please enter a valid email address.";
+            return "Please enter a valid Google email address (gmail.com or googlemail.com).";
         }
         // Validate Password
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
@@ -323,6 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (!passwordRegex.test(password)) {
             return "Password must contain at least 1 letter and 1 number.";
         }
+        // Validate confirmPassword
         if (password !== confirmPassword) {
             return "Passwords do not match.";
         }
@@ -419,7 +441,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function sendOtpToBackend(email) {
         fetch(`/${contextPath}/forgot-password`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Include CSRF Token
+            },
             body: 'email=' + encodeURIComponent(email) + '&action=sendOtp'
         })
                 .then(res => res.json())  // Parse response as JSON
