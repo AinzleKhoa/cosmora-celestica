@@ -71,7 +71,7 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
-    
+
     public boolean isUsernameExists(String username) {
         try {
             String query = "SELECT customer_id\n"
@@ -126,6 +126,22 @@ public class CustomerDAO extends DBContext {
                 customer.getEmail(),
                 customer.getPasswordHash(),
                 customer.getAvatarUrl()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateCustomerPassword(Customer customer) {
+        try {
+            String query = "UPDATE customer\n"
+                    + "SET password_hash = ?\n"
+                    + "WHERE email = ?";
+            Object[] params = {
+                customer.getEmail(),
+                customer.getPasswordHash(),
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

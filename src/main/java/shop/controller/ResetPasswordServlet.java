@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,7 +13,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import shop.dao.CustomerDAO;
 import shop.model.Customer;
+import shop.util.PasswordUtils;
 
 /**
  *
@@ -48,7 +51,33 @@ public class ResetPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
+
+        HttpSession session = request.getSession(false);
+        Customer forgotCustomer = (session != null) ? (Customer) session.getAttribute("currentForgotCustomer") : null;
+
+        // If current session has not expired, session passed from ForgotPassword
+        if (forgotCustomer != null) {
+            String email = request.getParameter("email");
+            String password = request.getParameter("password");
+
+            CustomerDAO cDAO = new CustomerDAO();
+            String hashedPassword = PasswordUtils.hashPassword(password);
+            // Reset password
+            if (cDAO.updateCustomerPassword(new Customer(email, hashedPassword)) > 0) {
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("message", "Reset password successful! Please log in.");
+                jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/login");
+            } else {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Something went wrong. Please try again.");
+            }
+        } else {
+            jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/forgot-password"
+                    + "?errorMessage=Session expired. Please go through the OTP process again.");
+        }
+        response.getWriter().write(jsonResponse.toString());
     }
 
     /**

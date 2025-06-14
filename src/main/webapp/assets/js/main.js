@@ -262,12 +262,11 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                     .then(res => res.json())  // Parse response as JSON
                     .then(data => {
+                        showLoadingMessage(false);
                         if (data.success) {
-                            showLoadingMessage(false);
                             showSuccess(data.message);
                             window.location.href = data.redirectUrl;
                         } else {
-                            showLoadingMessage(false);
                             showError(data.message);
                         }
                     })
@@ -327,12 +326,11 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                     .then(res => res.json())  // Parse response as JSON
                     .then(data => {
+                        showLoadingMessage(false);
                         if (data.success) {
-                            showLoadingMessage(false);
                             showSuccess(data.message);
                             window.location.href = data.redirectUrl;
                         } else {
-                            showLoadingMessage(false);
                             showError(data.message);
                         }
                     })
@@ -353,6 +351,73 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!emailRegex.test(email)) {
             return "Please enter a valid Google email address (gmail.com or googlemail.com).";
         }
+        // Validate Password
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long.";
+        } else if (!passwordRegex.test(password)) {
+            return "Password must contain at least 1 letter and 1 number.";
+        }
+        // Validate confirmPassword
+        if (password !== confirmPassword) {
+            return "Passwords do not match.";
+        }
+    }
+
+    /*==============================
+     Reset Password
+     ==============================*/
+    const resetPasswordForm = document.getElementById("resetPasswordForm");
+
+    if (resetPasswordForm) {
+        resetPasswordForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            clearMessages();
+
+            // Get the values when the form is submitted
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            const errorMessage = isValidResetForm(password, confirmPassword);
+            if (errorMessage) {
+                showError(errorMessage);
+                return;
+            }
+
+            showLoadingMessage(true);
+
+            // Use AJAX via fetch
+            fetch(`/${contextPath}/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(new FormData(this)).toString()
+            })
+                    .then(res => res.json())  // Parse response as JSON
+                    .then(data => {
+                        showLoadingMessage(false);
+                        if (data.success) {
+                            showSuccess(data.message);
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            if (data.redirectUrl) {
+                                // Session expired or similar server-side redirect needed
+                                window.location.href = data.redirectUrl;
+                            } else {
+                                showError(data.message);
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        showLoadingMessage(false);
+                        showError("An error occurred. Please try again.");
+                    });
+        });
+    }
+
+    function isValidResetForm(password, confirmPassword) {
         // Validate Password
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         if (password.length < 8) {
@@ -468,11 +533,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
                 .then(res => res.json())  // Parse response as JSON
                 .then(data => {
+                    showLoadingMessage(false);
                     if (data.success) {
-                        showLoadingMessage(false);
                         showSuccess(data.message);
                     } else {
-                        showLoadingMessage(false);
                         showError(data.message);
                         sendOtpForgotBtn.disabled = false;
                         clearInterval(countdownInterval);
@@ -498,12 +562,11 @@ document.addEventListener('DOMContentLoaded', function () {
         })
                 .then(res => res.json())  // Parse response as JSON
                 .then(data => {
+                    showLoadingMessage(false);
                     if (data.success) {
-                        showLoadingMessage(false);
                         showSuccess(data.message);
                         window.location.href = data.redirectUrl;
                     } else {
-                        showLoadingMessage(false);
                         showError(data.message);
                     }
                 })

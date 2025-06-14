@@ -4,6 +4,7 @@
     Author     : Le Anh Khoa - CE190449
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,42 +37,58 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="sign__content">
-                            <form action="${pageContext.servletContext.contextPath}/reset-password" method="POST" class="sign__form" onsubmit="return validateForm(event, 'login')">
-                                <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
-                                    <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
-                                </a>
+                            <c:choose>
+                                <c:when test="${not empty sessionScope.currentForgotCustomer}">
+                                    <div class="sign__form">
+                                        <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
+                                            <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
+                                        </a>
+                                        <p class="sign__sessionExpired">Your session has expired. Please go back and restart the OTP verification process.</p>
+                                        <a type="button" href="${pageContext.servletContext.contextPath}/forgot-password" class="sign__goback">Go Back</a>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <form id="resetPasswordForm" class="sign__form">
+                                        <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
+                                            <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
+                                        </a>
 
-                                <!-- Success Message Container -->
-                                <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                                    <c:if test="${not empty successMessage}">
-                                        <p>${successMessage}</p>
-                                    </c:if>
-                                </div>
+                                        <input type="email" class="sign__input" placeholder="Email" name="email" id="emailForgotInput" value="${sessionScope.currentForgotCustomer.email}" hidden>
 
-                                <!-- Error Message Container -->
-                                <div id="errorMessages" style="color: red; margin-bottom: 15px;">
-                                    <c:if test="${not empty requestScope.errorMessage}">
-                                        <p>${requestScope.errorMessage}</p>
-                                    </c:if>
-                                </div>
+                                        <div id="loadingMessage">Processing...</div>
 
-                                <span class="sign__currentEmail">
-                                    <span>Email: </span>${sessionScope.currentForgotCustomer.email}
-                                </span>
+                                        <!-- Success Message Container -->
+                                        <div id="successMessage" style="color: green; margin-bottom: 15px;">
+                                            <c:if test="${not empty successMessage}">
+                                                <p>${successMessage}</p>
+                                            </c:if>
+                                        </div>
 
-                                <div class="sign__group">
-                                    <input type="password" class="sign__input" name="password" placeholder="New Password"
-                                           autocomplete="new-password">
-                                </div>
+                                        <!-- Error Message Container -->
+                                        <div id="errorMessage" style="color: red; margin-bottom: 15px;">
+                                            <c:if test="${not empty requestScope.errorMessage}">
+                                                <p>${requestScope.errorMessage}</p>
+                                            </c:if>
+                                        </div>
 
-                                <div class="sign__group">
-                                    <input type="password" class="sign__input" name="password" placeholder="Confirm New Password"
-                                           autocomplete="new-password">
-                                </div>
+                                        <span class="sign__currentEmail">
+                                            <span>Email: </span>${sessionScope.currentForgotCustomer.email}
+                                        </span>
 
-                                <button class="sign__btn" type="submit">Submit</button>
-                            </form>
-                            <!-- end authorization form -->
+                                        <div class="sign__group">
+                                            <input type="password" class="sign__input" placeholder="Password" id="password" name="password" autocomplete="new-password" required>
+                                        </div>
+
+                                        <div class="sign__group">
+                                            <input type="password" class="sign__input" placeholder="Confirm Password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                                        </div>
+
+                                        <button class="sign__btn" type="submit">Submit</button>
+                                        <a type="button" href="${pageContext.servletContext.contextPath}/forgot-password" class="sign__goback">Go Back</a>
+                                    </form>
+                                    <!-- end authorization form -->
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </div>

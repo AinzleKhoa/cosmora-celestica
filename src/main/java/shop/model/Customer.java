@@ -73,9 +73,14 @@ public class Customer {
         this.isDeactivated = isDeactivated;
     }
 
+    public Customer(String email, String passwordHash) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
     public Customer() {
     }
-    
+
     public int getCustomerId() {
         return customerId;
     }
@@ -243,5 +248,5 @@ public class Customer {
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
-    
+
 }
