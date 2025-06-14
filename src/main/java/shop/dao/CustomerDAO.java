@@ -71,6 +71,22 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
+    
+    public boolean isUsernameExists(String username) {
+        try {
+            String query = "SELECT customer_id\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.username = ?";
+            Object[] params = {username};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 
     public int storeOtpForEmail(String email, String otp, Timestamp expiry) {
         try {
@@ -101,7 +117,7 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
-    public int register(Customer customer) {
+    public int createCustomer(Customer customer) {
         try {
             String query = "INSERT INTO customer (username, email, password_hash, avatar_url, created_at)\n"
                     + "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);";

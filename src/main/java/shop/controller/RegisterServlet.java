@@ -61,14 +61,22 @@ public class RegisterServlet extends HttpServlet {
         CustomerDAO cDAO = new CustomerDAO();
         String hashedPassword = PasswordUtils.hashPassword(password);
 
+        // If email already exists
         if (!cDAO.isEmailExists(email)) {
-            if (cDAO.register(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Registration successful! Please log in.");
-                jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/login");
+            // If username already exists
+            if (!cDAO.isUsernameExists(username)) {
+                // Register , insert customer if all is through
+                if (cDAO.createCustomer(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
+                    jsonResponse.addProperty("success", true);
+                    jsonResponse.addProperty("message", "Registration successful! Please log in.");
+                    jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/login");
+                } else {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Something went wrong. Please try again.");
+                }
             } else {
                 jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Something went wrong. Please try again.");
+                jsonResponse.addProperty("message", "The username already exists. Please try again.");
             }
         } else {
             jsonResponse.addProperty("success", false);

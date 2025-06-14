@@ -220,6 +220,15 @@ $(document).ready(function () {
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 document.addEventListener('DOMContentLoaded', function () {
     const contextPath = window.location.pathname.split('/')[1]; // Get the context path dynamically
+    function showLoadingMessage(show) {
+        const loadingMessage = document.getElementById("loadingMessage");
+        if (show) {
+            loadingMessage.style.display = 'block';
+        } else {
+            loadingMessage.style.display = 'none';
+        }
+    }
+
     /*==============================
      Login
      ==============================*/
@@ -241,25 +250,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            showLoadingMessage(true);
+
             // Use AJAX via fetch
             fetch(`/${contextPath}/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Include CSRF Token
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams(new FormData(this)).toString()
             })
                     .then(res => res.json())  // Parse response as JSON
                     .then(data => {
                         if (data.success) {
+                            showLoadingMessage(false);
                             showSuccess(data.message);
                             window.location.href = data.redirectUrl;
                         } else {
+                            showLoadingMessage(false);
                             showError(data.message);
                         }
                     })
                     .catch(() => {
+                        showLoadingMessage(false);
                         showError("An error occurred. Please try again.");
                     });
         });
@@ -290,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
 
             clearMessages();
-
             // Get the values when the form is submitted
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -303,25 +315,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            showLoadingMessage(true);
+
             // Use AJAX via fetch
             fetch(`/${contextPath}/register`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Include CSRF Token
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams(new FormData(this)).toString()
             })
                     .then(res => res.json())  // Parse response as JSON
                     .then(data => {
                         if (data.success) {
+                            showLoadingMessage(false);
                             showSuccess(data.message);
                             window.location.href = data.redirectUrl;
                         } else {
+                            showLoadingMessage(false);
                             showError(data.message);
                         }
                     })
                     .catch(() => {
+                        showLoadingMessage(false);
                         showError("An error occurred. Please try again.");
                     });
         });
@@ -375,6 +391,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            showLoadingMessage(true);
+
             this.disabled = true;
 
             sendOtpToBackend(email);
@@ -395,6 +413,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 showError(errorMessage);
                 return;
             }
+
+            showLoadingMessage(true);
 
             sendOtpForVerification(email, otp);
         });
@@ -442,16 +462,17 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/${contextPath}/forgot-password`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Include CSRF Token
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: 'email=' + encodeURIComponent(email) + '&action=sendOtp'
         })
                 .then(res => res.json())  // Parse response as JSON
                 .then(data => {
                     if (data.success) {
+                        showLoadingMessage(false);
                         showSuccess(data.message);
                     } else {
+                        showLoadingMessage(false);
                         showError(data.message);
                         sendOtpForgotBtn.disabled = false;
                         clearInterval(countdownInterval);
@@ -459,6 +480,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(() => {
+                    showLoadingMessage(false);
                     showError("An error occurred. Please try again.");
                     sendOtpForgotBtn.disabled = false;
                     clearInterval(countdownInterval);
@@ -477,13 +499,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(res => res.json())  // Parse response as JSON
                 .then(data => {
                     if (data.success) {
+                        showLoadingMessage(false);
                         showSuccess(data.message);
                         window.location.href = data.redirectUrl;
                     } else {
+                        showLoadingMessage(false);
                         showError(data.message);
                     }
                 })
                 .catch(() => {
+                    showLoadingMessage(false);
                     showError("An error occurred. Please try again.");
                 });
     }
@@ -510,54 +535,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showError(message) {
-        document.getElementById('errorMessages').innerHTML = `<p>${message}</p>`;
+        document.getElementById('errorMessage').innerHTML = `<p>${message}</p>`;
     }
 
     function clearMessages() {
         document.getElementById('successMessage').innerHTML = '';
-        document.getElementById('errorMessages').innerHTML = '';
+        document.getElementById('errorMessage').innerHTML = '';
     }
 });
-
-
-function validateForm(event, formType) {
-    let errors = [];
-
-    // Get form inputs
-    const username = document.getElementById('username') ? document.getElementById('username').value : null; // for registration
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword') ? document.getElementById('confirmPassword').value : null; // for registration
-
-    // Validate username (only for registration)
-    if (formType === 'register' || formType === 'login') {
-        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-        if (!username || !usernameRegex.test(username)) {
-            errors.push("Username must be 3-20 characters long and can only contain letters, numbers, and underscores.");
-        }
-    }
-
-    // Validate email
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-        errors.push("Please enter a valid email address.");
-    }
-
-    if (formType === 'register' || formType === 'login') {
-        // Validate password (both for login and registration)
-        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if (password.length < 8) {
-            errors.push("Password must be at least 8 characters long.");
-        } else if (!passwordRegex.test(password)) {
-            errors.push("Password must contain at least 1 letter and 1 number.");
-        }
-    }
-
-    // Validate confirm password (only for registration)
-    if ((formType === 'register' || formType === 'login') && password !== confirmPassword) {
-        errors.push("Passwords do not match.");
-    }
-
-    // If all checks pass
-    return true; // This allows the form to submit
-}

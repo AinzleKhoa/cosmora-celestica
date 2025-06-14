@@ -5855,6 +5855,12 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     }
 }
 
+#loadingMessage {
+    display: none; /* Initially hidden */
+    color: yellow; /* Text color */
+    font-size: 16px; /* Optional: adjust the size as needed */
+}
+
 /*==============================
         Forgot password
 ==============================*/
@@ -5883,10 +5889,11 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .sign__goback {
-    color: #3d7fff;          /* Set text color to blue */
-    text-decoration: underline;  /* Underline the text */
-    font-size: 16px;      /* Adjust the font size (optional) */
-    cursor: pointer;     /* Show pointer cursor on hover */
+    color: #3d7fff;          
+    text-decoration: underline; 
+    font-size: 14px;      
+    cursor: pointer;    
+    margin-top: 20px;
 }
 
 .sign__goback:hover {

@@ -51,9 +51,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        JsonObject jsonResponse = new JsonObject();
-
+        // Retrieve form parameters
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
@@ -68,25 +66,23 @@ public class LoginServlet extends HttpServlet {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("currentCustomer", customer);
 
-                    jsonResponse.addProperty("success", true);
-                    jsonResponse.addProperty("message", "Login successfully! Redirecting...");
-                    jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/home");
+                    // Redirect to the home page upon successful login
+                    response.sendRedirect(request.getContextPath() + "/home");
                 } else {
-                    // If password doesn't match, set error message and forward
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "Email or password is incorrect. Try again.");
+                    // If password doesn't match, set error message and forward to login page
+                    request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
+                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
                 }
             } else {
-                // If account is deactivated, set error message and forward
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
+                // If account is deactivated, set error message and forward to login page
+                request.setAttribute("errorMessage", "Your account is locked. Please contact us for more information.");
+                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
             }
         } else {
-            // If email doesn't exist, set error message and forward
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Email doesn't exist.");
+            // If email doesn't exist, set error message and forward to login page
+            request.setAttribute("errorMessage", "Email doesn't exist.");
+            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
         }
-        response.getWriter().write(jsonResponse.toString());
     }
 
     /**
