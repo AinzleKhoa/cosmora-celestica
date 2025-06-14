@@ -140,8 +140,8 @@ public class CustomerDAO extends DBContext {
                     + "SET password_hash = ?\n"
                     + "WHERE email = ?";
             Object[] params = {
-                customer.getEmail(),
                 customer.getPasswordHash(),
+                customer.getEmail()
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

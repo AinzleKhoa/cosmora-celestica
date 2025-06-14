@@ -38,7 +38,7 @@
                     <div class="col-12">
                         <div class="sign__content">
                             <!-- registration form -->
-                            <form class="sign__form" id="registerForm">
+                            <form action="${pageContext.servletContext.contextPath}/register" method="POST" id="registerForm" class="sign__form">
                                 <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
@@ -61,19 +61,19 @@
 
 
                                 <div class="sign__group">
-                                    <input type="text" class="sign__input" placeholder="Username" id="username" name="username" required>
+                                    <input type="text" class="sign__input" placeholder="Username" id="username" name="username" value="${requestScope.username}" required>
                                 </div>
 
                                 <div class="sign__group">
-                                    <input type="email" class="sign__input" placeholder="Email" id="email" name="email" autocomplete="username" required>
+                                    <input type="email" class="sign__input" placeholder="Email" id="email" name="email" value="${requestScope.email}" autocomplete="username" required>
                                 </div>
 
                                 <div class="sign__group">
-                                    <input type="password" class="sign__input" placeholder="Password" id="password" name="password" autocomplete="new-password" required>
+                                    <input type="password" class="sign__input" placeholder="Password" id="password" name="password" value="${requestScope.password}" autocomplete="new-password" required>
                                 </div>
 
                                 <div class="sign__group">
-                                    <input type="password" class="sign__input" placeholder="Confirm Password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                                    <input type="password" class="sign__input" placeholder="Confirm Password" id="confirmPassword" value="${requestScope.confirmPassword}" name="confirmPassword" autocomplete="new-password" required>
                                 </div>
 
                                 <button class="sign__btn" type="submit">Sign up</button>

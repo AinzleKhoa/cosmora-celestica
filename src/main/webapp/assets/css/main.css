@@ -5855,6 +5855,9 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     }
 }
 
+/*==============================
+        Loading
+==============================*/
 #loadingMessage {
     display: none; /* Initially hidden */
     color: yellow; /* Text color */

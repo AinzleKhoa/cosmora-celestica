@@ -51,33 +51,49 @@ public class ResetPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
-        JsonObject jsonResponse = new JsonObject();
 
         HttpSession session = request.getSession(false);
         Customer forgotCustomer = (session != null) ? (Customer) session.getAttribute("currentForgotCustomer") : null;
 
-        // If current session has not expired, session passed from ForgotPassword
         if (forgotCustomer != null) {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
+            String confirmPassword = request.getParameter("confirmPassword");
 
             CustomerDAO cDAO = new CustomerDAO();
-            String hashedPassword = PasswordUtils.hashPassword(password);
-            // Reset password
-            if (cDAO.updateCustomerPassword(new Customer(email, hashedPassword)) > 0) {
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Reset password successful! Please log in.");
-                jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/login");
+            Customer customer = cDAO.getAccountByEmail(email);
+
+            boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+            // Password is different from customer current password
+            if (!isPasswordMatched) {
+                String hashedPassword = PasswordUtils.hashPassword(password);
+                // Update customer password
+                if (cDAO.updateCustomerPassword(new Customer(email, hashedPassword)) > 0) {
+                    // Invalidate session after password reset
+                    if (session != null) {
+                        session.removeAttribute("currentForgotCustomer");
+                    }
+
+                    request.setAttribute("successMessage", "Password reset successfully! Please log in.");
+                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("email", email);
+                    request.setAttribute("password", password);
+                    request.setAttribute("confirmPassword", confirmPassword);
+                    request.setAttribute("errorMessage", "Something went wrong. Please try again.");
+                    request.getRequestDispatcher("/WEB-INF/view/reset-password.jsp").forward(request, response);
+                }
             } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Something went wrong. Please try again.");
+                request.setAttribute("email", email);
+                request.setAttribute("password", password);
+                request.setAttribute("confirmPassword", confirmPassword);
+                request.setAttribute("errorMessage", "Your new password must be different from your current password.");
+                request.getRequestDispatcher("/WEB-INF/view/reset-password.jsp").forward(request, response);
             }
         } else {
-            jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/forgot-password"
-                    + "?errorMessage=Session expired. Please go through the OTP process again.");
+            request.setAttribute("errorMessage", "Your session has expired. Please go through the OTP process again.");
+            request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp").forward(request, response);
         }
-        response.getWriter().write(jsonResponse.toString());
     }
 
     /**

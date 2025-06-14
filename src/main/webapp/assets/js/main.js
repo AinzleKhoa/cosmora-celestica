@@ -236,60 +236,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (loginForm) {
         loginForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
             clearMessages();
 
-            // Get the values when the form is submitted
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
+            
+            showLoadingMessage(true);
 
             const errorMessage = isValidLogin(email, password);
             if (errorMessage) {
+                showLoadingMessage(false);
+                event.preventDefault(); // Prevent submission
                 showError(errorMessage);
                 return;
             }
-
-            showLoadingMessage(true);
-
-            // Use AJAX via fetch
-            fetch(`/${contextPath}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams(new FormData(this)).toString()
-            })
-                    .then(res => res.json())  // Parse response as JSON
-                    .then(data => {
-                        showLoadingMessage(false);
-                        if (data.success) {
-                            showSuccess(data.message);
-                            window.location.href = data.redirectUrl;
-                        } else {
-                            showError(data.message);
-                        }
-                    })
-                    .catch(() => {
-                        showLoadingMessage(false);
-                        showError("An error occurred. Please try again.");
-                    });
+            // Form submits normally after this
         });
     }
 
     function isValidLogin(email, password) {
-        // Validate Email
         const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
         if (!emailRegex.test(email)) {
             return "Please enter a valid Google email address (gmail.com or googlemail.com).";
         }
-        // Validate Password
+
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         if (password.length < 8) {
             return "Password must be at least 8 characters long.";
         } else if (!passwordRegex.test(password)) {
             return "Password must contain at least 1 letter and 1 number.";
         }
+
+        return null;
     }
 
     /*==============================
@@ -299,45 +277,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (registerForm) {
         registerForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
             clearMessages();
-            // Get the values when the form is submitted
+
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            showLoadingMessage(true);
 
             const errorMessage = isValidRegister(username, email, password, confirmPassword);
             if (errorMessage) {
+                showLoadingMessage(false);
+                event.preventDefault(); // prevent form from submitting if invalid
                 showError(errorMessage);
                 return;
             }
-
-            showLoadingMessage(true);
-
-            // Use AJAX via fetch
-            fetch(`/${contextPath}/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams(new FormData(this)).toString()
-            })
-                    .then(res => res.json())  // Parse response as JSON
-                    .then(data => {
-                        showLoadingMessage(false);
-                        if (data.success) {
-                            showSuccess(data.message);
-                            window.location.href = data.redirectUrl;
-                        } else {
-                            showError(data.message);
-                        }
-                    })
-                    .catch(() => {
-                        showLoadingMessage(false);
-                        showError("An error occurred. Please try again.");
-                    });
         });
     }
 
@@ -346,22 +301,24 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!username || !usernameRegex.test(username)) {
             return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
         }
-        // Validate Email
+
         const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
         if (!emailRegex.test(email)) {
             return "Please enter a valid Google email address (gmail.com or googlemail.com).";
         }
-        // Validate Password
+
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         if (password.length < 8) {
             return "Password must be at least 8 characters long.";
         } else if (!passwordRegex.test(password)) {
             return "Password must contain at least 1 letter and 1 number.";
         }
-        // Validate confirmPassword
+
         if (password !== confirmPassword) {
             return "Passwords do not match.";
         }
+
+        return null;
     }
 
     /*==============================
@@ -371,64 +328,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (resetPasswordForm) {
         resetPasswordForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
             clearMessages();
 
-            // Get the values when the form is submitted
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
+            showLoadingMessage(true);
+
             const errorMessage = isValidResetForm(password, confirmPassword);
             if (errorMessage) {
+                showLoadingMessage(false);
+                event.preventDefault(); // Block form submission
                 showError(errorMessage);
                 return;
             }
 
-            showLoadingMessage(true);
-
-            // Use AJAX via fetch
-            fetch(`/${contextPath}/reset-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams(new FormData(this)).toString()
-            })
-                    .then(res => res.json())  // Parse response as JSON
-                    .then(data => {
-                        showLoadingMessage(false);
-                        if (data.success) {
-                            showSuccess(data.message);
-                            window.location.href = data.redirectUrl;
-                        } else {
-                            if (data.redirectUrl) {
-                                // Session expired or similar server-side redirect needed
-                                window.location.href = data.redirectUrl;
-                            } else {
-                                showError(data.message);
-                            }
-                        }
-                    })
-                    .catch(() => {
-                        showLoadingMessage(false);
-                        showError("An error occurred. Please try again.");
-                    });
+            // Allow traditional POST to go through
         });
     }
 
     function isValidResetForm(password, confirmPassword) {
-        // Validate Password
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
         if (password.length < 8) {
             return "Password must be at least 8 characters long.";
         } else if (!passwordRegex.test(password)) {
             return "Password must contain at least 1 letter and 1 number.";
         }
-        // Validate confirmPassword
+
         if (password !== confirmPassword) {
             return "Passwords do not match.";
         }
+
+        return null;
     }
 
     /*==============================
@@ -449,14 +381,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = emailForgotInput.value.trim();
 
             clearMessages();
+            
+            showLoadingMessage(true);
 
             const errorMessage = isValidEmail(email);
             if (errorMessage) {
+                showLoadingMessage(false);
                 showError(errorMessage);
                 return;
             }
-
-            showLoadingMessage(true);
 
             this.disabled = true;
 
@@ -472,14 +405,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const otp = otpForgotInput.value.trim();
 
             clearMessages();
+            
+            showLoadingMessage(true);
 
             const errorMessage = validateFormForgotPassword(email, otp);
             if (errorMessage) {
+                showLoadingMessage(false);
                 showError(errorMessage);
                 return;
             }
-
-            showLoadingMessage(true);
 
             sendOtpForVerification(email, otp);
         });

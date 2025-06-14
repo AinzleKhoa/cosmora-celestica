@@ -37,7 +37,7 @@
                     <div class="col-12">
                         <div class="sign__content">
                             <!-- authorization form -->
-                            <form action="${pageContext.servletContext.contextPath}" id="loginForm" class="sign__form">
+                            <form action="${pageContext.servletContext.contextPath}/login" method="POST" id="loginForm" class="sign__form">
                                 <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
@@ -59,11 +59,11 @@
                                 </div>
 
                                 <div class="sign__group">
-                                    <input type="email" class="sign__input" placeholder="Email" name="email" id="email" autocomplete="username">
+                                    <input type="email" class="sign__input" placeholder="Email" name="email" id="email" value="${requestScope.email}" autocomplete="username">
                                 </div>
 
                                 <div class="sign__group">
-                                    <input type="password" class="sign__input" name="password" id="password" placeholder="Password"
+                                    <input type="password" class="sign__input" name="password" id="password" value="${requestScope.password}" placeholder="Password"
                                            autocomplete="new-password">
                                 </div>
 
