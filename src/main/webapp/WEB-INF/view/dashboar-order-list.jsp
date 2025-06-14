@@ -126,10 +126,11 @@
 
             <section class="admin-header">
                 <div class="admin-header-top">
-                    <div class="search-filter-wrapper" style="display: flex; margin-left: auto;">
-                        <input type="text" class="search-input" placeholder="Enter order name...">
-                        <button class="search-btn">Search</button>
-                    </div>
+                    <form action="<%= request.getContextPath()%>/orderdashboard" method="POST" style="display: flex; margin-left: auto;" class="search-filter-wrapper">
+                        <input type="hidden" name="action" value="search" />
+                        <input type="text" name="customer_name" class="search-input" placeholder="Enter customer name...">
+                        <button type="submit" class="search-btn">Search</button>
+                    </form>
                 </div>
                 <div class="main-filter">
                     <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
@@ -158,12 +159,7 @@
                 </div>
             </section>
 
-            <%
-                ArrayList<Order> orderlist = (ArrayList) request.getAttribute("orderlist");
-                for (Order order : orderlist) {
 
-
-            %>
 
             <section class="admin-table-wrapper">
                 <div class="table-responsive shadow-sm rounded overflow-hidden">
@@ -179,6 +175,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <%
+                                ArrayList<Order> orderlist = (ArrayList) request.getAttribute("orderlist");
+                                for (Order order : orderlist) {
+
+
+                            %>
                             <tr>
                                 <td><%= order.getOrderId()%></td>
                                 <td><%= order.getCustomerId()%></td>
@@ -211,11 +213,11 @@
                                     </div>
                                 </td>
                             </tr>
+                                        <%}%>
                         </tbody>
                     </table>
                 </div>
             </section>
-            <%}%>
 
             <!-- Pagination -->
             <nav class="admin-pagination">
