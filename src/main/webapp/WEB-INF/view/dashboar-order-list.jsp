@@ -184,14 +184,28 @@
                                 <td><%= order.getCustomerId()%></td>
                                 <td><%= order.getOrderDate()%></td>
                                 <td><%= order.getTotalAmount()%></td>
-                                <td><span class="badge-status"><%= order.getStatus()%></span></td>
+                                <td>
+                                    <form action="orderdashboard" method="post">
+                                        <input type="hidden" name="action" value="update" />
+                                        <input type="hidden" name="orderId" value="<%= order.getOrderId()%>" />
+                                        <select name="status" class="admin-filter-select" onchange="this.form.submit()">
+                                            <option value="Pending" <%= order.getStatus().equals("Pending") ? "selected" : ""%>>Pending</option>
+                                            <option value="Confirmed" <%= order.getStatus().equals("Confirmed") ? "selected" : ""%>>Confirmed</option>
+                                            <option value="Shipped" <%= order.getStatus().equals("Shipped") ? "selected" : ""%>>Shipped</option>
+                                            <option value="Delivered" <%= order.getStatus().equals("Delivered") ? "selected" : ""%>>Delivered</option>
+                                        </select>
+                                    </form>
+
+
+
+                                </td>
                                 <td>
                                     <div class="table-actions-center">
                                         <button class="btn-action btn-details"
                                                 onclick="location.href = '<%= request.getContextPath()%>/orderdashboard?view=detail&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
                                             Details
                                         </button>
-                                            <button class="btn-action btn-edit" href="./admin-order-edit.html">Edit</button>
+                                        <button class="btn-action btn-edit" href="./admin-order-edit.html">Edit</button>
                                         <button class="btn-action btn-delete">Cancel</button>
                                         <button class="btn-action btn-history">Customer Details</button>
                                     </div>

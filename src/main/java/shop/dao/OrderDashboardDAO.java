@@ -26,7 +26,7 @@ public class OrderDashboardDAO extends DBContext {
         ResultSet rs = execSelectQuery(query);
         while (rs.next()) {
             order.add(new Order(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getBigDecimal(4), rs.getString(5), rs.getString(6), rs.getObject("order_date", LocalDateTime.class),
-                     rs.getString(8), rs.getInt(9)));
+                    rs.getString(8), rs.getInt(9)));
         }
         return order;
 
@@ -65,7 +65,7 @@ public class OrderDashboardDAO extends DBContext {
         String query = "select * from product where product_id =?;";
         Object[] params = {productId};
         ResultSet rs = execSelectQuery(query, params);
-        while (rs.next()) {            
+        while (rs.next()) {
             temp.setName(rs.getString(2));
         }
         return temp;
@@ -85,5 +85,13 @@ public class OrderDashboardDAO extends DBContext {
             temp.setShippingAddress(rs.getString(6));
         }
         return temp;
+    }
+
+    public int updateOrderStatus( String status, int orderId) throws SQLException {
+        String query = "UPDATE [order]\n"
+                + "SET status = ?\n"
+                + "WHERE order_id = ?;";
+        Object[] params = {status, orderId};
+        return execQuery(query, params);
     }
 }
