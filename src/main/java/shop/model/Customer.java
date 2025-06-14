@@ -21,7 +21,7 @@ public class Customer {
     private String phone;
     private String gender;
     private String address;
-    private String avatarUri;
+    private String avatarUrl;
     private Date dateOfBirth;
     private boolean isDeactivated;
     private Timestamp lastLogin;
@@ -35,7 +35,7 @@ public class Customer {
     private Timestamp updatedAt;
     private Timestamp createdAt;
 
-    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUri, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp updatedAt, Timestamp createdAt) {
+    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp updatedAt, Timestamp createdAt) {
         this.customerId = customerId;
         this.username = username;
         this.email = email;
@@ -44,7 +44,7 @@ public class Customer {
         this.phone = phone;
         this.gender = gender;
         this.address = address;
-        this.avatarUri = avatarUri;
+        this.avatarUrl = avatarUrl;
         this.dateOfBirth = dateOfBirth;
         this.isDeactivated = isDeactivated;
         this.lastLogin = lastLogin;
@@ -59,10 +59,26 @@ public class Customer {
         this.createdAt = createdAt;
     }
 
-    public Customer(String username, String email, String passwordHash) {
+    public Customer(String username, String email, String passwordHash, String avatarUrl) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.avatarUrl = avatarUrl;
+    }
+
+    public Customer(int customerId, String email, String passwordHash, boolean isDeactivated) {
+        this.customerId = customerId;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.isDeactivated = isDeactivated;
+    }
+
+    public Customer(String email, String passwordHash) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
+    public Customer() {
     }
 
     public int getCustomerId() {
@@ -97,8 +113,8 @@ public class Customer {
         return address;
     }
 
-    public String getAvatarUri() {
-        return avatarUri;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
     public Date getDateOfBirth() {
@@ -147,6 +163,90 @@ public class Customer {
 
     public Timestamp getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setAvatarUri(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setIsDeactivated(boolean isDeactivated) {
+        this.isDeactivated = isDeactivated;
+    }
+
+    public void setLastLogin(Timestamp lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
+    public void setRememberMeToken(String rememberMeToken) {
+        this.rememberMeToken = rememberMeToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public void setResetTokenExpiry(Timestamp resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public void setEmailVerificationToken(String emailVerificationToken) {
+        this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public void setEmailVerificationExpiry(Timestamp emailVerificationExpiry) {
+        this.emailVerificationExpiry = emailVerificationExpiry;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
 }

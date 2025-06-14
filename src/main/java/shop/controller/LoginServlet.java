@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import shop.dao.CustomerDAO;
+import shop.util.PasswordUtils;
 import shop.model.Customer;
 
 /**
@@ -48,16 +50,45 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        
+
+        // Retrieve form parameters
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        
+
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.login(email,password);
+        Customer customer = cDAO.getAccountByEmail(email);
+
+        if (customer != null) {
+            if (!customer.isIsDeactivated()) {
+                // Check password match before setting session
+                boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+                if (isPasswordMatched) {
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("currentCustomer", customer);
+
+                    // Redirect to the home page upon successful login
+                    response.sendRedirect(request.getContextPath() + "/home");
+                } else {
+                    // If password doesn't match, set error message and forward to login page
+                    request.setAttribute("email", email);
+                    request.setAttribute("password", password);
+                    request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
+                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                }
+            } else {
+                // If account is deactivated, set error message and forward to login page
+                request.setAttribute("email", email);
+                request.setAttribute("password", password);
+                request.setAttribute("errorMessage", "Your account is locked. Please contact us for more information.");
+                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+            }
+        } else {
+            // If email doesn't exist, set error message and forward to login page
+            request.setAttribute("email", email);
+            request.setAttribute("password", password);
+            request.setAttribute("errorMessage", "Email doesn't exist.");
+            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+        }
     }
 
     /**

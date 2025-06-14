@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,8 +12,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import shop.dao.CustomerDAO;
-import shop.filter.PasswordUtils;
+import shop.util.PasswordUtils;
 import shop.model.Customer;
 
 /**
@@ -48,17 +50,54 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        
+        String confirmPassword = request.getParameter("confirmPassword");
+        String avatarUrl = request.getContextPath() + "/assets/img/avatar/avatar1.png";
+
         CustomerDAO cDAO = new CustomerDAO();
         String hashedPassword = PasswordUtils.hashPassword(password);
-        
-        if (cDAO.register(new Customer(username,email,hashedPassword)) > 0) {
-            response.sendRedirect(request.getContextPath() + "/login");
+
+        // If email already exists
+        if (!cDAO.isEmailExists(email)) {
+            // If username already exists
+            if (!cDAO.isUsernameExists(username)) {
+                // Register the customer
+                if (cDAO.createCustomer(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
+                    // Success: redirect to login with success message in session (flash-style)
+                    request.setAttribute("username", username);
+                    request.setAttribute("email", email);
+                    request.setAttribute("password", password);
+                    request.setAttribute("confirmPassword", confirmPassword);
+                    request.getSession().setAttribute("successMessage", "Registration successful! Please log in.");
+                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                } else {
+                    // DB insert failed
+                    request.setAttribute("username", username);
+                    request.setAttribute("email", email);
+                    request.setAttribute("password", password);
+                    request.setAttribute("confirmPassword", confirmPassword);
+                    request.setAttribute("errorMessage", "We couldn't complete your registration at the moment. Please try again later.");
+                    request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+                }
+            } else {
+                // Username exists
+                request.setAttribute("username", username);
+                request.setAttribute("email", email);
+                request.setAttribute("password", password);
+                request.setAttribute("confirmPassword", confirmPassword);
+                request.setAttribute("errorMessage", "The username already exists. Please try again.");
+                request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+            }
         } else {
-            request.setAttribute("errorMessage", "Something went wrong. Please try again.");
+            // Email exists
+            request.setAttribute("username", username);
+            request.setAttribute("email", email);
+            request.setAttribute("password", password);
+            request.setAttribute("confirmPassword", confirmPassword);
+            request.setAttribute("errorMessage", "The email already exists. Please try again.");
             request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
         }
     }
@@ -69,6 +108,7 @@ public class RegisterServlet extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
+
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
