@@ -124,7 +124,8 @@
                 <!-- General Information -->
                 <form action="${pageContext.servletContext.contextPath}/staffsmanagement" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="edit" />
-                    
+                    <input type="hidden" name="id" value="<%=s.getId()%>" />
+
                     <fieldset class="mb-4 admin-manage-fieldset">
                         <legend class="admin-manage-subtitle">Staff Information</legend>
                         <%
@@ -138,8 +139,8 @@
                         } else {
 
                         %>
-                        
-                        <input type="hidden" name="id" value="<%=s.getId() %>" />
+
+
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Full Name</label>
@@ -169,7 +170,7 @@
                                 <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
                                      alt="Avatar" 
                                      style="width: 150px; height: 140px; border: 50px;">
-                                <input type="file" class="form-control admin-manage-input"  value="<%=s.getAvatarUrl() %>"name="avatar_url" accept=".png">
+                                <input type="file" class="form-control admin-manage-input"  value="<%=s.getAvatarUrl()%>"name="avatar_url" accept=".png">
                             </div>
 
                             <div class="col-md-6">
