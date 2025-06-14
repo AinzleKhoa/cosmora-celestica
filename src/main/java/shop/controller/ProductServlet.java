@@ -37,34 +37,8 @@ import shop.model.ProductAttribute;
         maxFileSize = 1024 * 1024 * 10,
         maxRequestSize = 1024 * 1024 * 15
 )
-@WebServlet(name = "ProductServlet", urlPatterns = {"/products"})
+@WebServlet(name = "ProductServlet", urlPatterns = {"/manage-products"})
 public class ProductServlet extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ProductServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ProductServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -92,7 +66,7 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("productList", productDAO.getAllProducts());
                     request.setAttribute("categoriesList", categoryDAO.getAllCategories());
                     request.setAttribute("brandsList", brandDAO.getAllBrands());
-                    request.getRequestDispatcher("/WEB-INF/admin/product-add.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
                     break;
                 }
                 case "update": {
@@ -101,7 +75,7 @@ public class ProductServlet extends HttpServlet {
                     Product existingProduct = productDAO.getProductById(id);
 
                     if (existingProduct == null) {
-                        response.sendRedirect(request.getContextPath() + "/products?action=list");
+                        response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                         return;
                     }
                     CategoryDAO categoryDAO = new CategoryDAO();
@@ -111,7 +85,7 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("categoriesList", categoryDAO.getAllCategories());
                     request.setAttribute("brandsList", brandDAO.getAllBrands());
 
-                    request.getRequestDispatcher("/WEB-INF/admin/product-edit.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-edit.jsp").forward(request, response);
                     break;
                 }
                 case "details": {
@@ -120,18 +94,18 @@ public class ProductServlet extends HttpServlet {
                     Product product = productDAO.getProductById(id);
 
                     if (product == null) {
-                        response.sendRedirect(request.getContextPath() + "/products?action=list");
+                        response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                         return;
                     }
                     request.setAttribute("product", product);
-                    request.getRequestDispatcher("/WEB-INF/admin/product-details.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-details.jsp").forward(request, response);
                     break;
                 }
                 case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
                     productDAO.deleteProduct(id);
-                    response.sendRedirect(request.getContextPath() + "/products?action=list");
+                    response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
                 }
                 case "search": {
@@ -151,13 +125,13 @@ public class ProductServlet extends HttpServlet {
                         productList = productDAO.getAllProducts();
                     }
                     request.setAttribute("productList", productList);
-                    request.getRequestDispatcher("/WEB-INF/admin/product-list.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-list.jsp").forward(request, response);
                     break;
                 }
                 default: {
                     ProductDAO productDAO = new ProductDAO();
                     request.setAttribute("productList", productDAO.getAllProducts());
-                    request.getRequestDispatcher("/WEB-INF/admin/product-list.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-list.jsp").forward(request, response);
                     break;
                 }
             }
@@ -170,7 +144,7 @@ public class ProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) {
-            response.sendRedirect(request.getContextPath() + "/products?action=list");
+            response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
             return;
         }
         try {
@@ -183,7 +157,7 @@ public class ProductServlet extends HttpServlet {
                         BrandDAO brandDAO = new BrandDAO();
                         request.setAttribute("categoriesList", categoryDAO.getAllCategories());
                         request.setAttribute("brandsList", brandDAO.getAllBrands());
-                        request.getRequestDispatcher("/WEB-INF/admin/product-add.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
                         return;
                     }
 
@@ -240,7 +214,7 @@ public class ProductServlet extends HttpServlet {
                             List<ProductAttribute> attributes = createAttributeListFromRequest(request);
                             productDAO.addAccessoryProduct(product, attributes, imageUrls);
                         }
-                        response.sendRedirect(request.getContextPath() + "/products?action=list&add_success=true");
+                        response.sendRedirect(request.getContextPath() + "/manage-products?action=list&add_success=true");
                     } catch (SQLException e) {
                         e.printStackTrace();
                         request.setAttribute("errorMessage", "Error adding product to database: " + e.getMessage());
@@ -248,7 +222,7 @@ public class ProductServlet extends HttpServlet {
                         BrandDAO brandDAO = new BrandDAO();
                         request.setAttribute("categoriesList", categoryDAO.getAllCategories());
                         request.setAttribute("brandsList", brandDAO.getAllBrands());
-                        request.getRequestDispatcher("/WEB-INF/admin/product-add.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
                     }
                     break;
                 }
@@ -319,12 +293,12 @@ public class ProductServlet extends HttpServlet {
                         ProductDAO productDAO = new ProductDAO();
                         productDAO.updateProduct(product, gameDetails, attributes, imagesUploaded ? newImageUrls : null);
 
-                        response.sendRedirect(request.getContextPath() + "/products?action=list&update_success=true");
+                        response.sendRedirect(request.getContextPath() + "/manage-products?action=list&update_success=true");
 
                     } catch (SQLException e) {
                         e.printStackTrace();
                         request.setAttribute("errorMessage", "Database update failed: " + e.getMessage());
-                        request.getRequestDispatcher("/WEB-INF/admin/product-edit.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/product-edit.jsp").forward(request, response);
                     } catch (Exception e) {
                         e.printStackTrace();
                         throw new ServletException(e);

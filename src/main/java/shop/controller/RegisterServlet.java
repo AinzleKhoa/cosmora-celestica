@@ -36,7 +36,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
     }
 
     /**
@@ -72,7 +72,7 @@ public class RegisterServlet extends HttpServlet {
                     request.setAttribute("password", password);
                     request.setAttribute("confirmPassword", confirmPassword);
                     request.getSession().setAttribute("successMessage", "Registration successful! Please log in.");
-                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 } else {
                     // DB insert failed
                     request.setAttribute("username", username);
@@ -80,7 +80,7 @@ public class RegisterServlet extends HttpServlet {
                     request.setAttribute("password", password);
                     request.setAttribute("confirmPassword", confirmPassword);
                     request.setAttribute("errorMessage", "We couldn't complete your registration at the moment. Please try again later.");
-                    request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
                 }
             } else {
                 // Username exists
@@ -89,7 +89,7 @@ public class RegisterServlet extends HttpServlet {
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);
                 request.setAttribute("errorMessage", "The username already exists. Please try again.");
-                request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
             }
         } else {
             // Email exists
@@ -98,7 +98,7 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute("password", password);
             request.setAttribute("confirmPassword", confirmPassword);
             request.setAttribute("errorMessage", "The email already exists. Please try again.");
-            request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
         }
     }
 

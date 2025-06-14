@@ -11,14 +11,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import shop.dao.CustomerDAO;
+import shop.model.Customer;
 
 /**
  *
- * @author CE190449 - Le Anh Khoa
+ * @author Le Anh Khoa - CE190449
  */
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
-public class LogoutServlet extends HttpServlet {
+@WebServlet(name = "CustomerServlet", urlPatterns = {"/manage-customers"})
+public class CustomerServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -32,13 +34,30 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+        String view = request.getParameter("view");
+        if (view == null || view.isEmpty() || view.equals("list")) {
+            CustomerDAO cDAO = new CustomerDAO();
+            int currentPage = 1;
+            int pageSize = 6;
 
-        request.setAttribute("successMessage", "Logout successfully!");
-        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+            if (request.getParameter("page") != null) {
+                try {
+                    currentPage = Integer.parseInt(request.getParameter("page"));
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+
+            List<Customer> paginatedCustomerList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
+            int totalCustomers = cDAO.getTotalCustomerCount();
+            int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
+
+            request.setAttribute("paginatedCustomerList", paginatedCustomerList);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-list.jsp").forward(request, response);
+        }
     }
 
     /**
