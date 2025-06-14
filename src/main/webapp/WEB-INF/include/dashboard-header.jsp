@@ -42,12 +42,12 @@
 					<div class="col-12">
 						<div class="header__content">
 							<a href="${pageContext.servletContext.contextPath}/home" class="header__logo">
-								<img src="img/logo.png" alt="">
+								<img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
 							</a>
 
 							<div class="admin-dropdown" onclick="toggleDropdown()">
 								<div class="admin-profile">
-									<img src="img/user.svg" alt="Avatar" class="admin-avatar">
+									<img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" alt="Avatar" class="admin-avatar">
 									<div>
 										<p class="admin-name">Jiue Anderson</p>
 										<span class="admin-role">Manager</span>
@@ -92,7 +92,7 @@
 				</a>
 			</li>
 			<li class="admin-sidebar__item">
-				<a href="admin-customer.html" class="admin-sidebar__link">
+				<a href="${pageContext.servletContext.contextPath}/manage-customers" class="admin-sidebar__link">
 					<i class="fas fa-users"></i> Manage Customers
 				</a>
 			</li>
