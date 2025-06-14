@@ -9,14 +9,14 @@ import java.math.BigDecimal;
  *
  * @author ADMIN
  */
-public class OrderDetail {
+public class OrderDetails {
     private int orderDetailId;
     private int orderId;
     private int productId;
     private int quantity;
     private BigDecimal price ;
 
-    public OrderDetail(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price) {
+    public OrderDetails(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price) {
         this.orderDetailId = orderDetailId;
         this.orderId = orderId;
         this.productId = productId;
@@ -26,7 +26,7 @@ public class OrderDetail {
 
    
 
-    public OrderDetail() {
+    public OrderDetails() {
     }
 
     public int getProductId() {

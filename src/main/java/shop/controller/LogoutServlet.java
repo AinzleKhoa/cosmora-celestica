@@ -38,7 +38,7 @@ public class LogoutServlet extends HttpServlet {
         }
 
         request.setAttribute("successMessage", "Logout successfully!");
-        request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
     }
 
     /**

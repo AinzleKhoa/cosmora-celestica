@@ -30,39 +30,13 @@ import shop.model.Staff;
  *
  * @author VICTUS
  */
-@WebServlet(name = "staffManagement", urlPatterns = {"/staffsmanagement"})
+@WebServlet(name = "StaffServlet", urlPatterns = {"/manage-staffs"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 10, // 10MB
         maxRequestSize = 1024 * 1024 * 50 // 50MB
 )
-public class staffSManagement extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet staffManagement</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet staffManagement at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+public class StaffServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -81,10 +55,10 @@ public class staffSManagement extends HttpServlet {
             StaffDAO sDAO = new StaffDAO();
             ArrayList<Staff> sList = sDAO.getList();
             request.setAttribute("s", sList);
-            request.getRequestDispatcher("/WEB-INF/staffsManagement/staff-list.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/dashboard/staff-list.jsp").forward(request, response);
 
         } else if (view.equals("create")) {
-            request.getRequestDispatcher("/WEB-INF/staffsManagement/create-staff.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/dashboard/staff-create.jsp").forward(request, response);
 
         } else if (view.equals("edit")) {
             try {
@@ -95,25 +69,25 @@ public class staffSManagement extends HttpServlet {
                 Staff oneStaff = sDAO.getOneById(id);
 
                 if (oneStaff == null) {
-                    response.sendRedirect("/WEB-INF/staffsManagement/staff-list.jsp");
+                    response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
                     return;
                 }
 
                 request.setAttribute("s", oneStaff);
-                request.getRequestDispatcher("/WEB-INF/staffsManagement/edit-staff.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/staff-edit.jsp").forward(request, response);
 
             } catch (NumberFormatException e) {
                 System.err.println("Lỗi định dạng ID: " + e.getMessage());
-                response.sendRedirect("/WEB-INF/staffsManagement/staff-list.jsp");
+                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
             } catch (Exception e) {
                 System.err.println("Lỗi không mong muốn: " + e.getMessage());
-                response.sendRedirect("/WEB-INF/staffsManagement/staff-list.jsp");
+                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
             }
         } else if (view.equals("delete")) {
             String idParam = request.getParameter("id");
 
             if (idParam == null || idParam.trim().isEmpty() || !idParam.matches("\\d+")) {
-                response.sendRedirect("/WEB-INF/staffsManagement/staff-list.jsp");
+                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
                 return;
             }
 
@@ -122,13 +96,13 @@ public class staffSManagement extends HttpServlet {
             Staff oneStaff = sDAO.getOneById(id);
 
             if (oneStaff == null) {
-                response.sendRedirect("/WEB-INF/staffsManagement/staff-list.jsp");
+                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
                 return;
             }
 
             request.setAttribute("s", oneStaff);
 
-            request.getRequestDispatcher("/WEB-INF/staffsManagement/delete-staff.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/dashboard/staff-delete.jsp").forward(request, response);
 
         }
 
@@ -190,7 +164,7 @@ public class staffSManagement extends HttpServlet {
                     int isCreated = sDAO.create(staff);
 
                     if (isCreated == 1) {
-                        response.sendRedirect(request.getContextPath() + "/staffsmanagement");//load lại trang
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs");//load lại trang
                     } else {
                         out.println("<h2>Error: Can't add staff into database.</h2>");
                     }
@@ -245,7 +219,7 @@ public class staffSManagement extends HttpServlet {
 
                     int isUpdate = sDAO.update(updatedStaff);
                     if (isUpdate == 1) {
-                        response.sendRedirect(request.getContextPath() + "/staffsmanagement");
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs");
                     } else {
                         out.println("<h2>Error: Can't update staff in database.</h2>");
                     }
@@ -261,7 +235,7 @@ public class staffSManagement extends HttpServlet {
                     int id = Integer.parseInt(idParam);
 
                     if (sDAO.delete(id) == 1) {
-                        response.sendRedirect(request.getContextPath() + "/staffsmanagement");
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs");
                     }
                     break;
 
@@ -274,9 +248,9 @@ public class staffSManagement extends HttpServlet {
                         sList = sDAO.searchByName(keyWord);
                         request.setAttribute("s", sList);
 
-                        request.getRequestDispatcher("/WEB-INF/staffsManagement/staff-list.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/staff-list.jsp").forward(request, response);
                     } catch (SQLException ex) {
-                        Logger.getLogger(staffSManagement.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(StaffServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
                     break;

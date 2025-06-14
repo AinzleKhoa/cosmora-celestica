@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import shop.db.DBContext;
 import shop.model.Customer;
 import shop.model.Order;
-import shop.model.OrderDetail;
+import shop.model.OrderDetails;
 import shop.model.Product;
 
 /**
  *
  * @author ADMIN
  */
-public class OrderDashboardDAO extends DBContext {
+public class OrderDAO extends DBContext {
 
     public ArrayList<Order> getallOrder() throws SQLException {
         ArrayList<Order> order = new ArrayList<>();
@@ -49,13 +49,13 @@ public class OrderDashboardDAO extends DBContext {
 
     }
 
-    public ArrayList<OrderDetail> getOrderDetail(int orderId) throws SQLException {
-        ArrayList<OrderDetail> temp = new ArrayList<>();
+    public ArrayList<OrderDetails> getOrderDetail(int orderId) throws SQLException {
+        ArrayList<OrderDetails> temp = new ArrayList<>();
         String query = "select * from order_detail where order_id=?;";
         Object[] params = {orderId};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
-            temp.add(new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getBigDecimal(5)));
+            temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getBigDecimal(5)));
         }
         return temp;
 

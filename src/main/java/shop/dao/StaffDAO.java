@@ -25,14 +25,14 @@ public class StaffDAO extends DBContext {
         try ( ResultSet rs = execSelectQuery(query)) {
             while (rs.next()) {
                 staffs.add(new Staff(
-                        rs.getInt(1), // staff_id
-                        rs.getString(2), // username
-                        rs.getString(3), // email
-                        rs.getString(4), // password_hash
-                        rs.getString(5), // phone
-                        rs.getString(6), // role
-                        rs.getDate(7), // date_of_birth
-                        rs.getString(8) // avatar_url
+                        rs.getInt("staff_id"), // staff_id
+                        rs.getString("username"), // username
+                        rs.getString("email"), // email
+                        rs.getString("password_hash"), // password_hash
+                        rs.getString("phone"), // phone
+                        rs.getString("role"), // role
+                        rs.getDate("date_of_birth"), // date_of_birth
+                        rs.getString("avatar_url") // avatar_url
                 ));
             }
         } catch (SQLException ex) {
@@ -78,14 +78,14 @@ public class StaffDAO extends DBContext {
             if (rs.next()) {
 
                 return new Staff(
-                        rs.getInt(1), // staff_id
-                        rs.getString(2), // username
-                        rs.getString(3), // email
-                        rs.getString(4), // password_hash
-                        rs.getString(5), // phone
-                        rs.getString(6), // role
-                        rs.getDate(7), // date_of_birth
-                        rs.getString(8) // avatar_url)
+                        rs.getInt("staff_id"), // staff_id
+                        rs.getString("username"), // username
+                        rs.getString("email"), // email
+                        rs.getString("password_hash"), // password_hash
+                        rs.getString("phone"), // phone
+                        rs.getString("role"), // role
+                        rs.getDate("date_of_birth"), // date_of_birth
+                        rs.getString("avatar_url") // avatar_url
                 );
             }
         } catch (SQLException ex) {
@@ -135,14 +135,14 @@ public class StaffDAO extends DBContext {
         ResultSet rs = execSelectQuery(query, params);
             while (rs.next()) {
                 staffs.add(new Staff(
-                        rs.getInt(1), // staff_id
-                        rs.getString(2), // username
-                        rs.getString(3), // email
-                        rs.getString(4), // password_hash
-                        rs.getString(5), // phone
-                        rs.getString(6), // role
-                        rs.getDate(7), // date_of_birth
-                        rs.getString(8) // avatar_url
+                        rs.getInt("staff_id"), // staff_id
+                        rs.getString("username"), // username
+                        rs.getString("email"), // email
+                        rs.getString("password_hash"), // password_hash
+                        rs.getString("phone"), // phone
+                        rs.getString("role"), // role
+                        rs.getDate("date_of_birth"), // date_of_birth
+                        rs.getString("avatar_url") // avatar_url
                 ));
             }
      
