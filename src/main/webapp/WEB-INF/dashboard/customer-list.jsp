@@ -32,22 +32,34 @@
                     <table class="table table-dark table-bordered table-hover align-middle mb-0">
                         <thead class="table-light text-dark">
                             <tr>
+                                <th></th>
                                 <th>ID</th>
                                 <th>Fullname</th>
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Status</th>
+                                <th>Email Verified</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:forEach var="customer" items="${requestScope.paginatedCustomerList}">
                                 <tr>
+                                    <td><img src="${customer.avatarUrl}" alt="Avatar" class="avatar-img"></td>
                                     <td>${customer.customerId}</td>
                                     <td>${customer.fullName}</td>
                                     <td>${customer.username}</td>
                                     <td>${customer.email}</td>
-                                    <td><span class="badge-status">Active</span></td>
+                                    <td>                            
+                                        <span class="badge-status ${customer.isDeactivated ? 'badge-suspend' : 'badge-active'}">
+                                            ${customer.isDeactivated ? 'Suspended' : 'Active'}
+                                        </span>
+                                    </td>
+                                    <td>                            
+                                        <span class="badge-status ${customer.emailVerified ? 'badge-suspend' : 'badge-active'}">
+                                            ${customer.emailVerified ? 'No' : 'Yes'}
+                                        </span>
+                                    </td>
                                     <td>
                                         <div class="table-actions-center">
                                             <a class="btn-action btn-details" href="./admin-customer-details.html">Details</a>
