@@ -25,9 +25,11 @@ public class DBContext {
      * Represents the database connection.
      */
     public Connection conn;
+
     private final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=CosmoraCelestica;encrypt=true;trustServerCertificate=true;user=sa;password=123456";
     private final String DB_USER = "sa";
     private final String DB_PWD = "123456";
+
 
     /**
      * Constructor that initializes the database connection. This constructor
