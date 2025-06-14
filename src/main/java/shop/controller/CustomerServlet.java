@@ -11,6 +11,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import shop.dao.CustomerDAO;
+import shop.model.Customer;
 
 /**
  *
@@ -31,8 +34,30 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/dashboard/customer-list.jsp")
-                .forward(request, response);
+        String view = request.getParameter("view");
+        if (view == null || view.isEmpty() || view.equals("list")) {
+            CustomerDAO cDAO = new CustomerDAO();
+            int currentPage = 1;
+            int pageSize = 2;
+
+            if (request.getParameter("page") != null) {
+                try {
+                    currentPage = Integer.parseInt(request.getParameter("page"));
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+
+            List<Customer> paginatedCustomerList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
+            int totalCustomers = cDAO.getTotalCustomerCount();
+            int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
+
+            request.setAttribute("paginatedCustomerList", paginatedCustomerList);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-list.jsp").forward(request, response);
+        }
     }
 
     /**

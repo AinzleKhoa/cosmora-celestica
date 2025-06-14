@@ -5905,7 +5905,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     color: blue;      /* Darker blue when hovering */
 }
 
-.sign__sessionExpired {
+.sign__empty {
     color: #ffffff;
     font-size: 16px;
     font-weight: 500;

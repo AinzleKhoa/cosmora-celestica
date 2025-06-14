@@ -43,7 +43,7 @@
                                         <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                         </a>
-                                        <p class="sign__sessionExpired">Your session has expired. Please go back and restart the OTP verification process.</p>
+                                        <p class="sign__empty">Your session has expired. Please go back and restart the OTP verification process.</p>
                                         <a type="button" href="${pageContext.servletContext.contextPath}/forgot-password" class="sign__goback">Go Back</a>
                                     </div>
                                 </c:when>
