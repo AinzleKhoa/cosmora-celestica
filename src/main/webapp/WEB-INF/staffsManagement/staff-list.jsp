@@ -123,10 +123,10 @@
 
             <section class="admin-header">
                 <div class="admin-header-top">
-                    <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/staffmanagement?view=create">+ Add New Staff</a>
+                    <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=create">+ Add New Staff</a>
                     <div class="search-filter-wrapper">
-                        <input type="text" class="search-input" placeholder="Enter staff name...">
-                        <button class="search-btn">Search</button>
+                        <input type="text" class="search-input" name="search" placeholder="Enter staff name...">
+                        <a class="search-btn" type="submit" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=search">Search</a>
                     </div>
                 </div>
                 <div class="main-filter">
@@ -181,7 +181,7 @@
                                 <td>
                                     <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
                                          alt="Avatar" 
-                                         style="width: 50px; height: 50px; border-radius: 50%;">
+                                         style="width: 150px; height: 140px; border: 50px;">
 
                                 </td>
                                 <td><%= s.getUserName()%></td>
@@ -191,8 +191,8 @@
                                 <td>
                                     <div class="table-actions-center">
                                         <a class="btn-action btn-details" href="staff-details?id=<%= s.getId()%>">Details</a>
-                                        <a class="btn-action btn-edit" href="staff-edit?id=<%= s.getId()%>">Edit</a>
-                                        <a class="btn-action btn-delete" href="staff-delete?id=<%= s.getId()%>">Delete</a>
+                                        <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=edit&id=<%= s.getId()%>">Edit</a>
+                                        <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=delete&id=<%= s.getId()%>">Delete</a>
                                         <a class="btn-action btn-history" href="staff-activitylog?id=<%= s.getId()%>">Activity Log</a>
                                     </div>
                                 </td>

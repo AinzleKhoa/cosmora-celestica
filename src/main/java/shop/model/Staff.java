@@ -112,4 +112,9 @@ public class Staff {
         this.avatarUrl = avatarUrl;
     }
 
+    @Override
+    public String toString() {
+        return "Staff{" + "Id=" + Id + ", userName=" + userName + ", email=" + email + ", password=" + password + ", phone=" + phone + ", role=" + role + ", dateOfBirth=" + dateOfBirth + ", avatarUrl=" + avatarUrl + '}';
+    }
+
 }
