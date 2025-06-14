@@ -1,14 +1,11 @@
 <%-- 
-    Document   : dashboar-order-list
-    Created on : Jun 11, 2025, 1:27:27 PM
-    Author     : ADMIN
+    Document   : staff-list
+    Created on : Jun 11, 2025, 11:52:31 PM
+    Author     : VICTUS
 --%>
 
-<%@page import="shop.dao.OrderDashboardDAO"%>
-<%@page import="shop.model.Customer"%>
-<%@page import="shop.model.Order"%>
-<%@page import="java.util.ArrayList"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.List"%>
+<%@page import="shop.model.Staff"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,7 +30,7 @@
 
         <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
         <meta name="keywords" content="">
-        <title>Cosmora Celestica – Games and Accessories</title>
+        <title>Cosmora Celestica ? Games and Accessories</title>
 
     </head>
 
@@ -79,7 +76,7 @@
             </div>
         </header>
         <!-- end header -->
-        <button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">☰
+        <button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">?
             Menu</button>
 
         <aside class="admin-sidebar">
@@ -91,7 +88,7 @@
                     </a>
                 </li>
                 <li class="admin-sidebar__item">
-                    <a href="admin-staff.html" class="admin-sidebar__link">
+                    <a href="admin-staff.html" class="admin-sidebar__link active">
                         <i class="fas fa-briefcase"></i> Manage Staffs
                     </a>
                 </li>
@@ -101,7 +98,7 @@
                     </a>
                 </li>
                 <li class="admin-sidebar__item">
-                    <a href="admin-order.html" class="admin-sidebar__link active">
+                    <a href="admin-order.html" class="admin-sidebar__link">
                         <i class="fas fa-clipboard-list"></i> Manage Orders
                     </a>
                 </li>
@@ -121,17 +118,22 @@
         <main class="admin-main">
 
             <div class="table-header">
-                <h2 class="table-title">Manage Orders</h2>
+                <h2 class="table-title">Manage Staffs</h2>
             </div>
 
             <section class="admin-header">
                 <div class="admin-header-top">
-                    <form action="<%= request.getContextPath()%>/orderdashboard" method="POST" style="display: flex; margin-left: auto;" class="search-filter-wrapper">
-                        <input type="hidden" name="action" value="search" />
-                        <input type="text" name="customer_name" class="search-input" placeholder="Enter customer name...">
-                        <button type="submit" class="search-btn">Search</button>
+                    <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=create">+ Add New Staff</a>
+
+                    <!-- Form search -->
+                    <form action="${pageContext.servletContext.contextPath}/staffsmanagement" method="POST" class="search-filter-wrapper">
+                        <input type="text" class="search-input" name="keyWord" placeholder="Enter staff name...">
+                        <input type="hidden" class="search-input" name="action" value="search" placeholder="Enter staff name...">
+                       
+                        <button class="search-btn" type="submit">Search</button>
                     </form>
                 </div>
+
                 <div class="main-filter">
                     <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
                     <select class="admin-filter-select">
@@ -148,18 +150,8 @@
                         <option value="active">Active</option>
                         <option value="suspended">Suspended</option>
                     </select>
-                    <select class="admin-filter-select">
-                        <option value="all">All Order Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
                 </div>
             </section>
-
-
 
             <section class="admin-table-wrapper">
                 <div class="table-responsive shadow-sm rounded overflow-hidden">
@@ -167,63 +159,65 @@
                         <thead class="table-light text-dark">
                             <tr>
                                 <th>ID</th>
-                                <th>CustomerID</th>
-                                <th>Order Date</th>
-                                <th>Total Amount</th>
+                                <th>Image Staff</th>
+                                <th>Full Name</th>
+
+                                <th>Email</th>
+                                <th>Role</th>
                                 <th>Status</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <%
-                                ArrayList<Order> orderlist = (ArrayList) request.getAttribute("orderlist");
-                                for (Order order : orderlist) {
-
-
+                                List<Staff> staffs = (List<Staff>) request.getAttribute("s");
+                                if (staffs == null || staffs.isEmpty()) {
                             %>
                             <tr>
-                                <td><%= order.getOrderId()%></td>
-                                <td><%= order.getCustomerId()%></td>
-                                <td><%= order.getOrderDate()%></td>
-                                <td><%= order.getTotalAmount()%></td>
+                                <td colspan="8" class="text-center text-danger">No Staff Found</td>
+                            </tr>
+                            <%
+                            } else {
+                                for (Staff s : staffs) {
+                            %>
+                            <tr>
+                                <td><%= s.getId()%></td>
+
                                 <td>
-                                    <form action="orderdashboard" method="post">
-                                        <input type="hidden" name="action" value="update" />
-                                        <input type="hidden" name="orderId" value="<%= order.getOrderId()%>" />
-                                        <select name="status" class="admin-filter-select" onchange="this.form.submit()">
-                                            <option value="Pending" <%= order.getStatus().equals("Pending") ? "selected" : ""%>>Pending</option>
-                                            <option value="Confirmed" <%= order.getStatus().equals("Confirmed") ? "selected" : ""%>>Confirmed</option>
-                                            <option value="Shipped" <%= order.getStatus().equals("Shipped") ? "selected" : ""%>>Shipped</option>
-                                            <option value="Delivered" <%= order.getStatus().equals("Delivered") ? "selected" : ""%>>Delivered</option>
-                                        </select>
-                                    </form>
-
-
+                                    <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
+                                         alt="Avatar" 
+                                         style="width: 150px; height: 140px; border: 50px;">
 
                                 </td>
+                                <td><%= s.getUserName()%></td>
+                                <td><%= s.getEmail()%></td>
+                                <td><%= s.getRole()%></td>
+                                <td><span class="badge-status">Active</span></td>
                                 <td>
                                     <div class="table-actions-center">
-                                        <button class="btn-action btn-details"
-                                                onclick="location.href = '<%= request.getContextPath()%>/orderdashboard?view=detail&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
-                                            Details
-                                        </button>
-                                        <button class="btn-action btn-edit" href="./admin-order-edit.html">Edit</button>
-                                        <button class="btn-action btn-delete">Cancel</button>
-                                        <button class="btn-action btn-history">Customer Details</button>
+                                        <a class="btn-action btn-details" href="staff-details?id=<%= s.getId()%>">Details</a>
+                                        <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=edit&id=<%= s.getId()%>">Edit</a>
+                                        <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=delete&id=<%= s.getId()%>">Delete</a>
+                                        <a class="btn-action btn-history" href="staff-activitylog?id=<%= s.getId()%>">Activity Log</a>
                                     </div>
                                 </td>
                             </tr>
-                                        <%}%>
+                            <%
+                                    }
+                                }
+                            %>
                         </tbody>
+
                     </table>
                 </div>
+
             </section>
 
             <!-- Pagination -->
             <nav class="admin-pagination">
                 <ul class="pagination">
                     <li class="page-item disabled">
-                        <a class="page-link" href="#">«</a>
+                        <a class="page-link" href="#">�</a>
                     </li>
                     <li class="page-item active">
                         <a class="page-link" href="#">1</a>
@@ -235,7 +229,7 @@
                         <a class="page-link" href="#">3</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="#">»</a>
+                        <a class="page-link" href="#">�</a>
                     </li>
                 </ul>
             </nav>

@@ -127,6 +127,18 @@ public class OrderDashboard extends HttpServlet {
                 Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
 
             }
+        } else if (action.equals("search")) {
+            String cusName = request.getParameter("customer_name");
+            OrderDashboardDAO OD = new OrderDashboardDAO();
+            try {
+                ArrayList<Order> orders = OD.searchOrders(cusName);
+                request.setAttribute("orderlist", orders);
+                request.getRequestDispatcher("/WEB-INF/view/dashboar-order-list.jsp").forward(request, response);
+
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }
 
