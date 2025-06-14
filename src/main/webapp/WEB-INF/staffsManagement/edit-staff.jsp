@@ -124,7 +124,7 @@
                 <!-- General Information -->
                 <form action="${pageContext.servletContext.contextPath}/staffsmanagement" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="edit" />
-                    <input type="hidden" name="id" value="<%=s.getId()%>" />
+                    
 
                     <fieldset class="mb-4 admin-manage-fieldset">
                         <legend class="admin-manage-subtitle">Staff Information</legend>
@@ -139,7 +139,7 @@
                         } else {
 
                         %>
-
+                        <input type="hidden" name="id" value="<%=s.getId()%>" />
 
                         <div class="row g-3">
                             <div class="col-md-6">
