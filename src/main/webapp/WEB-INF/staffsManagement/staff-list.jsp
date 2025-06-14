@@ -124,11 +124,16 @@
             <section class="admin-header">
                 <div class="admin-header-top">
                     <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=create">+ Add New Staff</a>
-                    <div class="search-filter-wrapper">
-                        <input type="text" class="search-input" name="search" placeholder="Enter staff name...">
-                        <a class="search-btn" type="submit" href="${pageContext.servletContext.contextPath}/staffsmanagement?view=search">Search</a>
-                    </div>
+
+                    <!-- Form search -->
+                    <form action="${pageContext.servletContext.contextPath}/staffsmanagement" method="POST" class="search-filter-wrapper">
+                        <input type="text" class="search-input" name="keyWord" placeholder="Enter staff name...">
+                        <input type="hidden" class="search-input" name="action" value="search" placeholder="Enter staff name...">
+                       
+                        <button class="search-btn" type="submit">Search</button>
+                    </form>
                 </div>
+
                 <div class="main-filter">
                     <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
                     <select class="admin-filter-select">

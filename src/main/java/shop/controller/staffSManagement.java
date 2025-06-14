@@ -18,8 +18,11 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shop.dao.StaffDAO;
 import shop.model.Staff;
 
@@ -126,10 +129,6 @@ public class staffSManagement extends HttpServlet {
             request.setAttribute("s", oneStaff);
 
             request.getRequestDispatcher("/WEB-INF/staffsManagement/delete-staff.jsp").forward(request, response);
-
-        } else if (view.equals("search")) {
-
-            request.getRequestDispatcher("/WEB-INF/staffsManagement/staff-list.jsp").forward(request, response);
 
         }
 
@@ -265,7 +264,22 @@ public class staffSManagement extends HttpServlet {
                         response.sendRedirect(request.getContextPath() + "/staffsmanagement");
                     }
                     break;
-             
+
+                case "search":
+
+                    String keyWord = request.getParameter("keyWord");
+
+                    ArrayList<Staff> sList;
+                    try {
+                        sList = sDAO.searchByName(keyWord);
+                        request.setAttribute("s", sList);
+
+                        request.getRequestDispatcher("/WEB-INF/staffsManagement/staff-list.jsp").forward(request, response);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(staffSManagement.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    break;
 
             }
         }

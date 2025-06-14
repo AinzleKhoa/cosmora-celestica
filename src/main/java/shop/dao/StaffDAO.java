@@ -7,6 +7,7 @@ package shop.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import shop.db.DBContext;
 import shop.model.Staff;
@@ -93,12 +94,12 @@ public class StaffDAO extends DBContext {
         return null;
 
     }
-    
+
     // 3. Update
     public int update(Staff staff) {
-       String sql = "UPDATE Staff SET username=?, email=?, password_hash=?, phone=?, role=?, date_of_birth=?, avatar_url=? WHERE staff_id = ?";
+        String sql = "UPDATE Staff SET username=?, email=?, password_hash=?, phone=?, role=?, date_of_birth=?, avatar_url=? WHERE staff_id = ?";
         Object[] params = {
-            staff.getUserName() ,
+            staff.getUserName(),
             staff.getEmail(),
             staff.getPassword(),
             staff.getPhone(),
@@ -114,7 +115,7 @@ public class StaffDAO extends DBContext {
         return 0;
     }
 
- // 4. Delete
+    // 4. Delete
     public int delete(int id) {
         String sql = "delete from staff where staff_id = ?";
         Object[] params = {id};
@@ -123,6 +124,30 @@ public class StaffDAO extends DBContext {
         } catch (SQLException ex) {
             return 0;
         }
+    }
+
+    //
+    public ArrayList<Staff> searchByName(String keyword) throws SQLException {
+        ArrayList<Staff> staffs = new ArrayList<>();
+        String query = "SELECT * FROM staff WHERE username LIKE ?";
+
+      Object [] params = {"%"+keyword+"%"};
+        ResultSet rs = execSelectQuery(query, params);
+            while (rs.next()) {
+                staffs.add(new Staff(
+                        rs.getInt(1), // staff_id
+                        rs.getString(2), // username
+                        rs.getString(3), // email
+                        rs.getString(4), // password_hash
+                        rs.getString(5), // phone
+                        rs.getString(6), // role
+                        rs.getDate(7), // date_of_birth
+                        rs.getString(8) // avatar_url
+                ));
+            }
+     
+
+        return staffs;
     }
 
 }
