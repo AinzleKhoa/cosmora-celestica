@@ -6,6 +6,7 @@ package shop.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shop.db.DBContext;
@@ -57,7 +58,7 @@ public class CustomerDAO extends DBContext {
 
     public boolean isEmailExists(String email) {
         try {
-            String query = "SELECT *\n"
+            String query = "SELECT customer_id\n"
                     + "FROM customer c\n"
                     + "WHERE c.email = ?";
             Object[] params = {email};
@@ -71,7 +72,52 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
-    public int register(Customer customer) {
+    public boolean isUsernameExists(String username) {
+        try {
+            String query = "SELECT customer_id\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.username = ?";
+            Object[] params = {username};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public int storeOtpForEmail(String email, String otp, Timestamp expiry) {
+        try {
+            String query = "UPDATE customer SET email_verification_token = ?, email_verification_expiry = ? WHERE email = ?";
+            Object[] params = {otp, expiry, email};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public boolean checkOtpForEmail(String email, String otp) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.email = ?\n"
+                    + "  AND c.email_verification_token = ?\n"
+                    + "  AND c.email_verification_expiry > GETDATE();";
+            Object[] params = {email, otp};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public int createCustomer(Customer customer) {
         try {
             String query = "INSERT INTO customer (username, email, password_hash, avatar_url, created_at)\n"
                     + "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);";
@@ -80,6 +126,22 @@ public class CustomerDAO extends DBContext {
                 customer.getEmail(),
                 customer.getPasswordHash(),
                 customer.getAvatarUrl()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateCustomerPassword(Customer customer) {
+        try {
+            String query = "UPDATE customer\n"
+                    + "SET password_hash = ?\n"
+                    + "WHERE email = ?";
+            Object[] params = {
+                customer.getPasswordHash(),
+                customer.getEmail()
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

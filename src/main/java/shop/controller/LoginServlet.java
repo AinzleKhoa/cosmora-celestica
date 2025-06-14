@@ -4,6 +4,7 @@
  */
 package shop.controller;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -35,19 +36,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false); // Get the current session (if it exists)
-
-        if (session != null) {
-            // Retrieve the success message from the session
-            String successMessage = (String) session.getAttribute("successMessage");
-            if (successMessage != null) {
-                // Add the message to the request to be displayed on the login page
-                request.setAttribute("successMessage", successMessage);
-                // Remove the message from the session after it has been used
-                session.removeAttribute("successMessage");
-            }
-        }
-
         request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
     }
 
@@ -62,11 +50,8 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
 
+        // Retrieve form parameters
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
@@ -78,22 +63,29 @@ public class LoginServlet extends HttpServlet {
                 // Check password match before setting session
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
                 if (isPasswordMatched) {
-                    // Create a new session and set the customer attribute
-                    session = request.getSession(true);
+                    HttpSession session = request.getSession(true);
                     session.setAttribute("currentCustomer", customer);
+
+                    // Redirect to the home page upon successful login
                     response.sendRedirect(request.getContextPath() + "/home");
                 } else {
-                    // If password doesn't match, set error message and forward
+                    // If password doesn't match, set error message and forward to login page
+                    request.setAttribute("email", email);
+                    request.setAttribute("password", password);
                     request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
                     request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
                 }
             } else {
-                // If account is deactivated, set error message and forward
-                request.setAttribute("errorMessage", "Your account is locked. Contacts us for more informations");
+                // If account is deactivated, set error message and forward to login page
+                request.setAttribute("email", email);
+                request.setAttribute("password", password);
+                request.setAttribute("errorMessage", "Your account is locked. Please contact us for more information.");
                 request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
             }
         } else {
-            // If email doesn't exist, set error message and forward
+            // If email doesn't exist, set error message and forward to login page
+            request.setAttribute("email", email);
+            request.setAttribute("password", password);
             request.setAttribute("errorMessage", "Email doesn't exist.");
             request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
         }
