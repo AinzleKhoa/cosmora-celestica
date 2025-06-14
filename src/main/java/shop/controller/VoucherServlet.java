@@ -23,7 +23,7 @@ import shop.model.Voucher;
  *
  * @author PC
  */
-@WebServlet(name = "VoucherServlet", urlPatterns = {"/voucher"})
+@WebServlet(name = "VoucherServlet", urlPatterns = {"/manage-vouchers"})
 public class VoucherServlet extends HttpServlet {
 
     @Override
@@ -38,7 +38,7 @@ public class VoucherServlet extends HttpServlet {
                 ArrayList<Voucher> voucherslist = vD.getList();
 
                 request.setAttribute("voucherslist", voucherslist);
-                request.getRequestDispatcher("/WEB-INF/admin/voucher-list.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -50,14 +50,14 @@ public class VoucherServlet extends HttpServlet {
                 Voucher voucher = voucherDao.getOne(id);
                 request.setAttribute("voucher", voucher);
                 request.setAttribute("id", id);
-                request.getRequestDispatcher("/WEB-INF/admin/voucher-edit.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-edit.jsp").forward(request, response);
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else if (view.equals("create")) {
             try {
-                request.getRequestDispatcher("/WEB-INF/admin/voucher-create.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -77,7 +77,7 @@ public class VoucherServlet extends HttpServlet {
 
                 request.setAttribute("voucherslist", voucherslist);
                 request.setAttribute("keyword", keyword); // để hiển thị lại trong ô input nếu cần
-                request.getRequestDispatcher("/WEB-INF/admin/voucher-list.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
 
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,12 +115,12 @@ public class VoucherServlet extends HttpServlet {
                         } else {
                             request.setAttribute("message", "Failed to update voucher!");
                             request.setAttribute("voucher", voucher);
-                            request.getRequestDispatcher("/WEB-INF/admin/voucher-edit.jsp").forward(request, response);
+                            request.getRequestDispatcher("/WEB-INF/dashboard/voucher-edit.jsp").forward(request, response);
                         }
                     } else {
                         request.setAttribute("message", "Voucher code already exists!");
                         request.setAttribute("voucher", voucher);
-                        request.getRequestDispatcher("/WEB-INF/admin/voucher-edit.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/voucher-edit.jsp").forward(request, response);
 
                     }
 
@@ -128,7 +128,7 @@ public class VoucherServlet extends HttpServlet {
                     Logger.getLogger(VoucherServlet.class
                             .getName()).log(Level.SEVERE, null, ex);
                     request.setAttribute("error", "Invalid data error!");
-                    request.getRequestDispatcher("/WEB-INF/admin/dashboard-voucher-edit.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/dashboard-voucher-edit.jsp").forward(request, response);
                 }
                 break;
                 case "create":
@@ -142,11 +142,11 @@ public class VoucherServlet extends HttpServlet {
 
                         } else {
                             request.setAttribute("message", "Failed to create voucher!");
-                            request.getRequestDispatcher("/WEB-INF/admin/voucher-create.jsp").forward(request, response);
+                            request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
                         }
                     } else {
                         request.setAttribute("message", "Voucher code already exists!");
-                        request.getRequestDispatcher("/WEB-INF/admin/voucher-create.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
 
                     }
 
@@ -154,7 +154,7 @@ public class VoucherServlet extends HttpServlet {
                     Logger.getLogger(VoucherServlet.class
                             .getName()).log(Level.SEVERE, null, ex);
                     request.setAttribute("message", "Invalid data error!");
-                    request.getRequestDispatcher("/WEB-INF/admin/voucher-create.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
                 }
                 break;
 

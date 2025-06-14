@@ -34,7 +34,7 @@
             <%
                 }
             %>
-            <form method="post" action="<%= request.getContextPath()%>/voucher">
+            <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
                 <input type="hidden" name="action" value="edit" >
                 <input type="hidden" name="id" value="<%= id%>" >
                 <div class="admin-manage-type voucher-details">
@@ -88,7 +88,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                    <a href="<%= request.getContextPath()%>/voucher" class="admin-manage-back">
+                    <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
                         <i class="fas fa-arrow-left mr-1"></i> Back
                     </a>
 

@@ -65,9 +65,9 @@
             <section class="admin-header">
                 <div class="admin-header-top">
                     <button class="btn-admin-add"
-                            onclick="location.href = '<%= request.getContextPath()%>/voucher?view=create'">+ Add New Voucher</button>
+                            onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=create'">+ Add New Voucher</button>
                     <div class="search-filter-wrapper">
-                        <form action="<%= request.getContextPath()%>/voucher" method="get">
+                        <form action="<%= request.getContextPath()%>/manage-vouchers" method="get">
                             <input type="hidden" name="view" value="search" />
                             <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
                             <button class="search-btn">Search</button>                    
@@ -143,7 +143,7 @@
                                 </td> 
                                 <td> <div class="table-actions-center">                                      
                                         <button class="btn-action btn-edit"
-                                                onclick="location.href = '<%= request.getContextPath()%>/voucher?view=edit&id=<%= voucher.getVoucherId()%>'">
+                                                onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
                                             Edit
                                         </button>
                                         <button class="btn-action btn-delete">Delete</button>
