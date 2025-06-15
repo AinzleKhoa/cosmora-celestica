@@ -41,7 +41,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Usage Limit</label>
-                                <input type="number" class="form-control admin-manage-input" name="usage_limit" required>
+                                <input type="number" class="form-control admin-manage-input" name="usage_limit" min="0" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Minimum Order Value</label>

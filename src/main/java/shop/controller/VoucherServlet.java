@@ -30,7 +30,7 @@ public class VoucherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String view = request.getParameter("view");
-        String keyword = request.getParameter("keyword");
+
         VouchersDAO vD = new VouchersDAO();
         if (view == null || view.isEmpty() || view.equals("list")) {
 
@@ -61,13 +61,15 @@ public class VoucherServlet extends HttpServlet {
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (view.equals("search")) {
+        } else if (view.equals(
+                "search")) {
             try {
                 ArrayList<Voucher> voucherslist;
-
+                    String keyword = request.getParameter("keyword");
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     voucherslist = vD.searchVoucherByCode(keyword);
-                    request.setAttribute("voucherslist", voucherslist); 
+                    request.setAttribute("voucherslist", voucherslist);     
+                } else {
                     voucherslist = vD.getList();
                     request.setAttribute("voucherslist", voucherslist); 
                 }
@@ -78,7 +80,6 @@ public class VoucherServlet extends HttpServlet {
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         } else if (view.equals(
                 "delete")) {
             VouchersDAO voucherDao = new VouchersDAO();
