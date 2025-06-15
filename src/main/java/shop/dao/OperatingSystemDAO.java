@@ -4,6 +4,7 @@
  */
 package shop.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,22 +19,8 @@ import shop.model.OperatingSystem;
  */
 public class OperatingSystemDAO extends DBContext {
 
-    private PreparedStatement ps = null;
-    private ResultSet rs = null;
-
-    public List<OperatingSystem> getAllOperatingSystems() throws SQLException {
-        List<OperatingSystem> list = new ArrayList<>();
-        String query = "SELECT DISTINCT os_id, os_name FROM operating_system";
+    private void closeResources(ResultSet rs, PreparedStatement ps, Connection conn) {
         try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(query);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(new OperatingSystem(rs.getInt("os_id"), rs.getString("os_name")));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
             if (rs != null) {
                 rs.close();
             }
@@ -43,12 +30,61 @@ public class OperatingSystemDAO extends DBContext {
             if (conn != null) {
                 conn.close();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<OperatingSystem> getAllOperatingSystems() throws SQLException {
+        List<OperatingSystem> list = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String query = "SELECT os_id, os_name FROM operating_system WHERE game_details_id IS NULL ORDER BY os_name";
+
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new OperatingSystem(rs.getInt("os_id"), rs.getString("os_name")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException("Error fetching all master Operating Systems: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, ps, conn);
         }
         return list;
     }
 
+    public String getOsNameById(int osId) throws SQLException {
+        String osName = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String query = "SELECT os_name FROM operating_system WHERE os_id = ? AND game_details_id IS NULL";
+
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, osId);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                osName = rs.getString("os_name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException("Error fetching Operating System name by ID: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, ps, conn);
+        }
+        return osName;
+    }
+
     public List<OperatingSystem> findByGameDetailsId(int gameDetailsId) throws SQLException {
         List<OperatingSystem> list = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         String query = "SELECT os_id, os_name, game_details_id FROM operating_system WHERE game_details_id = ?";
         try {
             conn = new DBContext().getConnection();
@@ -64,21 +100,15 @@ public class OperatingSystemDAO extends DBContext {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new SQLException("Error finding Operating Systems by GameDetails ID: " + e.getMessage(), e);
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (ps != null) {
-                ps.close();
-            }
-            if (conn != null) {
-                conn.close();
-            }
+            closeResources(rs, ps, conn);
         }
         return list;
     }
 
     public void deleteByGameDetailsId(int gameDetailsId) throws SQLException {
+        PreparedStatement ps = null;
         String query = "DELETE FROM operating_system WHERE game_details_id = ?";
         try {
             conn = new DBContext().getConnection();
@@ -87,34 +117,33 @@ public class OperatingSystemDAO extends DBContext {
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new SQLException("Error deleting Operating Systems by GameDetails ID: " + e.getMessage(), e);
         } finally {
-            if (ps != null) {
-                ps.close();
-            }
-            if (conn != null) {
-                conn.close();
-            }
+            closeResources(null, ps, conn);
         }
     }
 
-    public void add(int gameDetailsId, int osId) throws SQLException {
-        String query = "INSERT INTO operating_system (game_details_id, os_id, os_name) VALUES (?, ?, ?)";
+    public int getMasterOsIdByName(String osName) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String query = "SELECT os_id FROM operating_system WHERE os_name = ? AND game_details_id IS NULL";
+        int masterOsId = -1; 
+
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, gameDetailsId);
-            ps.setInt(2, osId);
-            ps.setString(3, "OS " + osId);
-            ps.executeUpdate();
+            ps.setString(1, osName);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                masterOsId = rs.getInt("os_id");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new SQLException("Error fetching master OS ID by name: " + e.getMessage(), e);
         } finally {
-            if (ps != null) {
-                ps.close();
-            }
-            if (conn != null) {
-                conn.close();
-            }
+            closeResources(rs, ps, conn);
         }
+        return masterOsId;
     }
 }

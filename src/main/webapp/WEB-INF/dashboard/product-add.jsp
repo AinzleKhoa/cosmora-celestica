@@ -1,15 +1,16 @@
 <%--
-    Document   : product-add
+    Document : product-add
     Created on : Jun 10, 2025, 10:55:00 PM
-    Author     : HoangSang
+    Author : HoangSang
 --%>
 
+<%@page import="shop.model.OperatingSystem"%>
+<%@page import="shop.model.StorePlatform"%>
 <%@page import="shop.model.Category"%>
 <%@page import="shop.model.Brand"%>
 <%@ page import="java.util.List" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/main.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
 <main class="main_1 container-fluid p-4 p-lg-5">
 
@@ -31,6 +32,8 @@
             if (errorMessage != null && !errorMessage.isEmpty()) {%>
         <div class="alert alert-danger" role="alert"><%= errorMessage%></div>
         <% }
+            List<StorePlatform> allPlatforms = (List<StorePlatform>) request.getAttribute("allPlatforms");
+            List<OperatingSystem> allOS = (List<OperatingSystem>) request.getAttribute("allOS");
         %>
 
         <div class="form-card">
@@ -115,54 +118,35 @@
                 </div>
                 <div class="form-card">
                     <h3 class="form-card__title">Game Activation & System</h3>
-                    <div class="row g-4"><div class="col-12">
+                    <div class="row g-4">
+                        <div class="col-12">
                             <label class="form-label admin-manage-label">Store Platform</label>
                             <div class="checkbox-group">
+                                <% if (allPlatforms != null && !allPlatforms.isEmpty()) {
+                                    for (StorePlatform platform : allPlatforms) { %>
                                 <div>
-                                    <input type="checkbox" id="platform_steam" name="platforms" value="Steam">
-                                    <label for="platform_steam">Steam</label>
+                                    <input type="checkbox" id="platform_<%= platform.getPlatformId()%>" name="platformIds" value="<%= platform.getPlatformId()%>">
+                                    <label for="platform_<%= platform.getPlatformId()%>"><%= platform.getStoreOSName()%></label>
                                 </div>
-                                <div>
-                                    <input type="checkbox" id="platform_epic" name="platforms" value="Epic Games Store">
-                                    <label for="platform_epic">Epic Games Store</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="platform_gog" name="platforms" value="GOG">
-                                    <label for="platform_gog">GOG</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="platform_ubisoft" name="platforms" value="Ubisoft Connect">
-                                    <label for="platform_ubisoft">Ubisoft Connect</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="platform_ea" name="platforms" value="EA App">
-                                    <label for="platform_ea">EA App</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="platform_battle" name="platforms" value="Battle.net">
-                                    <label for="platform_battle">Battle.net</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="platform_other" name="platforms" value="Other">
-                                    <label for="platform_other">Other</label>
-                                </div>
+                                <% }
+                                } else { %>
+                                <p class="text-muted">No platforms available in database.</p>
+                                <% } %>
                             </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label admin-manage-label">Supported OS</label>
                             <div class="checkbox-group">
+                                <% if (allOS != null && !allOS.isEmpty()) {
+                                    for (OperatingSystem os : allOS) { %>
                                 <div>
-                                    <input type="checkbox" id="os_windows" name="operatingSystems" value="Windows">
-                                    <label for="os_windows">Windows</label>
+                                    <input type="checkbox" id="os_<%= os.getOsId()%>" name="osIds" value="<%= os.getOsId()%>">
+                                    <label for="os_<%= os.getOsId()%>"><%= os.getOsName()%></label>
                                 </div>
-                                <div>
-                                    <input type="checkbox" id="os_macos" name="operatingSystems" value="macOS">
-                                    <label for="os_macos">macOS</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="os_linux" name="operatingSystems" value="Linux">
-                                    <label for="os_linux">Linux</label>
-                                </div>
+                                <% }
+                                } else { %>
+                                <p class="text-muted">No OS available in database.</p>
+                                <% } %>
                             </div>
                         </div>
                         <div class="col-12">
@@ -304,6 +288,3 @@
 <script src="<%= request.getContextPath()%>/assets/js/jquery.mCustomScrollbar.min.js"></script>
 <script src="<%= request.getContextPath()%>/assets/js/main.js"></script>
 <script src="<%= request.getContextPath()%>/assets/js/products/add-product.js"></script>
-
-<%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
-

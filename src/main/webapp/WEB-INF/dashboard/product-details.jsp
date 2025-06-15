@@ -14,7 +14,7 @@
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<%--<%@include file="/WEB-INF/include/dashboard-header.jsp" %>--%>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
 <link href="<%= request.getContextPath()%>/assets/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
@@ -38,7 +38,7 @@
             Product Details
         </h1>
         <div class="d-flex gap-2">
-            <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back</a>
+            <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Back</a>
             <a href="<%= request.getContextPath()%>/manage-products?action=update&id=<%= product.getProductId()%>" class="btn btn-warning"><i class="fas fa-edit me-1"></i> Edit</a>
             <a href="<%= request.getContextPath()%>/manage-products?action=delete&id=<%= product.getProductId()%>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');"><i class="fas fa-trash me-1"></i> Delete</a>
         </div>

@@ -17,9 +17,6 @@
 <%@page import="shop.model.ProductAttribute"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-
-<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/bootstrap-reboot.min.css">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/bootstrap-grid.min.css">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -38,7 +35,7 @@
 %>
 
 
-<main class="main">
+<main class="main main_2">
     <div class="table-header d-flex justify-content-between align-items-center">
         <h2 class="table-title">Edit Product: <%= (product != null) ? product.getName() : ""%></h2>
         <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Back</a>
