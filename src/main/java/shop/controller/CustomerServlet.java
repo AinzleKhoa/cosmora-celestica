@@ -38,7 +38,7 @@ public class CustomerServlet extends HttpServlet {
         if (view == null || view.isEmpty() || view.equals("list")) {
             CustomerDAO cDAO = new CustomerDAO();
             int currentPage = 1;
-            int pageSize = 8;
+            int pageSize = 1;
 
             if (request.getParameter("page") != null) {
                 try {
@@ -48,21 +48,32 @@ public class CustomerServlet extends HttpServlet {
                 }
             }
 
-            List<Customer> paginatedList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
-            int totalCustomers = cDAO.getTotalCustomerCount();
+            String search = request.getParameter("searchName");
+            List<Customer> paginatedList;
+            int totalCustomers;
+
+            if (search != null && !search.trim().isEmpty()) {
+                paginatedList = cDAO.getPaginatedCustomersBySearch(search.trim(), currentPage, pageSize);
+                totalCustomers = cDAO.getTotalCustomerCountBySearch(search.trim());
+            } else {
+                paginatedList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
+                totalCustomers = cDAO.getTotalCustomerCount();
+            }
+
             int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
 
             request.setAttribute("paginatedList", paginatedList);
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
+            request.setAttribute("searchName", search);
 
             request.getRequestDispatcher("/WEB-INF/dashboard/customer-list.jsp").forward(request, response);
         } else if (view.equals("edit")) {
             String id = request.getParameter("customerId");
-            
+
             CustomerDAO cDAO = new CustomerDAO();
             Customer thisCustomer = cDAO.getAccountById(id);
-            
+
             request.setAttribute("thisCustomer", thisCustomer);
             request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
         }

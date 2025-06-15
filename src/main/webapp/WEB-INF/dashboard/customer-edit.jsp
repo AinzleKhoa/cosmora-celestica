@@ -54,7 +54,7 @@
 
         <div class="d-flex justify-content-between align-items-center mt-4">
             <!-- Back Link -->
-            <a href="./admin-customer.html" class="admin-manage-back">
+            <a href="${pageContext.servletContext.contextPath}/manage-customers" class="admin-manage-back">
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
 
