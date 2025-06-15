@@ -54,12 +54,16 @@ public class OrderServlet extends HttpServlet {
 
         } else if (view.equals("details")) {
             OrderDAO OD = new OrderDAO();
+            String cus_id = request.getParameter("customer_id");
             String o_id = request.getParameter("order_id");
+            int customer_id = Integer.parseInt(cus_id);
             int order_id = Integer.parseInt(o_id);
             try {
+                Customer customer = OD.getCustomerById(customer_id);
                 ArrayList<OrderDetails> orderDetails = OD.getOrderDetail(order_id);
                 Order order = OD.getOneOrder(order_id);
                 request.setAttribute("order", order);
+                request.setAttribute("customer", customer);
                 request.setAttribute("orderdetails", orderDetails);
                 request.getRequestDispatcher("/WEB-INF/dashboard/order-details.jsp").forward(request, response);
 
@@ -89,7 +93,7 @@ public class OrderServlet extends HttpServlet {
             OrderDAO OD = new OrderDAO();
             try {
                 if (OD.updateOrderStatus(status, orderId) == 1) {
-                    response.sendRedirect(request.getContextPath() + "/manage-orders");
+                    response.sendRedirect(request.getContextPath() + "/orderdashboard");
 
                 }
 

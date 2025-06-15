@@ -18,6 +18,11 @@ public class ProductAttribute {
     public ProductAttribute() {
     }
 
+    public ProductAttribute(String value, String attributeName) {
+        this.value = value;
+        this.attributeName = attributeName;
+    }
+
     public ProductAttribute(int productId, int attributeId, String value, String attributeName) {
         this.productId = productId;
         this.attributeId = attributeId;

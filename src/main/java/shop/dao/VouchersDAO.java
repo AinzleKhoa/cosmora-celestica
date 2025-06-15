@@ -24,25 +24,25 @@ public class VouchersDAO extends DBContext {
     public ArrayList<Voucher> getList() {
         ArrayList<Voucher> codes = new ArrayList<>();
         try {
-            String query = "SELECT voucher_id, code, value, usage_limit, start_date, end_date, description, min_order_value, "
-                    + "       CASE "
-                    + "           WHEN GETDATE() < start_date THEN 2 "
-                    + "           WHEN GETDATE() > end_date THEN 0 "
-                    + "           ELSE 1 "
-                    + "       END AS is_active "
+            String query = "SELECT *,\n"
+                    + "       CASE\n"
+                    + "           WHEN GETDATE() < start_date THEN 2\n"
+                    + "           WHEN GETDATE() > end_date THEN 0\n"
+                    + "           ELSE 1\n"
+                    + "       END AS is_active\n"
                     + "FROM voucher;";
             ResultSet rs = execSelectQuery(query);
             while (rs.next()) {
                 Voucher voucher = new Voucher(
-                        rs.getInt("voucher_id"),
-                        rs.getString("code"),
-                        rs.getBigDecimal("value"),
-                        rs.getInt("usage_limit"),
-                        rs.getDate("start_date").toLocalDate(),
-                        rs.getDate("end_date").toLocalDate(),
-                        rs.getInt("is_active"), // đã alias ở truy vấn SQL
-                        rs.getString("description"),
-                        rs.getBigDecimal("min_order_value")
+                        rs.getInt(1), // voucher_id
+                        rs.getString(2), // code
+                        rs.getBigDecimal(3), // value
+                        rs.getInt(4), // usage_limit
+                        rs.getDate(5).toLocalDate(), // start_date
+                        rs.getDate(6).toLocalDate(), // end_date
+                        rs.getInt(10), // active
+                        rs.getString(8), // description
+                        rs.getBigDecimal(9) // min_order_value
                 );
                 codes.add(voucher);
             }
@@ -173,17 +173,6 @@ public class VouchersDAO extends DBContext {
             Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, e);
         }
         return vouchers;
-    }
-
-    public int deleteVoucher(int id) {
-        try {
-            String query = "DELETE FROM voucher WHERE voucher_id = ?";
-            Object[] params = {id};
-            return execQuery(query, params);
-        } catch (SQLException ex) {
-            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
     }
 
 }
