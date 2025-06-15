@@ -18,9 +18,14 @@ import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import shop.dao.BrandDAO;
 import shop.dao.CategoryDAO;
 import shop.dao.ProductDAO;
@@ -107,9 +112,28 @@ public class ProductServlet extends HttpServlet {
                     CategoryDAO categoryDAO = new CategoryDAO();
                     BrandDAO brandDAO = new BrandDAO();
 
+                    // ================= LOGIC ĐƯỢC CHUYỂN VÀO ĐÂY =================
+                    // 1. Chuẩn bị attributeMap từ List<ProductAttribute>
+                    Map<String, String> attributeMap = new HashMap<>();
+                    if (existingProduct.getAttributes() != null) {
+                        for (ProductAttribute attr : existingProduct.getAttributes()) {
+                            attributeMap.put(attr.getAttributeName(), attr.getValue());
+                        }
+                    }
+
+                    // 2. Chuẩn bị gameDetails để tránh null trong JSP
+                    GameDetails gameDetails = existingProduct.getGameDetails();
+                    if (gameDetails == null) {
+                        gameDetails = new GameDetails(); // Tạo đối tượng rỗng nếu không có
+                    }
+                    // ================= KẾT THÚC LOGIC CHUYỂN VÀO =================
+
+                    // Gửi tất cả dữ liệu đã được chuẩn bị sang JSP
                     request.setAttribute("product", existingProduct);
                     request.setAttribute("categoriesList", categoryDAO.getAllCategories());
                     request.setAttribute("brandsList", brandDAO.getAllBrands());
+                    request.setAttribute("attributeMap", attributeMap); // Gửi map đã tạo
+                    request.setAttribute("gameDetails", gameDetails);   // Gửi đối tượng không bao giờ null
 
                     request.getRequestDispatcher("/WEB-INF/admin/product-edit.jsp").forward(request, response);
                     break;
@@ -118,7 +142,14 @@ public class ProductServlet extends HttpServlet {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
                     Product product = productDAO.getProductById(id);
+                    Locale localeVN = new Locale("vi", "VN");
+                    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
+                    SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
 
+                    request.setAttribute("currencyFormatter", currencyFormatter);
+                    request.setAttribute("timestampFormatter", timestampFormatter);
+                    request.setAttribute("dateFormatter", dateFormatter);
                     if (product == null) {
                         response.sendRedirect(request.getContextPath() + "/products?action=list");
                         return;
@@ -157,7 +188,14 @@ public class ProductServlet extends HttpServlet {
                 default: {
                     ProductDAO productDAO = new ProductDAO();
                     request.setAttribute("productList", productDAO.getAllProducts());
+<<<<<<< Updated upstream
                     request.getRequestDispatcher("/WEB-INF/admin/product-list.jsp").forward(request, response);
+=======
+                    Locale locale = new Locale("vi", "VN");
+                    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+                    request.setAttribute("currencyFormatter", currencyFormatter);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-list.jsp").forward(request, response);
+>>>>>>> Stashed changes
                     break;
                 }
             }
