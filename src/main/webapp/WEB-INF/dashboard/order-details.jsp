@@ -64,15 +64,12 @@
                 <tbody>
                     <%
                         ArrayList<OrderDetails> orderDetails = (ArrayList) request.getAttribute("orderdetails");
-                        Product product = new Product();
-                        OrderDAO OD = new OrderDAO();
                         for (OrderDetails orderdetails : orderDetails) {
 
-                            product = OD.getProductInOrder(orderdetails.getProductId());
                     %>
                     <tr>
                         <td><%= orderdetails.getOrderId()%></td>
-                        <td><%= product.getName()%></td>
+                        <td><%= orderdetails.getProductName()%></td>
                         <td><%= orderdetails.getQuantity()%></td>
                         <td><%= orderdetails.getPrice()%></td>
                     </tr>
@@ -81,6 +78,9 @@
             </table>
         </div>
     </section>
+    <a href="<%= request.getContextPath()%>/manage-orders" class="admin-manage-back">
+        <i class="fas fa-arrow-left mr-1"></i> Back
+    </a>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

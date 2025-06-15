@@ -23,11 +23,17 @@ public class OrderDAO extends DBContext {
 
     public ArrayList<Order> getallOrder() throws SQLException {
         ArrayList<Order> order = new ArrayList<>();
-        String query = "SELECT * FROM [order];";
+        String query = "SELECT \n"
+                + "    o.*, \n"
+                + "    c.full_name\n"
+                + "FROM \n"
+                + "    [order] o\n"
+                + "JOIN \n"
+                + "    customer c ON o.customer_id = c.customer_id;";
         ResultSet rs = execSelectQuery(query);
         while (rs.next()) {
             order.add(new Order(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getBigDecimal(4), rs.getString(5), rs.getString(6), rs.getObject("order_date", LocalDateTime.class),
-                    rs.getString(8), rs.getInt(9)));
+                    rs.getString(8), rs.getInt(9), rs.getString(10)));
         }
         return order;
 
@@ -51,27 +57,25 @@ public class OrderDAO extends DBContext {
 
     public ArrayList<OrderDetails> getOrderDetail(int orderId) throws SQLException {
         ArrayList<OrderDetails> temp = new ArrayList<>();
-        String query = "select * from order_detail where order_id=?;";
+        String query = "SELECT \n"
+                + "    od.*, \n"
+                + "    p.name AS product_name\n"
+                + "FROM \n"
+                + "    Order_Detail od\n"
+                + "JOIN \n"
+                + "    Product p ON od.product_id = p.product_id\n"
+                + "WHERE \n"
+                + "    od.order_id = ?;";
         Object[] params = {orderId};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
-            temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getBigDecimal(5)));
+            temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getBigDecimal(5), rs.getString(6)));
         }
         return temp;
 
     }
 
-    public Product getProductInOrder(int productId) throws SQLException {
-        Product temp = new Product();
-        String query = "select * from product where product_id =?;";
-        Object[] params = {productId};
-        ResultSet rs = execSelectQuery(query, params);
-        while (rs.next()) {
-            temp.setName(rs.getString(2));
-        }
-        return temp;
 
-    }
 
     public Order getOneOrder(int orderId) throws SQLException {
         Order temp = new Order();
@@ -98,16 +102,17 @@ public class OrderDAO extends DBContext {
 
     public ArrayList<Order> searchOrders(String customer_name) throws SQLException {
         ArrayList<Order> temp = new ArrayList<>();
-        String query = "SELECT o.*\n"
+        String query = "SELECT o.*, c.full_name\n"
                 + "FROM [Order] o\n"
                 + "JOIN Customer c ON o.customer_id = c.customer_id\n"
                 + "WHERE c.full_name LIKE ?;";
-        Object [] params = {"%"+customer_name+"%"};
+        Object[] params = {"%" + customer_name + "%"};
         ResultSet rs = execSelectQuery(query, params);
-        while (rs.next()) {            
+        while (rs.next()) {
             temp.add(new Order(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getBigDecimal(4), rs.getString(5), rs.getString(6), rs.getObject("order_date", LocalDateTime.class),
-                    rs.getString(8), rs.getInt(9)));
-        }return temp;
-        
+                    rs.getString(8), rs.getInt(9), rs.getString(10)));
+        }
+        return temp;
+
     }
 }
