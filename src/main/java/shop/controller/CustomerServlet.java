@@ -48,11 +48,11 @@ public class CustomerServlet extends HttpServlet {
                 }
             }
 
-            List<Customer> paginatedCustomerList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
+            List<Customer> paginatedList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
             int totalCustomers = cDAO.getTotalCustomerCount();
             int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
 
-            request.setAttribute("paginatedCustomerList", paginatedCustomerList);
+            request.setAttribute("paginatedList", paginatedList);
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
 

@@ -14,7 +14,7 @@
     </div>
 
     <c:choose>
-        <c:when test="${empty requestScope.paginatedCustomerList}">
+        <c:when test="${empty requestScope.paginatedList}">
             <p class="sign__empty">The list is empty</p>
         </c:when>
         <c:otherwise>
@@ -43,7 +43,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="customer" items="${requestScope.paginatedCustomerList}">
+                            <c:forEach var="customer" items="${requestScope.paginatedList}">
                                 <tr>
                                     <td><img src="${customer.avatarUrl}" alt="Avatar" class="avatar-img"></td>
                                     <td>${customer.customerId}</td>
