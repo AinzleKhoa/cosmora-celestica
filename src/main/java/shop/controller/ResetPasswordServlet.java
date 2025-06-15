@@ -36,7 +36,7 @@ public class ResetPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/reset-password.jsp")
+        request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp")
                 .forward(request, response);
     }
 
@@ -75,24 +75,24 @@ public class ResetPasswordServlet extends HttpServlet {
                     }
 
                     request.setAttribute("successMessage", "Password reset successfully! Please log in.");
-                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 } else {
                     request.setAttribute("email", email);
                     request.setAttribute("password", password);
                     request.setAttribute("confirmPassword", confirmPassword);
                     request.setAttribute("errorMessage", "Something went wrong. Please try again.");
-                    request.getRequestDispatcher("/WEB-INF/view/reset-password.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);
                 request.setAttribute("errorMessage", "Your new password must be different from your current password.");
-                request.getRequestDispatcher("/WEB-INF/view/reset-password.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp").forward(request, response);
             }
         } else {
             request.setAttribute("errorMessage", "Your session has expired. Please go through the OTP process again.");
-            request.getRequestDispatcher("/WEB-INF/view/forgot-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
         }
     }
 
