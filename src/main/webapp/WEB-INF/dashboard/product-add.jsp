@@ -1,6 +1,6 @@
 <%--
     Document   : product-add
-    Created on : Jun 12, 2025, 10:55:00 PM
+    Created on : Jun 10, 2025, 10:55:00 PM
     Author     : HoangSang
 --%>
 
@@ -8,13 +8,11 @@
 <%@page import="shop.model.Brand"%>
 <%@ page import="java.util.List" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/main.css">
+<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
+<main class="main_1 container-fluid p-4 p-lg-5">
 
-<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css"> 
-        
-<main class="main">
     <div class="table-header d-flex justify-content-between align-items-center">
         <h2 class="table-title">Create New Product</h2>
         <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Back</a>
@@ -24,7 +22,6 @@
 
         <input type="hidden" id="productType" name="productType" value="">
 
-        <%-- NOTIFICATION MESSAGES --%>
         <%
             String successMessage = (String) request.getAttribute("successMessage");
             if (successMessage != null && !successMessage.isEmpty()) {%>
@@ -294,6 +291,7 @@
             <button type="submit" class="btn admin-manage-button"><i class="fas fa-plus mr-1"></i> Create Product</button>
         </div>
     </form>
+
 </main>
 
 <script src="<%= request.getContextPath()%>/assets/js/jquery-3.5.1.min.js"></script>
@@ -305,92 +303,7 @@
 <script src="<%= request.getContextPath()%>/assets/js/jquery.mousewheel.min.js"></script>
 <script src="<%= request.getContextPath()%>/assets/js/jquery.mCustomScrollbar.min.js"></script>
 <script src="<%= request.getContextPath()%>/assets/js/main.js"></script>
+<script src="<%= request.getContextPath()%>/assets/js/products/add-product.js"></script>
 
-<script>
-                function handleProductTypeChange() {
-                    const productTypeSelect = document.getElementById('categoryId');
-                    const selectedOption = productTypeSelect.options[productTypeSelect.selectedIndex];
-                    const selectedType = selectedOption ? selectedOption.dataset.normalizedName : '';
-
-                    document.getElementById('productType').value = selectedType;
-
-                    const allFieldIds = ['gameFields', 'accessoryFields', 'headphoneFields', 'keyboardFields', 'mouseFields', 'controllerFields'];
-                    allFieldIds.forEach(id => {
-                        const element = document.getElementById(id);
-                        if (element)
-                            element.style.display = 'none';
-                    });
-
-                    if (!selectedType)
-                        return;
-
-                    const brandSelect = document.querySelector('select[name="brandId"]');
-
-                    if (selectedType === 'game') {
-                        document.getElementById('gameFields').style.display = 'block';
-
-                        if (brandSelect) {
-                            brandSelect.required = false;
-                        }
-                    } else {
-                        const accessoryFields = document.getElementById('accessoryFields');
-                        if (accessoryFields)
-                            accessoryFields.style.display = 'block';
-
-                        const specificFieldId = selectedType + 'Fields';
-                        const specificFields = document.getElementById(specificFieldId);
-                        if (specificFields) {
-                            specificFields.style.display = 'block';
-                        }
-
-                        if (brandSelect) {
-                            brandSelect.required = true;
-                        }
-                    }
-                }
-
-                function setupImageUploader(index) {
-                    const input = document.getElementById('productImage' + index);
-                    const uploader = document.getElementById('uploader' + index);
-                    if (!input || !uploader)
-                        return;
-                    const preview = document.getElementById('preview' + index);
-                    const removeBtn = document.getElementById('removeBtn' + index);
-                    const uploaderContent = uploader.querySelector('.image-uploader__content');
-                    input.addEventListener('change', function (event) {
-                        const file = event.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                preview.src = e.target.result;
-                                preview.style.display = 'block';
-                                removeBtn.style.display = 'flex';
-                                uploaderContent.style.display = 'none';
-                            }
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                    removeBtn.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        input.value = '';
-                        preview.src = '';
-                        preview.style.display = 'none';
-                        removeBtn.style.display = 'none';
-                        uploaderContent.style.display = 'block';
-                    });
-                }
-
-                document.addEventListener('DOMContentLoaded', function () {
-                    for (let i = 1; i <= 6; i++) {
-                        setupImageUploader(i);
-                    }
-
-                    handleProductTypeChange();
-                });
-
-                function toggleDropdown() {
-                    document.getElementById("adminDropdown").classList.toggle("show");
-                }
-</script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
+

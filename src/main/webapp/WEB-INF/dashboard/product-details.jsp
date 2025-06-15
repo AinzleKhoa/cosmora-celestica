@@ -1,9 +1,12 @@
 <%--
     Document   : product-details
-    Created on : Jun 12, 2025, 10:55:00 PM
+    Created on : Jun 10, 2025, 10:55:00 PM
     Author     : HoangSang
 --%>
 
+<%@page import="shop.model.OperatingSystem"%>
+<%@page import="shop.model.StorePlatform"%>
+<%@page import="shop.model.GameKey"%>
 <%@page import="shop.model.ProductAttribute"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Locale"%>
@@ -17,29 +20,15 @@
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
 
 <%
-    // Retrieve the product object and formatters from the request scope.
-    // They are now set by the ProductServlet.
     Product product = (Product) request.getAttribute("product");
     NumberFormat currencyFormatter = (NumberFormat) request.getAttribute("currencyFormatter");
     SimpleDateFormat timestampFormatter = (SimpleDateFormat) request.getAttribute("timestampFormatter");
     SimpleDateFormat dateFormatter = (SimpleDateFormat) request.getAttribute("dateFormatter");
-
-    // This block displays the product name at the very top of the page (e.g., in the browser tab title or a hidden element)
-    if (product != null) {
-        out.print(product.getName());
-    } else {
-        out.print("Not Found");
-    }
+    List<GameKey> gameKeys = (List<GameKey>) request.getAttribute("gameKeys");
+    List<StorePlatform> platforms = (List<StorePlatform>) request.getAttribute("platforms");
+    List<OperatingSystem> operatingSystems = (List<OperatingSystem>) request.getAttribute("operatingSystems");
 %>
 
-<%--
-    THE FOLLOWING DUPLICATE BLOCK HAS BEEN REMOVED:
-    <% if (product != null) {
-        out.print(product.getName());
-    } else {
-        out.print("Not Found");
-    } %>
---%>
 
 <main class="container-fluid p-4 p-lg-5">
     <% if (product != null) {%>
@@ -107,6 +96,48 @@
                             <tr><th style="width: 30%"><i class="fas fa-user-edit fa-fw me-2 text-secondary"></i>Developer</th><td><%= product.getGameDetails().getDeveloper()%></td></tr>
                             <tr><th><i class="fas fa-gamepad fa-fw me-2 text-secondary"></i>Genre</th><td><%= product.getGameDetails().getGenre()%></td></tr>
                             <tr><th><i class="fas fa-calendar-alt fa-fw me-2 text-secondary"></i>Release Date</th><td><%= dateFormatter.format(product.getGameDetails().getReleaseDate())%></td></tr>
+
+                            <tr>
+                                <th><i class="fas fa-desktop fa-fw me-2 text-secondary"></i>Platforms</th>
+                                <td>
+                                    <% if (platforms != null && !platforms.isEmpty()) { %>
+                                        <% for (int i = 0; i < platforms.size(); i++) { %>
+                                            <%= platforms.get(i).getStoreOSName() %><%= (i < platforms.size() - 1) ? ", " : "" %>
+                                        <% } %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th><i class="fab fa-windows fa-fw me-2 text-secondary"></i>Operating Systems</th>
+                                <td>
+                                    <% if (operatingSystems != null && !operatingSystems.isEmpty()) { %>
+                                        <% for (int i = 0; i < operatingSystems.size(); i++) { %>
+                                            <%= operatingSystems.get(i).getOsName() %><%= (i < operatingSystems.size() - 1) ? ", " : "" %>
+                                        <% } %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th><i class="fas fa-key fa-fw me-2 text-secondary"></i>Available Keys</th>
+                                <td>
+                                    <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
+                                        <ul class="list-unstyled mb-0">
+                                            <% for (GameKey key : gameKeys) { %>
+                                                <li><%= key.getKeyCode() %></li>
+                                            <% } %>
+                                        </ul>
+                                    <% } else { %>
+                                        No keys available
+                                    <% } %>
+                                </td>
+                            </tr>
+
                         </tbody>
                     </table>
                     <% } else if (product.getAttributes() != null && !product.getAttributes().isEmpty()) { %>
@@ -181,19 +212,5 @@
     <% }%>
 </main>
 
-<script>
-    function changeMainImage(thumbElement) {
-        document.getElementById('mainProductImage').src = thumbElement.src;
-        document.querySelectorAll('.thumbnail-container .thumb').forEach(thumb => {
-            thumb.classList.remove('active');
-        });
-        thumbElement.classList.add('active');
-    }
-
-    function scrollGallery(direction) {
-        const container = document.getElementById('thumbnailContainer');
-        const scrollAmount = (120 + 12) * 3 * direction;
-        container.scrollBy({left: scrollAmount, behavior: 'smooth'});
-    }
-</script>
+    <script src="<%= request.getContextPath()%>/assets/js/products/details-product.js"></script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

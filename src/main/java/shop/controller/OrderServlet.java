@@ -15,44 +15,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import shop.dao.OrderDashboardDAO;
+import shop.dao.OrderDAO;
 import shop.model.Customer;
 import shop.model.Order;
-import shop.model.OrderDetail;
+import shop.model.OrderDetails;
 import shop.model.Product;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "OrderDashboard", urlPatterns = {"/orderdashboard"})
-public class OrderDashboard extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet OrderDashboard</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet OrderDashboard at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+@WebServlet(name = "OrderDashboard", urlPatterns = {"/manage-orders"})
+public class OrderServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -68,33 +42,33 @@ public class OrderDashboard extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("list")) {
-            OrderDashboardDAO OD = new OrderDashboardDAO();
+            OrderDAO OD = new OrderDAO();
             try {
                 ArrayList<Order> orderlist = OD.getallOrder();
 
                 request.setAttribute("orderlist", orderlist);
-                request.getRequestDispatcher("/WEB-INF/view/dashboar-order-list.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/order-list.jsp").forward(request, response);
             } catch (SQLException ex) {
-                Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-        } else if (view.equals("detail")) {
-            OrderDashboardDAO OD = new OrderDashboardDAO();
+        } else if (view.equals("details")) {
+            OrderDAO OD = new OrderDAO();
             String cus_id = request.getParameter("customer_id");
             String o_id = request.getParameter("order_id");
             int customer_id = Integer.parseInt(cus_id);
             int order_id = Integer.parseInt(o_id);
             try {
                 Customer customer = OD.getCustomerById(customer_id);
-                ArrayList<OrderDetail> orderDetails = OD.getOrderDetail(order_id);
+                ArrayList<OrderDetails> orderDetails = OD.getOrderDetail(order_id);
                 Order order = OD.getOneOrder(order_id);
                 request.setAttribute("order", order);
                 request.setAttribute("customer", customer);
-                request.setAttribute("orderdetail", orderDetails);
-                request.getRequestDispatcher("/WEB-INF/view/dashboard-order-detail.jsp").forward(request, response);
+                request.setAttribute("orderdetails", orderDetails);
+                request.getRequestDispatcher("/WEB-INF/dashboard/order-details.jsp").forward(request, response);
 
             } catch (SQLException ex) {
-                Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
@@ -116,7 +90,7 @@ public class OrderDashboard extends HttpServlet {
         if (action.equals("update")) {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
             String status = request.getParameter("status");
-            OrderDashboardDAO OD = new OrderDashboardDAO();
+            OrderDAO OD = new OrderDAO();
             try {
                 if (OD.updateOrderStatus(status, orderId) == 1) {
                     response.sendRedirect(request.getContextPath() + "/orderdashboard");
@@ -124,9 +98,21 @@ public class OrderDashboard extends HttpServlet {
                 }
 
             } catch (SQLException ex) {
-                Logger.getLogger(OrderDashboard.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
 
             }
+        } else if (action.equals("search")) {
+            String cusName = request.getParameter("customer_name");
+            OrderDAO OD = new OrderDAO();
+            try {
+                ArrayList<Order> orders = OD.searchOrders(cusName);
+                request.setAttribute("orderlist", orders);
+                request.getRequestDispatcher("/WEB-INF/dashboard/order-list.jsp").forward(request, response);
+
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }
 
