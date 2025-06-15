@@ -38,7 +38,7 @@ public class CustomerServlet extends HttpServlet {
         if (view == null || view.isEmpty() || view.equals("list")) {
             CustomerDAO cDAO = new CustomerDAO();
             int currentPage = 1;
-            int pageSize = 6;
+            int pageSize = 8;
 
             if (request.getParameter("page") != null) {
                 try {
