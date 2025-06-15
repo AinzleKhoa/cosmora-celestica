@@ -11,7 +11,7 @@ import java.sql.Date;
  * @author HoangSang
  */
 public class GameDetails {
-    private int gameDetailsId;
+    private Integer gameDetailsId;
     private String developer;
     private String genre; 
     private Date releaseDate;
@@ -19,18 +19,18 @@ public class GameDetails {
     public GameDetails() {
     }
 
-    public GameDetails(int gameDetailsId, String developer, String genre, Date releaseDate) {
+    public GameDetails(Integer gameDetailsId, String developer, String genre, Date releaseDate) {
         this.gameDetailsId = gameDetailsId;
         this.developer = developer;
         this.genre = genre;
         this.releaseDate = releaseDate;
     }
 
-    public int getGameDetailsId() {
+    public Integer getGameDetailsId() {
         return gameDetailsId;
     }
 
-    public void setGameDetailsId(int gameDetailsId) {
+    public void setGameDetailsId(Integer gameDetailsId) {
         this.gameDetailsId = gameDetailsId;
     }
 
@@ -57,5 +57,7 @@ public class GameDetails {
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
+
+    
     
 }
