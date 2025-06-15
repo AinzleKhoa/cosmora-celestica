@@ -24,6 +24,7 @@ public class Order {
     private String status;
     private int staffId;
     private String customerName;
+    private String customerEmail ;
 
     public Order(int orderId, int customerId, int voucherId, BigDecimal totalAmount, String paymentMethod, String shippingAddress, LocalDateTime orderDate, String status, int staffId, String customerName) {
         this.orderId = orderId;
@@ -37,10 +38,19 @@ public class Order {
         this.staffId = staffId;
         this.customerName = customerName;
     }
+    
 
     public Order() {
     }
 
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+    
     public String getCustomerName() {
         return customerName;
     }

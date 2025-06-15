@@ -39,21 +39,7 @@ public class OrderDAO extends DBContext {
 
     }
 
-    public Customer getCustomerById(int id) throws SQLException {
-        Customer temp = new Customer();
-        String query = "SELECT * FROM customer WHERE customer_id = ?;";
-        Object[] params = {id};
-        ResultSet rs = execSelectQuery(query, params);
-        while (rs.next()) {
-            temp.setCustomerId(rs.getInt(1));
-            temp.setEmail(rs.getString(3));
-            temp.setFullName(rs.getString(5));
-            temp.setFullName(rs.getString(5));
-            temp.setAddress(rs.getString(7));
-        }
-        return temp;
-
-    }
+ 
 
     public ArrayList<OrderDetails> getOrderDetail(int orderId) throws SQLException {
         ArrayList<OrderDetails> temp = new ArrayList<>();
@@ -75,11 +61,18 @@ public class OrderDAO extends DBContext {
 
     }
 
-
-
     public Order getOneOrder(int orderId) throws SQLException {
         Order temp = new Order();
-        String query = "select * from [order] where order_id = ?;";
+        String query = "SELECT \n"
+                + "    o.*, \n"
+                + "    c.full_name, \n"
+                + "    c.email\n"
+                + "FROM \n"
+                + "    [Order] o\n"
+                + "JOIN \n"
+                + "    Customer c ON o.customer_id = c.customer_id\n"
+                + "WHERE \n"
+                + "    o.order_id = ?;";
         Object[] params = {orderId};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
@@ -88,6 +81,8 @@ public class OrderDAO extends DBContext {
             temp.setOrderDate(rs.getObject("order_date", LocalDateTime.class));
             temp.setStatus(rs.getString(8));
             temp.setShippingAddress(rs.getString(6));
+            temp.setCustomerName(rs.getString(10));
+            temp.setCustomerEmail(rs.getString(11));
         }
         return temp;
     }
