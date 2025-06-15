@@ -188,14 +188,14 @@ public class ProductServlet extends HttpServlet {
                 default: {
                     ProductDAO productDAO = new ProductDAO();
                     request.setAttribute("productList", productDAO.getAllProducts());
-<<<<<<< Updated upstream
+
                     request.getRequestDispatcher("/WEB-INF/admin/product-list.jsp").forward(request, response);
-=======
+
                     Locale locale = new Locale("vi", "VN");
                     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
                     request.setAttribute("currencyFormatter", currencyFormatter);
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-list.jsp").forward(request, response);
->>>>>>> Stashed changes
+
                     break;
                 }
             }
