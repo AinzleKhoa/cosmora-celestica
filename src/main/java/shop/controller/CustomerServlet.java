@@ -38,7 +38,7 @@ public class CustomerServlet extends HttpServlet {
         if (view == null || view.isEmpty() || view.equals("list")) {
             CustomerDAO cDAO = new CustomerDAO();
             int currentPage = 1;
-            int pageSize = 1;
+            int pageSize = 6;
 
             if (request.getParameter("page") != null) {
                 try {
@@ -90,6 +90,17 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if (action.equals("edit")) {
+            String username = request.getParameter("username");
+            String email = request.getParameter("email");
+            String fullName = request.getParameter("fullName");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            
+            CustomerDAO cDAO = new CustomerDAO();
+            
+        }
     }
 
     /**

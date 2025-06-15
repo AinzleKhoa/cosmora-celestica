@@ -21,7 +21,8 @@
         </div>
 
         <!-- General Information -->
-        <fieldset class="mb-4 admin-manage-fieldset">
+        <form class="mb-4 admin-manage-fieldset" action="${pageContext.servletContext.contextPath}/manage-customers" method="POST">
+            <input type="hidden" name="action" value="edit"/>
             <legend class="admin-manage-subtitle">Customer Information</legend>
             <div class="row g-3">
                 <!-- If offensive or misleading (e.g., hate speech, impersonation) -->
@@ -37,7 +38,7 @@
                 <!-- If it includes slurs, fake names, or inappropriate language -->
                 <div class="col-md-6">
                     <label class="form-label admin-manage-label">Full Name</label>
-                    <input type="text" class="form-control admin-manage-input" name="full_name" value="${thisCustomer.fullName}" required>
+                    <input type="text" class="form-control admin-manage-input" name="full_name" value="${thisCustomer.fullName}">
                 </div>
                 <!-- To blank or anonymize if it’s spammy or fake -->
                 <div class="col-md-6">
@@ -50,36 +51,74 @@
                     <input type="text" class="form-control admin-manage-input" value="${thisCustomer.address}" name="address">
                 </div>
             </div>
-        </fieldset>
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end">
+                <a href="
+                   <c:url value="/manage-customers">
+                       <c:param name="view" value="edit"/>
+                       <c:param name="customerId" value="${thisCustomer.customerId}"/>
+                   </c:url>
+                   " type="reset" class="btn admin-manage-reset mr-2">
+                    <i class="fas fa-xmark mr-1"></i> Reset
+                </a>
+                <button type="submit" class="btn admin-manage-button">
+                    <i class="fas fa-pen-to-square mr-1"></i> Edit
+                </button>
+            </div>
+        </form>
 
         <div class="d-flex justify-content-between align-items-center mt-4">
             <!-- Back Link -->
             <a href="${pageContext.servletContext.contextPath}/manage-customers" class="admin-manage-back">
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
-
-            <!-- Action Buttons -->
-            <div>
-                <button type="reset" class="btn admin-manage-reset mr-2">
-                    <i class="fas fa-xmark mr-1"></i> Reset
-                </button>
-                <button type="submit" class="btn admin-manage-button">
-                    <i class="fas fa-pen-to-square mr-1"></i> Edit
-                </button>
-            </div>
         </div>
     </div>
 </main>
 
 <script>
-    function previewAvatar(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById('avatarPreview').src = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
+    document.querySelector('form[action$="manage-customers"]').addEventListener('submit', function (e) {
+        const username = this.querySelector('[name="username"]').value.trim();
+        const email = this.querySelector('[name="email"]').value.trim();
+        const fullName = this.querySelector('[name="full_name"]').value.trim();
+        const phone = this.querySelector('[name="phone"]').value.trim();
+
+        // Username - required
+        if (username === '') {
+            alert('Username is required.');
+            e.preventDefault();
+            return;
         }
-    }
+
+        // Email - required + valid format
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
+        if (email === '') {
+            alert('Email is required.');
+            e.preventDefault();
+            return;
+        } else if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            e.preventDefault();
+            return;
+        }
+
+        // Full Name - optional but must be 2–50 chars if provided
+        if (fullName !== '' && (fullName.length < 2 || fullName.length > 50)) {
+            alert('Full name must be between 2 and 50 characters.');
+            e.preventDefault();
+            return;
+        }
+
+        // Phone - optional but must be digits and 9–15 chars if provided
+        const phoneRegex = /^[0-9]{9,15}$/;
+        if (phone !== '' && !phoneRegex.test(phone)) {
+            alert('Phone number must contain 9 to 15 digits only.');
+            e.preventDefault();
+            return;
+        }
+
+        // No validation for address
+    });
 </script>
+
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
