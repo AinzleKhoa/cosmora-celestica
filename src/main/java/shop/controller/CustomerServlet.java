@@ -57,6 +57,14 @@ public class CustomerServlet extends HttpServlet {
             request.setAttribute("totalPages", totalPages);
 
             request.getRequestDispatcher("/WEB-INF/dashboard/customer-list.jsp").forward(request, response);
+        } else if (view.equals("edit")) {
+            String id = request.getParameter("customerId");
+            
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+            
+            request.setAttribute("thisCustomer", thisCustomer);
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
         }
     }
 

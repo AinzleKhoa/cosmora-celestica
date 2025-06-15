@@ -63,7 +63,12 @@
                                     <td>
                                         <div class="table-actions-center">
                                             <a class="btn-action btn-details" href="./admin-customer-details.html">Details</a>
-                                            <a class="btn-action btn-edit" href="./admin-customer-edit.html">Edit</a>
+                                            <a class="btn-action btn-edit" href="
+                                               <c:url value="/manage-customers">
+                                                   <c:param name="view" value="edit"/>
+                                                   <c:param name="customerId" value="${customer.customerId}"/>
+                                               </c:url>
+                                               ">Edit</a>
                                             <a class="btn-action btn-delete" href="./admin-customer-delete.html">Delete</a>
                                             <a class="btn-action btn-history" href="./admin-customer-orderhistory.html">Order
                                                 History</a>

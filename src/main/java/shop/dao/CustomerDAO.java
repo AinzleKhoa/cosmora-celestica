@@ -149,6 +149,44 @@ public class CustomerDAO extends DBContext {
         }
         return null;
     }
+    
+    public Customer getAccountById(String id) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.customer_id = ?";
+            Object[] params = {id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("full_name"),
+                        rs.getString("phone"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("avatar_url"),
+                        rs.getDate("date_of_birth"),
+                        rs.getBoolean("is_deactivated"),
+                        rs.getTimestamp("last_login"),
+                        rs.getString("google_id"),
+                        rs.getString("remember_me_token"),
+                        rs.getString("reset_token"),
+                        rs.getTimestamp("reset_token_expiry"),
+                        rs.getBoolean("email_verified"),
+                        rs.getString("email_verification_token"),
+                        rs.getTimestamp("email_verification_expiry"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     public boolean isEmailExists(String email) {
         try {
