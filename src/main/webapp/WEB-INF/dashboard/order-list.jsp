@@ -25,31 +25,7 @@
                 <button type="submit" class="search-btn">Search</button>
             </form>
         </div>
-        <div class="main-filter">
-            <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
-            <select class="admin-filter-select">
-                <option value="ascending">A-Z</option>
-                <option value="descending">Z-A</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Dates</option>
-                <option value="last30">Last 30 Days</option>
-                <option value="lastYear">Last Year</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Order Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-            </select>
-        </div>
+   
     </section>
 
 
@@ -60,7 +36,7 @@
                 <thead class="table-light text-dark">
                     <tr>
                         <th>ID</th>
-                        <th>CustomerID</th>
+                        <th>Customer Name</th>
                         <th>Order Date</th>
                         <th>Total Amount</th>
                         <th>Status</th>
@@ -76,8 +52,8 @@
                     %>
                     <tr>
                         <td><%= order.getOrderId()%></td>
-                        <td><%= order.getCustomerId()%></td>
-                        <td><%= order.getOrderDate()%></td>
+                        <td><%= order.getCustomerName()%></td>
+                        <td><%= order.getOrderDate() %></td>
                         <td><%= order.getTotalAmount()%></td>
                         <td>
                             <form action="manage-orders" method="post">
@@ -100,8 +76,6 @@
                                         onclick="location.href = '<%= request.getContextPath()%>/manage-orders?view=details&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
                                     Details
                                 </button>
-                                <button class="btn-action btn-edit" href="./admin-order-edit.html">Edit</button>
-                                <button class="btn-action btn-delete">Cancel</button>
                                 <button class="btn-action btn-history">Customer Details</button>
                             </div>
                         </td>

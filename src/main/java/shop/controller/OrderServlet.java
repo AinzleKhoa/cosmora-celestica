@@ -93,7 +93,7 @@ public class OrderServlet extends HttpServlet {
             OrderDAO OD = new OrderDAO();
             try {
                 if (OD.updateOrderStatus(status, orderId) == 1) {
-                    response.sendRedirect(request.getContextPath() + "/orderdashboard");
+                    response.sendRedirect(request.getContextPath() + "/manage-orders");
 
                 }
 
