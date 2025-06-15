@@ -75,89 +75,91 @@
 
                     </div>
                 </div>  
-            <%
-                String success = (String) session.getAttribute("message");
-                if (success != null) {
-            %>
-            <div style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
-                <%= success%>
-            </div>
-            <%
-                    session.removeAttribute("message");
-                }
-            %>
-            <section class="admin-table-wrapper">
-                <div class="table-responsive shadow-sm rounded overflow-hidden">
-                    <table class="table table-dark table-bordered table-hover align-middle mb-0">
-                        <thead class="table-light text-dark">
-
-                            <tr>
-                                <th>ID</th>
-                                <th>Code</th>
-                                <th>Discount (%)</th>
-                                <th>Usage</th>
-                                <th>Valid From</th>
-                                <th>Valid Until</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th style="text-align: center;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <%
-                                ArrayList<Voucher> voucherlist = (ArrayList) request.getAttribute("voucherslist");
-
-                                for (Voucher voucher : voucherlist) {
-
-
-                            %>
-                            <tr>
-                                <td><%= voucher.getVoucherId()%></td>
-                                <td> <%= voucher.getCode()%></td>
-                                <td><%= voucher.getValue()%></td>
-                                <td><%= voucher.getUsageLimit()%></td>
-                                <td><%= voucher.getStartDate()%></td>
-                                <td><%= voucher.getEndDate()%></td>
-                                <td><%= voucher.getDescription()%></td>
-                                <td>
-                                    <%
-
-                                        if (voucher.getActive() == 1) {
-                                    %>
-                                    Active
-                                    <%
-                                    } else if (voucher.getActive() == 0) {
-                                    %>
-                                    Expired
-                                    <%
-                                    } else if (voucher.getActive() == 2) {
-                                    %>
-                                    Not yet started
-                                    <%
-                                    } else {
-                                    %>
-                                    Unknown
-                                    <%
-                                        }
-                                    %>
-                                </td> 
-                                <td> <div class="table-actions-center">                                      
-                                        <button class="btn-action btn-edit"
-                                                onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
-                                            Edit
-                                        </button>
-                                        <button class="btn-action btn-delete">Delete</button>
-                                    </div> </td> <%}%>
-
-
-
-                            </tr>
-                        </tbody>
-
-                    </table>
-
+                <%
+                    String success = (String) session.getAttribute("message");
+                    if (success != null) {
+                %>
+                <div style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                    <%= success%>
                 </div>
-            </section>
+                <%
+                        session.removeAttribute("message");
+                    }
+                %>
+                <section class="admin-table-wrapper">
+                    <div class="table-responsive shadow-sm rounded overflow-hidden">
+                        <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                            <thead class="table-light text-dark">
+
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Discount (%)</th>
+                                    <th>Usage</th>
+                                    <th>Valid From</th>
+                                    <th>Valid Until</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                    ArrayList<Voucher> voucherlist = (ArrayList) request.getAttribute("voucherslist");
+                                    if (voucherlist != null && !voucherlist.isEmpty()) {
+                                        for (Voucher voucher : voucherlist) {
+
+
+                                %>
+                                <tr>
+
+                                    <td> <%= voucher.getCode()%></td>
+                                    <td><%= voucher.getValue()%></td>
+                                    <td><%= voucher.getUsageLimit()%></td>
+                                    <td><%= voucher.getStartDate()%></td>
+                                    <td><%= voucher.getEndDate()%></td>
+                                    <td><%= voucher.getDescription()%></td>
+                                    <td>
+                                        <%
+
+                                            if (voucher.getActive() == 1) {
+                                        %>
+                                        Active
+                                        <%
+                                        } else if (voucher.getActive() == 0) {
+                                        %>
+                                        Expired
+                                        <%
+                                        } else if (voucher.getActive() == 2) {
+                                        %>
+                                        Not yet started
+                                        <%
+                                        } else {
+                                        %>
+                                        Unknown
+                                        <%
+                                            }
+                                        %>
+                                    </td> 
+                                    <td> <div class="table-actions-center">                                      
+                                            <button class="btn-action btn-edit"
+                                                    onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
+                                                Edit
+                                            </button>
+                                            <button class="btn-action btn-delete"
+                                                    onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=delete&id=<%= voucher.getVoucherId()%>'">Delete</button>
+                                        </div> </td> <% }
+                                        } else {%>
+                            <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>
+                            <%}%>
+
+
+                            </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </section>
         </main>
 
         <!-- Edit Staff Modal -->

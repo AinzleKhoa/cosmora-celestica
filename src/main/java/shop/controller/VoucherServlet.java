@@ -30,7 +30,7 @@ public class VoucherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String view = request.getParameter("view");
-        String keyword = request.getParameter("search");
+        String keyword = request.getParameter("keyword");
         VouchersDAO vD = new VouchersDAO();
         if (view == null || view.isEmpty() || view.equals("list")) {
 
@@ -67,18 +67,26 @@ public class VoucherServlet extends HttpServlet {
 
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     voucherslist = vD.searchVoucherByCode(keyword);
-
-                    if (voucherslist.isEmpty()) {
-                        request.setAttribute("message", "No voucher codes matched your search.");
-                    }
-                } else {
+                    request.setAttribute("voucherslist", voucherslist); 
                     voucherslist = vD.getList();
+                    request.setAttribute("voucherslist", voucherslist); 
                 }
 
-                request.setAttribute("voucherslist", voucherslist);
-                request.setAttribute("keyword", keyword); // để hiển thị lại trong ô input nếu cần
+                request.setAttribute("keyword", keyword);
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
 
+            } catch (Exception ex) {
+                Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (view.equals(
+                "delete")) {
+            VouchersDAO voucherDao = new VouchersDAO();
+            int id = Integer.parseInt(request.getParameter("id"));
+            try {
+                Voucher voucher = voucherDao.getOne(id);
+                request.setAttribute("voucher", voucher);
+                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-delete.jsp").forward(request, response);
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -91,26 +99,25 @@ public class VoucherServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         VouchersDAO vD = new VouchersDAO();
-        int id = Integer.parseInt(request.getParameter("id"));
-        String code = request.getParameter("code");
-        BigDecimal value = new BigDecimal(request.getParameter("value"));
-        int usageLimit = Integer.parseInt(request.getParameter("usage_limit"));
-        LocalDate startDate = LocalDate.parse(request.getParameter("start_date"));
-        LocalDate endDate = LocalDate.parse(request.getParameter("end_date"));
-        int active = Integer.parseInt(request.getParameter("active"));
-        String description = request.getParameter("description");
-        BigDecimal minOrderValue = new BigDecimal(request.getParameter("min_order_value"));
 
         if (action != null) {
             switch (action) {
                 case "edit":
                      try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    String code = request.getParameter("code");
+                    BigDecimal value = new BigDecimal(request.getParameter("value"));
+                    int usageLimit = Integer.parseInt(request.getParameter("usage_limit"));
+                    LocalDate startDate = LocalDate.parse(request.getParameter("start_date"));
+                    LocalDate endDate = LocalDate.parse(request.getParameter("end_date"));
+                    int active = Integer.parseInt(request.getParameter("active"));
+                    String description = request.getParameter("description");
+                    BigDecimal minOrderValue = new BigDecimal(request.getParameter("min_order_value"));
                     Voucher voucher = new Voucher(id, code, value, usageLimit, startDate, endDate, active, description, minOrderValue);
-
                     if (!vD.isDuplicateCodeForOtherVoucher(code, id)) {
                         if (vD.editVoucherCode(voucher) != 0) {
                             request.setAttribute("id", voucher.getVoucherId());
-                            response.sendRedirect(request.getContextPath() + "/voucher?view=list");
+                            response.sendRedirect(request.getContextPath() + "/manage-vouchers?view=list");
 
                         } else {
                             request.setAttribute("message", "Failed to update voucher!");
@@ -133,12 +140,19 @@ public class VoucherServlet extends HttpServlet {
                 break;
                 case "create":
                      try {
+                    String code = request.getParameter("code");
+                    BigDecimal value = new BigDecimal(request.getParameter("value"));
+                    int usageLimit = Integer.parseInt(request.getParameter("usage_limit"));
+                    LocalDate startDate = LocalDate.parse(request.getParameter("start_date"));
+                    LocalDate endDate = LocalDate.parse(request.getParameter("end_date"));
+                    int active = Integer.parseInt(request.getParameter("active"));
+                    String description = request.getParameter("description");
+                    BigDecimal minOrderValue = new BigDecimal(request.getParameter("min_order_value"));
                     Voucher voucher = new Voucher(code, value, usageLimit, startDate, endDate, active, description, minOrderValue);
-
                     if (!vD.isDuplicateCodeForOtherVoucherOfTheCreate(code)) {
                         if (vD.createVoucherCode(voucher) != 0) {
                             request.getSession().setAttribute("message", "Voucher created successfully!");
-                            response.sendRedirect(request.getContextPath() + "/voucher?view=list");
+                            response.sendRedirect(request.getContextPath() + "/manage-vouchers?view=list");
 
                         } else {
                             request.setAttribute("message", "Failed to create voucher!");
@@ -157,7 +171,25 @@ public class VoucherServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
                 }
                 break;
+                case "delete":
+                     try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    if (vD.deleteVoucher(id) != 0) {
 
+                        request.setAttribute("message", "Deleted successfully");
+                        response.sendRedirect(request.getContextPath() + "/manage-vouchers?view=list");
+                    } else {
+                        request.setAttribute("message", "Failed to update voucher!");
+                        request.getRequestDispatcher("/WEB-INF/dashboard/voucher-delete.jsp").forward(request, response);
+
+                    }
+
+                } catch (Exception ex) {
+                    Logger.getLogger(VoucherServlet.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                    request.setAttribute("error", "Invalid data error!");
+                    request.getRequestDispatcher("/WEB-INF/dashboard/dashboard-voucher-delete.jsp").forward(request, response);
+                }
             }
         }
     }
