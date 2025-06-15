@@ -175,4 +175,15 @@ public class VouchersDAO extends DBContext {
         return vouchers;
     }
 
+    public int deleteVoucher(int id) {
+        try {
+            String query = "DELETE FROM voucher WHERE voucher_id = ?";
+            Object[] params = {id};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
 }
