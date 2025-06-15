@@ -92,7 +92,6 @@
                             <thead class="table-light text-dark">
 
                                 <tr>
-
                                     <th>Code</th>
                                     <th>Discount (%)</th>
                                     <th>Usage</th>
@@ -106,8 +105,8 @@
                             <tbody>
                                 <%
                                     ArrayList<Voucher> voucherlist = (ArrayList) request.getAttribute("voucherslist");
-
-                                    for (Voucher voucher : voucherlist) {
+                                    if (voucherlist != null && !voucherlist.isEmpty()) {
+                                        for (Voucher voucher : voucherlist) {
 
 
                                 %>
@@ -148,11 +147,13 @@
                                             </button>
                                             <button class="btn-action btn-delete"
                                                     onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=delete&id=<%= voucher.getVoucherId()%>'">Delete</button>
-                                        </div> </td> <%}%>
+                                        </div> </td> <% }
+                                        } else {%>
+                            <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>
+                            <%}%>
 
 
-
-                                </tr>
+                            </tr>
                             </tbody>
 
                         </table>

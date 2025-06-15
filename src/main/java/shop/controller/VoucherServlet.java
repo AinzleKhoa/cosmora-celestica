@@ -30,7 +30,7 @@ public class VoucherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String view = request.getParameter("view");
-        String keyword = request.getParameter("keyword");
+
         VouchersDAO vD = new VouchersDAO();
         if (view == null || view.isEmpty() || view.equals("list")) {
 
@@ -61,31 +61,27 @@ public class VoucherServlet extends HttpServlet {
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (view.equals("search")) {
+        } else if (view.equals(
+                "search")) {
             try {
                 ArrayList<Voucher> voucherslist;
-
+                    String keyword = request.getParameter("keyword");
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     voucherslist = vD.searchVoucherByCode(keyword);
-
-                    if (voucherslist.isEmpty()) {
-                        request.getSession().setAttribute("message", "No voucher codes matched your search.");
-                        request.setAttribute("voucherslist", voucherslist);
-                        request.setAttribute("keyword", keyword);
-                        request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
-                    }
+                    request.setAttribute("voucherslist", voucherslist);     
                 } else {
                     voucherslist = vD.getList();
-                    request.setAttribute("voucherslist", voucherslist);
-                    request.setAttribute("keyword", keyword); // để hiển thị lại trong ô input nếu cần
-                    request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
+                    request.setAttribute("voucherslist", voucherslist); 
                 }
+
+                request.setAttribute("keyword", keyword);
+                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
 
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-        } else if (view.equals("delete")) {
+        } else if (view.equals(
+                "delete")) {
             VouchersDAO voucherDao = new VouchersDAO();
             int id = Integer.parseInt(request.getParameter("id"));
             try {
@@ -186,6 +182,7 @@ public class VoucherServlet extends HttpServlet {
                     } else {
                         request.setAttribute("message", "Failed to update voucher!");
                         request.getRequestDispatcher("/WEB-INF/dashboard/voucher-delete.jsp").forward(request, response);
+
                     }
 
                 } catch (Exception ex) {

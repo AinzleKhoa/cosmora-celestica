@@ -14,7 +14,7 @@
     </div>
 
     <c:choose>
-        <c:when test="${empty requestScope.paginatedList}">
+        <c:when test="${empty requestScope.paginatedCustomerList}">
             <p class="sign__empty">The list is empty</p>
         </c:when>
         <c:otherwise>
@@ -43,7 +43,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="customer" items="${requestScope.paginatedList}">
+                            <c:forEach var="customer" items="${requestScope.paginatedCustomerList}">
                                 <tr>
                                     <td><img src="${customer.avatarUrl}" alt="Avatar" class="avatar-img"></td>
                                     <td>${customer.customerId}</td>
@@ -79,31 +79,20 @@
             <!-- Pagination -->
             <nav class="admin-pagination">
                 <ul class="pagination">
-                    <!-- Previous button -->
-                    <li class="page-item ${requestScope.currentPage == 1 ? 'disabled' : ''}">
-                        <c:choose>
-                            <c:when test="${requestScope.currentPage == 1}">
-                                <a class="page-link">«</a>
-                            </c:when>
-                            <c:otherwise>
-                                <a class="page-link" href="?page=${requestScope.currentPage - 1}">«</a>
-                            </c:otherwise>
-                        </c:choose>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">«</a>
                     </li>
-                    <c:forEach begin="1" end="${requestScope.totalPages}" var="pageNum">
-                        <li class="page-item ${currentPage == pageNum ? 'active' : ''}">
-                            <a class="page-link" href="?page=${pageNum}">${pageNum}</a>
-                        </li>
-                    </c:forEach>
-                    <li class="page-item ${requestScope.currentPage == requestScope.totalPages ? 'disabled' : ''}">
-                        <c:choose>
-                            <c:when test="${requestScope.currentPage == requestScope.totalPages}">
-                                <a class="page-link">»</a>
-                            </c:when>
-                            <c:otherwise>
-                                <a class="page-link" href="?page=${requestScope.currentPage + 1}">»</a>
-                            </c:otherwise>
-                        </c:choose>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">»</a>
                     </li>
                 </ul>
             </nav>
