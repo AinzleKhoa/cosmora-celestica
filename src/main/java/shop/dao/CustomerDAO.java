@@ -177,7 +177,7 @@ public class CustomerDAO extends DBContext {
         return null;
     }
 
-    public Customer getAccountById(String id) {
+    public Customer getAccountById(int id) {
         try {
             String query = "SELECT *\n"
                     + "FROM customer c\n"
@@ -213,6 +213,21 @@ public class CustomerDAO extends DBContext {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
+        try {
+            String query = "SELECT COUNT(*) FROM customer \n"
+                    + "WHERE (username = ? OR email = ?) AND customer_id != ?";
+            Object[] params = {username, email, id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     public boolean isEmailExists(String email) {
@@ -285,6 +300,44 @@ public class CustomerDAO extends DBContext {
                 customer.getEmail(),
                 customer.getPasswordHash(),
                 customer.getAvatarUrl()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateCustomer(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET username = ?,\n"
+                    + "	email = ?,\n"
+                    + "	full_name = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	address = ?\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                customer.getUsername(),
+                customer.getEmail(),
+                customer.getFullName(),
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int deleteCustomer(int id) {
+        try {
+            String query = "DELETE FROM customer\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                id
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

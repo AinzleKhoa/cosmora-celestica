@@ -19,10 +19,22 @@
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
         </div>
-
+        <!-- Success Message Container -->
+        <div id="successMessage" style="color: green; margin-bottom: 15px;">
+            <c:if test="${not empty successMessage}">
+                <p>${successMessage}</p>
+            </c:if>
+        </div>
+        <!-- Error Message Container -->
+        <div id="errorMessage" style="color: red; margin-bottom: 15px;">
+            <c:if test="${not empty requestScope.errorMessage}">
+                <p>${requestScope.errorMessage}</p>
+            </c:if>
+        </div>
         <!-- General Information -->
-        <form class="mb-4 admin-manage-fieldset" action="${pageContext.servletContext.contextPath}/manage-customers" method="POST">
+        <form class="mb-4 admin-manage-fieldset" action="${pageContext.servletContext.contextPath}/manage-customers" id="customerEditForm" method="POST">
             <input type="hidden" name="action" value="edit"/>
+            <input type="hidden" name="id" value="${thisCustomer.customerId}"/>
             <legend class="admin-manage-subtitle">Customer Information</legend>
             <div class="row g-3">
                 <!-- If offensive or misleading (e.g., hate speech, impersonation) -->
@@ -38,7 +50,7 @@
                 <!-- If it includes slurs, fake names, or inappropriate language -->
                 <div class="col-md-6">
                     <label class="form-label admin-manage-label">Full Name</label>
-                    <input type="text" class="form-control admin-manage-input" name="full_name" value="${thisCustomer.fullName}">
+                    <input type="text" class="form-control admin-manage-input" name="fullName" value="${thisCustomer.fullName}">
                 </div>
                 <!-- To blank or anonymize if it’s spammy or fake -->
                 <div class="col-md-6">
@@ -77,10 +89,10 @@
 </main>
 
 <script>
-    document.querySelector('form[action$="manage-customers"]').addEventListener('submit', function (e) {
+    document.getElementById('customerEditForm').addEventListener('submit', function (e) {
         const username = this.querySelector('[name="username"]').value.trim();
         const email = this.querySelector('[name="email"]').value.trim();
-        const fullName = this.querySelector('[name="full_name"]').value.trim();
+        const fullName = this.querySelector('[name="fullName"]').value.trim();
         const phone = this.querySelector('[name="phone"]').value.trim();
 
         // Username - required
