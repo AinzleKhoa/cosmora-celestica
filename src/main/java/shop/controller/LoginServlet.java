@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
     }
 
     /**
@@ -73,21 +73,21 @@ public class LoginServlet extends HttpServlet {
                     request.setAttribute("email", email);
                     request.setAttribute("password", password);
                     request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
-                    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 }
             } else {
                 // If account is deactivated, set error message and forward to login page
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("errorMessage", "Your account is locked. Please contact us for more information.");
-                request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             }
         } else {
             // If email doesn't exist, set error message and forward to login page
             request.setAttribute("email", email);
             request.setAttribute("password", password);
             request.setAttribute("errorMessage", "Email doesn't exist.");
-            request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
         }
     }
 

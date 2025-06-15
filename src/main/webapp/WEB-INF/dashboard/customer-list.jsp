@@ -1,0 +1,113 @@
+<%-- 
+    Document   : customer-list
+    Created on : Jun 14, 2025, 12:30:33 PM
+    Author     : Le Anh Khoa - CE190449
+--%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<main class="admin-main">
+
+    <div class="table-header">
+        <h2 class="table-title">Manage Customers</h2>
+    </div>
+
+    <c:choose>
+        <c:when test="${empty requestScope.paginatedList}">
+            <p class="sign__empty">The list is empty</p>
+        </c:when>
+        <c:otherwise>
+            <section class="admin-header">
+                <div class="admin-header-top">
+                    <div class="search-filter-wrapper" style="display: flex; margin-left: auto;">
+                        <input type="text" class="search-input" placeholder="Enter customer name...">
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-table-wrapper">
+                <div class="table-responsive shadow-sm rounded overflow-hidden">
+                    <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light text-dark">
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Fullname</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Email Verified</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="customer" items="${requestScope.paginatedList}">
+                                <tr>
+                                    <td><img src="${customer.avatarUrl}" alt="Avatar" class="avatar-img"></td>
+                                    <td>${customer.customerId}</td>
+                                    <td>${customer.fullName}</td>
+                                    <td>${customer.username}</td>
+                                    <td>${customer.email}</td>
+                                    <td>                            
+                                        <span class="badge-status ${customer.isDeactivated ? 'badge-suspend' : 'badge-active'}">
+                                            ${customer.isDeactivated ? 'Suspended' : 'Active'}
+                                        </span>
+                                    </td>
+                                    <td>                            
+                                        <span class="badge-status ${customer.emailVerified ? 'badge-suspend' : 'badge-active'}">
+                                            ${customer.emailVerified ? 'No' : 'Yes'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="table-actions-center">
+                                            <a class="btn-action btn-details" href="./admin-customer-details.html">Details</a>
+                                            <a class="btn-action btn-edit" href="./admin-customer-edit.html">Edit</a>
+                                            <a class="btn-action btn-delete" href="./admin-customer-delete.html">Delete</a>
+                                            <a class="btn-action btn-history" href="./admin-customer-orderhistory.html">Order
+                                                History</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Pagination -->
+            <nav class="admin-pagination">
+                <ul class="pagination">
+                    <!-- Previous button -->
+                    <li class="page-item ${requestScope.currentPage == 1 ? 'disabled' : ''}">
+                        <c:choose>
+                            <c:when test="${requestScope.currentPage == 1}">
+                                <a class="page-link">«</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="page-link" href="?page=${requestScope.currentPage - 1}">«</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </li>
+                    <c:forEach begin="1" end="${requestScope.totalPages}" var="pageNum">
+                        <li class="page-item ${currentPage == pageNum ? 'active' : ''}">
+                            <a class="page-link" href="?page=${pageNum}">${pageNum}</a>
+                        </li>
+                    </c:forEach>
+                    <li class="page-item ${requestScope.currentPage == requestScope.totalPages ? 'disabled' : ''}">
+                        <c:choose>
+                            <c:when test="${requestScope.currentPage == requestScope.totalPages}">
+                                <a class="page-link">»</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="page-link" href="?page=${requestScope.currentPage + 1}">»</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </li>
+                </ul>
+            </nav>
+        </c:otherwise>
+    </c:choose>
+</main>
+<%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
