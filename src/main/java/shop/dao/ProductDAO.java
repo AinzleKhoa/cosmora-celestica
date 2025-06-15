@@ -34,9 +34,8 @@ public class ProductDAO extends DBContext {
     }
 
     public void addFullGameProduct(Product product, GameDetails gameDetails, List<String> imageUrls, String[] platformIds, String[] osIds, String[] newKeys) throws SQLException {
-        Connection conn = null;
         try {
-            conn = new DBContext().getConnection();
+
             conn.setAutoCommit(false);
 
             int gameDetailsId = getNextId(conn, "game_details", "game_details_id");
@@ -58,7 +57,11 @@ public class ProductDAO extends DBContext {
                 ps.setBigDecimal(4, product.getPrice());
                 ps.setInt(5, product.getQuantity());
                 ps.setInt(6, product.getCategoryId());
-                ps.setNull(7, Types.INTEGER);
+                if (product.getBrandId() != null) {
+                    ps.setInt(7, product.getBrandId());
+                } else {
+                    ps.setNull(7, Types.INTEGER);
+                }
                 ps.setInt(8, gameDetailsId);
                 ps.executeUpdate();
             }
@@ -78,45 +81,60 @@ public class ProductDAO extends DBContext {
             }
 
             if (platformIds != null && platformIds.length > 0) {
-                int nextPlatformId = getNextId(conn, "store_platform", "platform_id");
+                StorePlatformDAO platformDao = new StorePlatformDAO();
+                int nextPlatformEntryId = getNextId(conn, "store_platform", "platform_id"); // Get starting ID for platform batch
                 String sqlPlatform = "INSERT INTO store_platform (platform_id, game_details_id, store_OS_name) VALUES (?, ?, ?)";
                 try ( PreparedStatement ps = conn.prepareStatement(sqlPlatform)) {
-                    for (String pId : platformIds) {
-                        ps.setInt(1, nextPlatformId++);
-                        ps.setInt(2, gameDetailsId);
-                        ps.setString(3, "Platform " + pId);
-                        ps.addBatch();
+                    for (String pIdStr : platformIds) {
+                        int pId = Integer.parseInt(pIdStr);
+                        String platformName = platformDao.getStorePlatformNameById(pId);
+
+                        if (platformName != null) {
+                            ps.setInt(1, nextPlatformEntryId++);
+                            ps.setInt(2, gameDetailsId);
+                            ps.setString(3, platformName);
+                            ps.addBatch();
+                        }
                     }
                     ps.executeBatch();
                 }
             }
 
             if (osIds != null && osIds.length > 0) {
-                int nextOsId = getNextId(conn, "operating_system", "os_id");
+                OperatingSystemDAO osDao = new OperatingSystemDAO();
+                int nextOsEntryId = getNextId(conn, "operating_system", "os_id");
                 String sqlOs = "INSERT INTO operating_system (os_id, game_details_id, os_name) VALUES (?, ?, ?)";
                 try ( PreparedStatement ps = conn.prepareStatement(sqlOs)) {
-                    for (String oId : osIds) {
-                        ps.setInt(1, nextOsId++);
-                        ps.setInt(2, gameDetailsId);
-                        ps.setString(3, "OS " + oId);
-                        ps.addBatch();
+                    for (String oIdStr : osIds) {
+                        int oId = Integer.parseInt(oIdStr);
+
+                        String osName = osDao.getOsNameById(oId);
+
+                        if (osName != null) {
+                            ps.setInt(1, nextOsEntryId++);
+                            ps.setInt(2, gameDetailsId);
+                            ps.setString(3, osName);
+                            ps.addBatch();
+                        }
                     }
                     ps.executeBatch();
                 }
             }
 
-            int nextKeyId = getNextId(conn, "game_key", "game_key_id");
-            String sqlKey = "INSERT INTO game_key (game_key_id, game_details_id, key_code) VALUES (?, ?, ?)";
-            try ( PreparedStatement ps = conn.prepareStatement(sqlKey)) {
-                for (String key : newKeys) {
-                    if (key != null && !key.trim().isEmpty()) {
-                        ps.setInt(1, nextKeyId++);
-                        ps.setInt(2, gameDetailsId);
-                        ps.setString(3, key.trim());
-                        ps.addBatch();
+            if (newKeys != null && newKeys.length > 0) {
+                int nextKeyId = getNextId(conn, "game_key", "game_key_id");
+                String sqlKey = "INSERT INTO game_key (game_key_id, game_details_id, key_code) VALUES (?, ?, ?)";
+                try ( PreparedStatement ps = conn.prepareStatement(sqlKey)) {
+                    for (String key : newKeys) {
+                        if (key != null && !key.trim().isEmpty()) {
+                            ps.setInt(1, nextKeyId++);
+                            ps.setInt(2, gameDetailsId);
+                            ps.setString(3, key.trim());
+                            ps.addBatch();
+                        }
                     }
+                    ps.executeBatch();
                 }
-                ps.executeBatch();
             }
 
             conn.commit();
@@ -369,7 +387,6 @@ public class ProductDAO extends DBContext {
     public void updateProduct(Product product, GameDetails gameDetails, List<ProductAttribute> attributes,
             List<String> newImageUrls, String[] platformIds, String[] osIds, String[] newKeys) throws SQLException {
 
-        Connection conn = null;
         try {
             conn = new DBContext().getConnection();
             conn.setAutoCommit(false);
@@ -412,15 +429,23 @@ public class ProductDAO extends DBContext {
                     ps.setInt(1, gameDetailsId);
                     ps.executeUpdate();
                 }
-                if (platformIds != null) {
-                    int nextPlatformId = getNextId(conn, "store_platform", "platform_id");
-                    String sqlInsertPlatform = "INSERT INTO store_platform (platform_id, game_details_id, store_OS_name) VALUES (?, ?, ?)";
-                    try ( PreparedStatement ps = conn.prepareStatement(sqlInsertPlatform)) {
-                        for (String pId : platformIds) {
-                            ps.setInt(1, nextPlatformId++);
-                            ps.setInt(2, gameDetailsId);
-                            ps.setString(3, "Platform-" + pId);
-                            ps.addBatch();
+
+                if (platformIds != null && platformIds.length > 0) {
+                    StorePlatformDAO platformDao = new StorePlatformDAO();
+                    int nextPlatformEntryId = getNextId(conn, "store_platform", "platform_id");
+                    String sqlPlatform = "INSERT INTO store_platform (platform_id, game_details_id, store_OS_name) VALUES (?, ?, ?)";
+                    try ( PreparedStatement ps = conn.prepareStatement(sqlPlatform)) {
+                        for (String pIdStr : platformIds) {
+                            int pId = Integer.parseInt(pIdStr);
+
+                            String platformName = platformDao.getStorePlatformNameById(pId);
+
+                            if (platformName != null) {
+                                ps.setInt(1, nextPlatformEntryId++);
+                                ps.setInt(2, gameDetailsId);
+                                ps.setString(3, platformName);
+                                ps.addBatch();
+                            }
                         }
                         ps.executeBatch();
                     }
@@ -431,15 +456,42 @@ public class ProductDAO extends DBContext {
                     ps.setInt(1, gameDetailsId);
                     ps.executeUpdate();
                 }
-                if (osIds != null) {
-                    int nextOsId = getNextId(conn, "operating_system", "os_id");
-                    String sqlInsertOs = "INSERT INTO operating_system (os_id, game_details_id, os_name) VALUES (?, ?, ?)";
-                    try ( PreparedStatement ps = conn.prepareStatement(sqlInsertOs)) {
-                        for (String oId : osIds) {
-                            ps.setInt(1, nextOsId++);
-                            ps.setInt(2, gameDetailsId);
-                            ps.setString(3, "OS-" + oId);
-                            ps.addBatch();
+
+                if (platformIds != null && platformIds.length > 0) {
+                    StorePlatformDAO platformDao = new StorePlatformDAO();
+                    int nextPlatformEntryId = getNextId(conn, "store_platform", "platform_id");
+                    String sqlPlatform = "INSERT INTO store_platform (platform_id, game_details_id, store_OS_name) VALUES (?, ?, ?)";
+                    try ( PreparedStatement ps = conn.prepareStatement(sqlPlatform)) {
+                        for (String pIdStr : platformIds) {
+                            int pId = Integer.parseInt(pIdStr);
+
+                            String platformName = platformDao.getStorePlatformNameById(pId);
+
+                            if (platformName != null) {
+                                ps.setInt(1, nextPlatformEntryId++);
+                                ps.setInt(2, gameDetailsId);
+                                ps.setString(3, platformName);
+                                ps.addBatch();
+                            }
+                        }
+                        ps.executeBatch();
+                    }
+                }
+
+                if (osIds != null && osIds.length > 0) {
+                    OperatingSystemDAO osDao = new OperatingSystemDAO();
+                    int nextOsEntryId = getNextId(conn, "operating_system", "os_id");
+                    String sqlOs = "INSERT INTO operating_system (os_id, game_details_id, os_name) VALUES (?, ?, ?)";
+                    try ( PreparedStatement ps = conn.prepareStatement(sqlOs)) {
+                        for (String oIdStr : osIds) {
+                            int oId = Integer.parseInt(oIdStr);
+                            String osName = osDao.getOsNameById(oId);
+                            if (osName != null) {
+                                ps.setInt(1, nextOsEntryId++);
+                                ps.setInt(2, gameDetailsId);
+                                ps.setString(3, osName);
+                                ps.addBatch();
+                            }
                         }
                         ps.executeBatch();
                     }

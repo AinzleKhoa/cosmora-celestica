@@ -97,11 +97,14 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("product", existingProduct);
                     request.setAttribute("categoriesList", new CategoryDAO().getAllCategories());
                     request.setAttribute("brandsList", new BrandDAO().getAllBrands());
-                    request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
-                    request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
+
+                    StorePlatformDAO platformDAO = new StorePlatformDAO();
+                    OperatingSystemDAO osDAO = new OperatingSystemDAO();
+
+                    request.setAttribute("allPlatforms", platformDAO.getAllPlatforms());
+                    request.setAttribute("allOS", osDAO.getAllOperatingSystems());
 
                     GameDetails gameDetails = existingProduct.getGameDetails();
-
                     request.setAttribute("gameDetails", gameDetails);
 
                     if (existingProduct.getGameDetailsId() != null && existingProduct.getGameDetailsId() > 0) {
@@ -111,17 +114,23 @@ public class ProductServlet extends HttpServlet {
                         List<GameKey> gameKeys = gameKeyDAO.findByGameDetailsId(gameDetailsId);
                         request.setAttribute("gameKeys", gameKeys);
 
-                        List<StorePlatform> selectedPlatforms = new StorePlatformDAO().findByGameDetailsId(gameDetailsId);
+                        List<StorePlatform> selectedPlatforms = platformDAO.findByGameDetailsId(gameDetailsId);
                         Set<Integer> selectedPlatformIds = new HashSet<>();
                         for (StorePlatform p : selectedPlatforms) {
-                            selectedPlatformIds.add(p.getPlatformId());
+                            int masterId = platformDAO.getMasterStorePlatformIdByName(p.getStoreOSName());
+                            if (masterId != -1) {
+                                selectedPlatformIds.add(masterId);
+                            }
                         }
                         request.setAttribute("selectedPlatformIds", selectedPlatformIds);
 
-                        List<OperatingSystem> selectedOS = new OperatingSystemDAO().findByGameDetailsId(gameDetailsId);
+                        List<OperatingSystem> selectedOS = osDAO.findByGameDetailsId(gameDetailsId);
                         Set<Integer> selectedOsIds = new HashSet<>();
                         for (OperatingSystem os : selectedOS) {
-                            selectedOsIds.add(os.getOsId());
+                            int masterId = osDAO.getMasterOsIdByName(os.getOsName());
+                            if (masterId != -1) {
+                                selectedOsIds.add(masterId);
+                            }
                         }
                         request.setAttribute("selectedOsIds", selectedOsIds);
                     }
@@ -144,13 +153,11 @@ public class ProductServlet extends HttpServlet {
                     ProductDAO productDAO = new ProductDAO();
                     Product product = productDAO.getProductById(id);
 
-                    // If product is null, redirect to list page
                     if (product == null) {
                         response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                         return;
                     }
 
-                    // For Game products, fetch additional details
                     if ("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetailsId() != null && product.getGameDetailsId() > 0) {
                         int gameDetailsId = product.getGameDetailsId();
 
@@ -159,12 +166,32 @@ public class ProductServlet extends HttpServlet {
                         request.setAttribute("gameKeys", gameKeys);
 
                         StorePlatformDAO platformDAO = new StorePlatformDAO();
-                        List<StorePlatform> platforms = platformDAO.findByGameDetailsId(gameDetailsId);
-                        request.setAttribute("platforms", platforms);
+                        List<StorePlatform> rawPlatforms = platformDAO.findByGameDetailsId(gameDetailsId);
+                        List<StorePlatform> distinctPlatforms = new ArrayList<>();
+                        HashSet<String> seenPlatformNames = new HashSet<>();
+                        for (StorePlatform platform : rawPlatforms) {
+                            if (!seenPlatformNames.contains(platform.getStoreOSName())) {
+                                distinctPlatforms.add(platform);
+                                seenPlatformNames.add(platform.getStoreOSName());
+                            }
+                        }
+                        request.setAttribute("platforms", distinctPlatforms);
 
                         OperatingSystemDAO osDAO = new OperatingSystemDAO();
-                        List<OperatingSystem> operatingSystems = osDAO.findByGameDetailsId(gameDetailsId);
-                        request.setAttribute("operatingSystems", operatingSystems);
+                        List<OperatingSystem> rawOperatingSystems = osDAO.findByGameDetailsId(gameDetailsId);
+                        List<OperatingSystem> distinctOperatingSystems = new ArrayList<>();
+                        HashSet<String> seenOsNames = new HashSet<>();
+                        for (OperatingSystem os : rawOperatingSystems) {
+                            if (!seenOsNames.contains(os.getOsName())) {
+                                distinctOperatingSystems.add(os);
+                                seenOsNames.add(os.getOsName());
+                            }
+                        }
+                        request.setAttribute("operatingSystems", distinctOperatingSystems);
+                    } else {
+                        request.setAttribute("gameKeys", new ArrayList<GameKey>());
+                        request.setAttribute("platforms", new ArrayList<StorePlatform>());
+                        request.setAttribute("operatingSystems", new ArrayList<OperatingSystem>());
                     }
 
                     Locale localeVN = new Locale("vi", "VN");
@@ -178,7 +205,7 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("product", product);
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-details.jsp").forward(request, response);
                     break;
-                }           
+                }
                 case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
