@@ -25,7 +25,7 @@ import shop.model.Product;
  *
  * @author ADMIN
  */
-@WebServlet(name = "OrderDashboard", urlPatterns = {"/manage-orders"})
+@WebServlet(name = "OrderServlet", urlPatterns = {"/manage-orders"})
 public class OrderServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -93,7 +93,7 @@ public class OrderServlet extends HttpServlet {
             OrderDAO OD = new OrderDAO();
             try {
                 if (OD.updateOrderStatus(status, orderId) == 1) {
-                    response.sendRedirect(request.getContextPath() + "/orderdashboard");
+                    response.sendRedirect(request.getContextPath() + "/manage-orders");
 
                 }
 
