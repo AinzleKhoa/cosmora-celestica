@@ -1,7 +1,7 @@
 <%--
     Document   : product-edit.jsp
     Created on : Jun 10, 2025 ,10:55:00 PM
-    Author     : HoangSang 
+    Author     : HoangSang
 --%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/bootstrap-grid.min.css">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
 <%
     Product product = (Product) request.getAttribute("product");
     List<Category> categories = (List<Category>) request.getAttribute("categoriesList");
@@ -34,8 +35,7 @@
     Set<Integer> selectedOsIds = (Set<Integer>) request.getAttribute("selectedOsIds");
 %>
 
-
-<main class="main main_2">
+<main class="main main_2 container my-5">
     <div class="table-header d-flex justify-content-between align-items-center">
         <h2 class="table-title">Edit Product: <%= (product != null) ? product.getName() : ""%></h2>
         <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Back</a>
@@ -55,7 +55,7 @@
             <h3 class="form-card__title">General Information</h3>
             <div class="row g-4">
                 <div class="col-md-12"><label class="form-label admin-manage-label">Product Name</label><input type="text" class="form-control admin-manage-input" name="name" value="<%= product.getName()%>" required></div>
-                <div class="col-md-6"><label class="form-label admin-manage-label">Price (VND)</label><input type="number" step="1000" class="form-control admin-manage-input" name="price" value="<%= product.getPrice()%>" required></div>
+                <div class="col-md-6"><label class="form-label admin-manage-label">Price (VND)</label><input type="number"  class="form-control admin-manage-input" name="price" value="<%= product.getPrice()%>" required></div>
                 <div class="col-md-6"><label class="form-label admin-manage-label">Quantity</label><input type="number" class="form-control admin-manage-input" name="quantity" value="<%= product.getQuantity()%>" required></div>
                 <div class="col-12"><label class="form-label admin-manage-label">Description</label><textarea class="form-control admin-manage-input" name="description" rows="4"><%= product.getDescription()%></textarea></div>
             </div>
@@ -79,10 +79,10 @@
                             <i class="fas fa-cloud-upload-alt image-uploader__icon"></i>
                             <p>Click to upload</p>
                         </div>
-                        <img src="<%= (existingImageUrl != null) ? request.getContextPath() + "/assets/img/" + existingImageUrl : ""%>" 
-                             alt="Preview <%= i + 1%>" 
-                             id="preview<%= i%>" 
-                             class="image-preview" 
+                        <img src="<%= (existingImageUrl != null) ? request.getContextPath() + "/assets/img/" + existingImageUrl : ""%>"
+                             alt="Preview <%= i + 1%>"
+                             id="preview<%= i%>"
+                             class="image-preview"
                              style="<%= (existingImageUrl != null) ? "display: block;" : "display: none;"%>">
                         <input type="file" class="form-control-file" id="productImage<%= i%>" name="productImages" accept="image/*">
                         <button type="button" class="remove-image-btn" id="removeBtn<%= i%>" style="<%= (existingImageUrl != null) ? "display: flex;" : "display: none;"%>">&times;</button>
@@ -152,7 +152,7 @@
                                     <label class="form-check-label" for="platform_<%= platform.getPlatformId()%>"><%= platform.getStoreOSName()%></label>
                                 </div>
                                 <% }
-                                } else { %>
+                                    } else { %>
                                 <p class="text-muted">No platforms available in database.</p>
                                 <% } %>
                             </div>
@@ -170,7 +170,7 @@
                                     <label class="form-check-label" for="os_<%= os.getOsId()%>"><%= os.getOsName()%></label>
                                 </div>
                                 <% }
-                                } else { %>
+                                    } else { %>
                                 <p class="text-muted">No OS available in database.</p>
                                 <% } %>
                             </div>
@@ -180,23 +180,24 @@
 
                 <div class="form-card">
                     <h3 class="form-card__title">Game Keys</h3>
-                    <div class="col-12">
-                        <label class="form-label admin-manage-label"></label>
+                    <div class="p-3">
+                        <label class="form-label admin-manage-label">Existing Keys (<%= (gameKeys != null ? gameKeys.size() : 0) %>)</label>
                         <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
                         <ul class="game-key-list">
                             <% for (GameKey key : gameKeys) {%>
                             <li><%= key.getKeyCode()%></li>
-                                <% } %>
+                            <% } %>
                         </ul>
                         <% } else { %>
                         <p class="text-muted">No keys found for this game.</p>
                         <% }%>
+                        
+                        <div class="mt-3">
+                            <label class="form-label admin-manage-label">Add New Keys (one per line)</label>
+                            <textarea class="form-control admin-manage-input" name="newGameKeys" rows="5" placeholder="Enter new keys here, one key per line..."></textarea>
+                        </div>
                     </div>
-                    <div class="col-12 mt-3">
-                        <label class="form-label admin-manage-label">Add New Keys (one per line)</label>
-                        <textarea class="form-control admin-manage-input" name="newGameKeys" rows="5" placeholder="Enter new keys here, one key per line..."></textarea>
                     </div>
-                </div>
             </div>
 
             <div id="accessoryFields" style="display: none;">
