@@ -33,8 +33,8 @@
                 <tbody>
                     <tr>
                         <td><%= request.getParameter("order_id")%></td>
-                        <td><%= order.getCustomerName() %></td>
-                        <td><%= order.getCustomerEmail() %></td>
+                        <td><%= order.getCustomerName()%></td>
+                        <td><%= order.getCustomerEmail()%></td>
                         <td><%= order.getOrderDate()%></td>
                         <td><%= order.getTotalAmount()%></td>
                         <td><span class="badge-status"><%= order.getStatus()%></span></td>
@@ -77,9 +77,9 @@
             </table>
         </div>
     </section>
-    <a href="<%= request.getContextPath()%>/manage-orders" class="admin-manage-back">
-        <i class="fas fa-arrow-left mr-1"></i> Back
-    </a>
+    <button onclick="history.back()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
+        ⬅ Back
+    </button>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
