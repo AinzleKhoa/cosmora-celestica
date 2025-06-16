@@ -9,123 +9,137 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
-        <main class="admin-main">
+<main class="admin-main">
 
-            <div class="table-header">
-                <h2 class="table-title">Manage Staffs</h2>
-            </div>
+    <div class="table-header">
+        <h2 class="table-title">Manage Staffs</h2>
+    </div>
 
-            <section class="admin-header">
-                <div class="admin-header-top">
-                    <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/manage-staffs?view=create">+ Add New Staff</a>
+    <section class="admin-header">
+        <div class="admin-header-top">
+            <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/manage-staffs?view=create">+ Add New Staff</a>
 
-                    <!-- Form search -->
-                    <form action="${pageContext.servletContext.contextPath}/manage-staffs" method="POST" class="search-filter-wrapper">
-                        <input type="text" class="search-input" name="keyWord" placeholder="Enter staff name...">
-                        <input type="hidden" class="search-input" name="action" value="search" placeholder="Enter staff name...">
-                       
-                        <button class="search-btn" type="submit">Search</button>
-                    </form>
-                </div>
+            <!-- Form search -->
+            <form action="${pageContext.servletContext.contextPath}/manage-staffs" method="POST" class="search-filter-wrapper">
+                <input type="text" class="search-input" name="keyWord" placeholder="Enter staff name...">
+                <input type="hidden" class="search-input" name="action" value="search" placeholder="Enter staff name...">
 
-                <div class="main-filter">
-                    <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
-                    <select class="admin-filter-select">
-                        <option value="ascending">A-Z</option>
-                        <option value="descending">Z-A</option>
-                    </select>
-                    <select class="admin-filter-select">
-                        <option value="all">All Dates</option>
-                        <option value="last30">Last 30 Days</option>
-                        <option value="lastYear">Last Year</option>
-                    </select>
-                    <select class="admin-filter-select">
-                        <option value="all">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="suspended">Suspended</option>
-                    </select>
-                </div>
-            </section>
+                <button class="search-btn" type="submit">Search</button>
+            </form>
+        </div>
 
-            <section class="admin-table-wrapper">
-                <div class="table-responsive shadow-sm rounded overflow-hidden">
-                    <table class="table table-dark table-bordered table-hover align-middle mb-0">
-                        <thead class="table-light text-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Image Staff</th>
-                                <th>Full Name</th>
+        <div class="main-filter">
+            <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
+            <select class="admin-filter-select">
+                <option value="ascending">A-Z</option>
+                <option value="descending">Z-A</option>
+            </select>
+            <select class="admin-filter-select">
+                <option value="all">All Dates</option>
+                <option value="last30">Last 30 Days</option>
+                <option value="lastYear">Last Year</option>
+            </select>
+            <select class="admin-filter-select">
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+            </select>
+        </div>
+    </section>
 
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th style="text-align: center;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <%
-                                List<Staff> staffs = (List<Staff>) request.getAttribute("s");
-                                if (staffs == null || staffs.isEmpty()) {
-                            %>
-                            <tr>
-                                <td colspan="8" class="text-center text-danger">No Staff Found</td>
-                            </tr>
-                            <%
-                            } else {
-                                for (Staff s : staffs) {
-                            %>
-                            <tr>
-                                <td><%= s.getId()%></td>
+    <section class="admin-table-wrapper">
+        <div class="table-responsive shadow-sm rounded overflow-hidden">
+            <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                <thead class="table-light text-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Image Staff</th>
+                        <th>Full Name</th>
 
-                                <td>
-                                    <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
-                                         alt="Avatar" 
-                                         style="width: 150px; height: 140px; border: 50px;">
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th style="text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                        List<Staff> staffs = (List<Staff>) request.getAttribute("s");
+                        if (staffs == null || staffs.isEmpty()) {
+                    %>
+                    <tr>
+                        <td colspan="8" class="text-center text-danger">No Staff Found</td>
+                    </tr>
+                    <%
+                    } else {
+                        for (Staff s : staffs) {
+                    %>
+                    <tr>
+                        <td><%= s.getId()%></td>
 
-                                </td>
-                                <td><%= s.getUserName()%></td>
-                                <td><%= s.getEmail()%></td>
-                                <td><%= s.getRole()%></td>
-                                <td><span class="badge-status">Active</span></td>
-                                <td>
-                                    <div class="table-actions-center">
-                                        <a class="btn-action btn-details" href="staff-details?id=<%= s.getId()%>">Details</a>
-                                        <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/manage-staffs?view=edit&id=<%= s.getId()%>">Edit</a>
-                                        <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/manage-staffs?view=delete&id=<%= s.getId()%>">Delete</a>
-                                        <a class="btn-action btn-history" href="staff-activitylog?id=<%= s.getId()%>">Activity Log</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <%
-                                    }
-                                }
-                            %>
-                        </tbody>
+                        <td>
+                            <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
+                                 alt="Avatar" 
+                                 style="width: 150px; height: 140px; border: 50px;">
 
-                    </table>
-                </div>
+                        </td>
+                        <td><%= s.getUserName()%></td>
+                        <td><%= s.getEmail()%></td>
+                        <td><%= s.getRole()%></td>
+                        <td><span class="badge-status">Active</span></td>
+                        <td>
+                            <div class="table-actions-center">
+                                <a class="btn-action btn-details" href="staff-details?id=<%= s.getId()%>">Details</a>
+                                <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/manage-staffs?view=edit&id=<%= s.getId()%>">Edit</a>
+                                <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/manage-staffs?view=delete&id=<%= s.getId()%>">Delete</a>
+                                <a class="btn-action btn-history" href="staff-activitylog?id=<%= s.getId()%>">Activity Log</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        }
+                    %>
+                </tbody>
 
-            </section>
+            </table>
+        </div>
 
-            <!-- Pagination -->
-            <nav class="admin-pagination">
-                <ul class="pagination">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#">«</a>
-                    </li>
-                    <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">»</a>
-                    </li>
-                </ul>
-            </nav>
-        </main>
+    </section>
+
+    <!-- Pagination -->
+    <%
+        int currentPage = 1;
+        if (request.getParameter("page") != null) {
+            currentPage = Integer.parseInt(request.getParameter("page"));
+        }
+
+        Object numAttr = request.getAttribute("numOfPage");
+        int totalPage = (numAttr != null) ? Integer.parseInt(numAttr.toString()) : 1;
+        String baseUrl = request.getContextPath() + "/manage-staffs?view=list&page=";
+    %>
+
+    <%-- Debug check --%>
+    <p>Current Page: <%= currentPage%></p>
+    <p>Total Pages: <%= totalPage%></p>
+
+    <nav class="admin-pagination">
+        <ul class="pagination">
+            <li class="page-item <%= (currentPage == 1) ? "disabled" : ""%>">
+                <a class="page-link" href="<%= baseUrl + (currentPage - 1)%>">«</a>
+            </li>
+
+            <% for (int i = 1; i <= totalPage; i++) {%>
+            <li class="page-item <%= (i == currentPage) ? "active" : ""%>">
+                <a class="page-link" href="<%= baseUrl + i%>"><%= i%></a>
+            </li>
+            <% }%>
+
+            <li class="page-item <%= (currentPage == totalPage) ? "disabled" : ""%>">
+                <a class="page-link" href="<%= baseUrl + (currentPage + 1)%>">»</a>
+            </li>
+        </ul>
+    </nav>
+
+</main>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

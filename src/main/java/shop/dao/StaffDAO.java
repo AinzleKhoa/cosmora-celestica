@@ -12,34 +12,67 @@ import java.util.logging.Level;
 import shop.db.DBContext;
 import shop.model.Staff;
 import java.util.logging.Logger;
+import shop.controller.StaffServlet;
 
 /**
  *
- * @author VICTUS
+ * @author PHUCHH CE180985
  */
 public class StaffDAO extends DBContext {
 
-    public ArrayList<Staff> getList() {
-        ArrayList<Staff> staffs = new ArrayList<>();
-        String query = "SELECT * FROM staff";
-        try ( ResultSet rs = execSelectQuery(query)) {
-            while (rs.next()) {
-                staffs.add(new Staff(
-                        rs.getInt("staff_id"), // staff_id
-                        rs.getString("username"), // username
-                        rs.getString("email"), // email
-                        rs.getString("password_hash"), // password_hash
-                        rs.getString("phone"), // phone
-                        rs.getString("role"), // role
-                        rs.getDate("date_of_birth"), // date_of_birth
-                        rs.getString("avatar_url") // avatar_url
-                ));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
+//    public ArrayList<Staff> getList() {
+//        ArrayList<Staff> staffs = new ArrayList<>();
+//        String query = "SELECT * FROM staff";
+//        try ( ResultSet rs = execSelectQuery(query)) {
+//            while (rs.next()) {
+//                staffs.add(new Staff(
+//                        rs.getInt("staff_id"), // staff_id
+//                        rs.getString("username"), // username
+//                        rs.getString("email"), // email
+//                        rs.getString("password_hash"), // password_hash
+//                        rs.getString("phone"), // phone
+//                        rs.getString("role"), // role
+//                        rs.getDate("date_of_birth"), // date_of_birth
+//                        rs.getString("avatar_url") // avatar_url
+//                ));
+//            }
+//        } catch (SQLException ex) {
+//            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return staffs;
+//    }
+    
+    public ArrayList<Staff> getList(int currentPage) {
+    ArrayList<Staff> staffs = new ArrayList<>();
+    String query = "SELECT * FROM staff " +
+                   "ORDER BY staff_id " +
+                   "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+    Object[] params = {
+        (currentPage - 1) * StaffServlet.PAGE_SIZE,
+        StaffServlet.PAGE_SIZE
+    };
+
+    try (ResultSet rs = execSelectQuery(query, params)) {
+        while (rs.next()) {
+            staffs.add(new Staff(
+                rs.getInt("staff_id"),
+                rs.getString("username"),
+                rs.getString("email"),
+                rs.getString("password_hash"),
+                rs.getString("phone"),
+                rs.getString("role"),
+                rs.getDate("date_of_birth"),
+                rs.getString("avatar_url")
+            ));
         }
-        return staffs;
+    } catch (SQLException ex) {
+        Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+    return staffs;
+}
+
 
     public int create(Staff staff) {
         try {
@@ -148,6 +181,22 @@ public class StaffDAO extends DBContext {
      
 
         return staffs;
+    }
+    
+        //row count
+    public int countStaffs() {
+        try {
+            String query = "SELECT COUNT(*) FROM Staff";
+            ResultSet rs = execSelectQuery(query);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
     }
 
 }
