@@ -38,6 +38,8 @@ import shop.model.Staff;
 )
 public class StaffServlet extends HttpServlet {
 
+    public static final int PAGE_SIZE = 10;
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -52,9 +54,19 @@ public class StaffServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("list")) {
+
+            int page = 1;
+            if (request.getParameter("page") != null) {
+                page = Integer.parseInt(request.getParameter("page"));
+            }
+
             StaffDAO sDAO = new StaffDAO();
-            ArrayList<Staff> sList = sDAO.getList();
+            ArrayList<Staff> sList = sDAO.getList(page);
             request.setAttribute("s", sList);
+
+            int numOfPage = (int) Math.ceil((double) sDAO.countStaffs() / PAGE_SIZE);
+            request.setAttribute("numOfPage", numOfPage);
+
             request.getRequestDispatcher("/WEB-INF/dashboard/staff-list.jsp").forward(request, response);
 
         } else if (view.equals("create")) {
