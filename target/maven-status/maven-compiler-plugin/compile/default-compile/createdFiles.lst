@@ -1,3 +1,4 @@
+shop\filter\AdminStaffAuthFilter.class
 shop\dao\StaffDAO.class
 shop\controller\VoucherServlet.class
 shop\controller\ProductServlet.class
@@ -5,6 +6,7 @@ shop\util\EmailUtils$1.class
 shop\model\Staff.class
 shop\dao\ProductDAO.class
 shop\controller\StaffServlet.class
+shop\util\SessionUtil.class
 shop\model\GameDetails.class
 shop\model\Image.class
 shop\dao\StorePlatformDAO.class
@@ -38,6 +40,7 @@ shop\util\PasswordUtils.class
 shop\controller\ForgotPasswordServlet.class
 shop\dao\AttributeDAO.class
 shop\model\Brand.class
+shop\filter\CustomerAuthFilter.class
 shop\model\Category.class
 shop\controller\OrderServlet.class
 shop\dao\GameKeyDAO.class

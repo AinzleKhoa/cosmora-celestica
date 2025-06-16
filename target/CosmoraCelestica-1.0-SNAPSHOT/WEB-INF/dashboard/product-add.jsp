@@ -11,8 +11,9 @@
 <%@ page import="java.util.List" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
-<main class="main_1 container-fluid p-4 p-lg-5">
+<main class="main_1 container my-5">
 
     <div class="table-header d-flex justify-content-between align-items-center">
         <h2 class="table-title">Create New Product</h2>
@@ -275,7 +276,6 @@
             <button type="submit" class="btn admin-manage-button"><i class="fas fa-plus mr-1"></i> Create Product</button>
         </div>
     </form>
-
 </main>
 
 <script src="<%= request.getContextPath()%>/assets/js/jquery-3.5.1.min.js"></script>

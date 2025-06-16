@@ -5,6 +5,7 @@
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 <c:set var="thisCustomer" value="${requestScope.thisCustomer}"/>
@@ -36,7 +37,14 @@
                             <p class="mb-2"><strong>Full Name:</strong> ${thisCustomer.fullName}</p>
                             <p class="mb-2"><strong>Username:</strong> ${thisCustomer.username}</p>
                             <p class="mb-2"><strong>Email:</strong> ${thisCustomer.email}</p>
-                            <p class="mb-2"><strong>Phone Number:</strong> ${thisCustomer.phone}</p>
+                            <p class="mb-2"><strong>Phone Number:</strong> 
+                                <c:choose>
+                                    <c:when test="${not empty thisCustomer.phone}">
+                                        ${thisCustomer.phone}
+                                    </c:when>
+                                    <c:otherwise>Unspecified</c:otherwise>
+                                </c:choose>
+                            </p>
                             <p class="mb-2"><strong>Gender:</strong> 
                                 <c:choose>
                                     <c:when test="${thisCustomer.gender == '0'}">Male</c:when>
@@ -45,20 +53,37 @@
                                     <c:otherwise>Unspecified</c:otherwise>
                                 </c:choose>
                             </p>
-                            <p class="mb-2"><strong>Address:</strong> ${thisCustomer.address}</p>
-                            <p class="mb-2"><strong>Date of Birth:</strong> 
-                            <fmt:formatDate value="${thisCustomer.dateOfBirth}" pattern="dd MMM yyyy" />
+                            <p class="mb-2"><strong>Address:</strong>
+                                <c:choose>
+                                    <c:when test="${not empty thisCustomer.address}">
+                                        ${thisCustomer.address}
+                                    </c:when>
+                                    <c:otherwise>Unspecified</c:otherwise>
+                                </c:choose>
+                            </p>
+                            <p class="mb-2"><strong>Date of Birth:</strong>
+                                <c:choose>
+                                    <c:when test="${not empty thisCustomer.dateOfBirth}">
+                                        <fmt:formatDate value="${thisCustomer.dateOfBirth}" pattern="dd MMM yyyy" />
+                                    </c:when>
+                                    <c:otherwise>Unspecified</c:otherwise>
+                                </c:choose>
                             </p>
                         </div>
                         <div class="col-12 col-md-6">
                             <p class="mb-2"><strong>Last Login:</strong> 
-                            <fmt:formatDate value="${thisCustomer.lastLogin}" pattern="dd MMM yyyy HH:mm" />
+                                <c:choose>
+                                    <c:when test="${not empty thisCustomer.lastLogin}">
+                                        <fmt:formatDate value="${thisCustomer.lastLogin}" pattern="dd MMM yyyy HH:mm" />
+                                    </c:when>
+                                    <c:otherwise>Unspecified</c:otherwise>
+                                </c:choose>
                             </p>
                             <p class="mb-2"><strong>Account Created At:</strong> 
-                            <fmt:formatDate value="${thisCustomer.createdAt}" pattern="dd MMM yyyy HH:mm" />
+                                <fmt:formatDate value="${thisCustomer.createdAt}" pattern="dd MMM yyyy HH:mm" />
                             </p>
                             <p class="mb-2"><strong>Last Updated At:</strong> 
-                            <fmt:formatDate value="${thisCustomer.updatedAt}" pattern="dd MMM yyyy HH:mm" />
+                                <fmt:formatDate value="${thisCustomer.updatedAt}" pattern="dd MMM yyyy HH:mm" />
                             </p>
                             <p class="mb-2"><strong>Status:</strong> 
                                 <c:choose>

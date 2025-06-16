@@ -27,24 +27,6 @@
                 <button class="search-btn" type="submit">Search</button>
             </form>
         </div>
-
-        <div class="main-filter">
-            <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
-            <select class="admin-filter-select">
-                <option value="ascending">A-Z</option>
-                <option value="descending">Z-A</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Dates</option>
-                <option value="last30">Last 30 Days</option>
-                <option value="lastYear">Last Year</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-            </select>
-        </div>
     </section>
 
     <section class="admin-table-wrapper">
@@ -55,7 +37,6 @@
                         <th>ID</th>
                         <th>Image Staff</th>
                         <th>Full Name</th>
-
                         <th>Email</th>
                         <th>Role</th>
                         <th>Status</th>
@@ -78,12 +59,12 @@
                         <td><%= s.getId()%></td>
 
                         <td>
-                            <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
+                            <img src="<%= s.getAvatarUrl()%>" 
                                  alt="Avatar" 
                                  style="width: 150px; height: 140px; border: 50px;">
 
                         </td>
-                        <td><%= s.getUserName()%></td>
+                        <td><%= s.getUsername()%></td>
                         <td><%= s.getEmail()%></td>
                         <td><%= s.getRole()%></td>
                         <td><span class="badge-status">Active</span></td>
@@ -119,10 +100,6 @@
         String baseUrl = request.getContextPath() + "/manage-staffs?view=list&page=";
     %>
 
-    <%-- Debug check --%>
-    <p>Current Page: <%= currentPage%></p>
-    <p>Total Pages: <%= totalPage%></p>
-
     <nav class="admin-pagination">
         <ul class="pagination">
             <li class="page-item <%= (currentPage == 1) ? "disabled" : ""%>">
@@ -140,6 +117,5 @@
             </li>
         </ul>
     </nav>
-
 </main>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
