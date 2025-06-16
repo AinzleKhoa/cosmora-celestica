@@ -66,7 +66,12 @@
                                     </td>
                                     <td>
                                         <div class="table-actions-center">
-                                            <a class="btn-action btn-details" href="./admin-customer-details.html">Details</a>
+                                            <a class="btn-action btn-details" href="
+                                               <c:url value="/manage-customers">
+                                                   <c:param name="view" value="details"/>
+                                                   <c:param name="id" value="${customer.customerId}"/>
+                                               </c:url>
+                                               ">Details</a>
                                             <a class="btn-action btn-edit" href="
                                                <c:url value="/manage-customers">
                                                    <c:param name="view" value="edit"/>

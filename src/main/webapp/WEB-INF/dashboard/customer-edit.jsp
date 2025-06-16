@@ -31,60 +31,66 @@
                 <p>${requestScope.errorMessage}</p>
             </c:if>
         </div>
-        <!-- General Information -->
-        <form class="mb-4 admin-manage-fieldset" action="${pageContext.servletContext.contextPath}/manage-customers" id="customerEditForm" method="POST">
-            <input type="hidden" name="action" value="edit"/>
-            <input type="hidden" name="id" value="${thisCustomer.customerId}"/>
-            <legend class="admin-manage-subtitle">Customer Information</legend>
-            <div class="row g-3">
-                <!-- If offensive or misleading (e.g., hate speech, impersonation) -->
-                <div class="col-md-6">
-                    <label class="form-label admin-manage-label">Username</label>
-                    <input type="text" class="form-control admin-manage-input" name="username" value="${thisCustomer.username}" required>
+        <c:choose>
+            <c:when test="${empty thisCustomer}">
+                <p class="sign__empty">This Id does not exists.</p>
+            </c:when>
+            <c:otherwise>
+                <!-- General Information -->
+                <form class="mb-4 admin-manage-fieldset" action="${pageContext.servletContext.contextPath}/manage-customers" id="customerEditForm" method="POST">
+                    <input type="hidden" name="action" value="edit"/>
+                    <input type="hidden" name="id" value="${thisCustomer.customerId}"/>
+                    <legend class="admin-manage-subtitle">Customer Information</legend>
+                    <div class="row g-3">
+                        <!-- If offensive or misleading (e.g., hate speech, impersonation) -->
+                        <div class="col-md-6">
+                            <label class="form-label admin-manage-label">Username</label>
+                            <input type="text" class="form-control admin-manage-input" name="username" value="${thisCustomer.username}" required>
+                        </div>
+                        <!-- 	If it contains abusive text or spam patterns; or to anonymize -->
+                        <div class="col-md-6">
+                            <label class="form-label admin-manage-label">Email</label>
+                            <input type="email" class="form-control admin-manage-input" name="email" value="${thisCustomer.email}" required>
+                        </div>
+                        <!-- If it includes slurs, fake names, or inappropriate language -->
+                        <div class="col-md-6">
+                            <label class="form-label admin-manage-label">Full Name</label>
+                            <input type="text" class="form-control admin-manage-input" name="fullName" value="${thisCustomer.fullName}">
+                        </div>
+                        <!-- To blank or anonymize if it’s spammy or fake -->
+                        <div class="col-md-6">
+                            <label class="form-label admin-manage-label">Phone</label>
+                            <input type="text" class="form-control admin-manage-input" value="${thisCustomer.phone}" name="phone">
+                        </div>
+                        <!-- 	If it contains abusive content or was misused -->
+                        <div class="col-md-6">
+                            <label class="form-label admin-manage-label">Address</label>
+                            <input type="text" class="form-control admin-manage-input" value="${thisCustomer.address}" name="address">
+                        </div>
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end">
+                        <a href="
+                           <c:url value="/manage-customers">
+                               <c:param name="view" value="edit"/>
+                               <c:param name="customerId" value="${thisCustomer.customerId}"/>
+                           </c:url>
+                           " type="reset" class="btn admin-manage-reset mr-2">
+                            <i class="fas fa-xmark mr-1"></i> Reset
+                        </a>
+                        <button type="submit" class="btn admin-manage-button">
+                            <i class="fas fa-pen-to-square mr-1"></i> Edit
+                        </button>
+                    </div>
+                </form>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <!-- Back Link -->
+                    <a href="${pageContext.servletContext.contextPath}/manage-customers" class="admin-manage-back">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
                 </div>
-                <!-- 	If it contains abusive text or spam patterns; or to anonymize -->
-                <div class="col-md-6">
-                    <label class="form-label admin-manage-label">Email</label>
-                    <input type="email" class="form-control admin-manage-input" name="email" value="${thisCustomer.email}" required>
-                </div>
-                <!-- If it includes slurs, fake names, or inappropriate language -->
-                <div class="col-md-6">
-                    <label class="form-label admin-manage-label">Full Name</label>
-                    <input type="text" class="form-control admin-manage-input" name="fullName" value="${thisCustomer.fullName}">
-                </div>
-                <!-- To blank or anonymize if it’s spammy or fake -->
-                <div class="col-md-6">
-                    <label class="form-label admin-manage-label">Phone</label>
-                    <input type="text" class="form-control admin-manage-input" value="${thisCustomer.phone}" name="phone">
-                </div>
-                <!-- 	If it contains abusive content or was misused -->
-                <div class="col-md-6">
-                    <label class="form-label admin-manage-label">Address</label>
-                    <input type="text" class="form-control admin-manage-input" value="${thisCustomer.address}" name="address">
-                </div>
-            </div>
-            <!-- Action Buttons -->
-            <div class="d-flex justify-content-end">
-                <a href="
-                   <c:url value="/manage-customers">
-                       <c:param name="view" value="edit"/>
-                       <c:param name="customerId" value="${thisCustomer.customerId}"/>
-                   </c:url>
-                   " type="reset" class="btn admin-manage-reset mr-2">
-                    <i class="fas fa-xmark mr-1"></i> Reset
-                </a>
-                <button type="submit" class="btn admin-manage-button">
-                    <i class="fas fa-pen-to-square mr-1"></i> Edit
-                </button>
-            </div>
-        </form>
-
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <!-- Back Link -->
-            <a href="${pageContext.servletContext.contextPath}/manage-customers" class="admin-manage-back">
-                <i class="fas fa-arrow-left mr-1"></i> Back
-            </a>
-        </div>
+            </c:otherwise>
+        </c:choose>
     </div>
 </main>
 

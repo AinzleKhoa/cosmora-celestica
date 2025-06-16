@@ -138,12 +138,20 @@ public class OrderServlet extends HttpServlet {
                 int totalOrders = allOrders.size();
                 int totalPages = (int) Math.ceil((double) totalOrders / itemsPerPage);
 
+                // Đảm bảo currentPage nằm trong phạm vi hợp lệ
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
                 // Tính chỉ số bắt đầu và kết thúc của danh sách con
                 int startIndex = (currentPage - 1) * itemsPerPage;
                 int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
 
-                List<Order> paginatedOrders = allOrders.subList(startIndex, endIndex);
-
+                List<Order> paginatedOrders = (List<Order>) ((startIndex < endIndex)
+                        ? allOrders.subList(startIndex, endIndex)
+                        : new ArrayList<>());
                 request.setAttribute("orderlist", paginatedOrders);
                 request.setAttribute("currentPage", currentPage);
                 request.setAttribute("totalPages", totalPages);
