@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package filter;
+package shop.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -19,8 +20,8 @@ import shop.util.SessionUtil;
  *
  * @author Le Anh Khoa - CE190449
  */
-@WebFilter(filterName = "AdminStaffAuthFilter", urlPatterns = {"/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers", "/manage-discounts"})
-public class AdminStaffAuthFilter implements Filter {
+@WebFilter(filterName = "CustomerAuthFilter", urlPatterns = {"/cart", "/checkout"})
+public class CustomerAuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -29,10 +30,10 @@ public class AdminStaffAuthFilter implements Filter {
 
         if (SessionUtil.isCustomerLoggedIn(req)) {
             chain.doFilter(req, response);
-            System.out.println("Staff/Admin has logged in!");
+            System.out.println("Customer has logged in!");
         } else {
-            ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/404");
-            System.out.println("Staff/Admin not logged in! Redirecting to 404");
+            ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/login");
+            System.out.println("Customer not logged in! Redirecting to login page");
         }
     }
 }
