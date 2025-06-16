@@ -63,11 +63,19 @@ public class LoginServlet extends HttpServlet {
                 // Check password match before setting session
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
                 if (isPasswordMatched) {
-                    HttpSession session = request.getSession(true);
-                    session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
+                    if (cDAO.updateLastLoginTime(customer) > 0) {
+                        HttpSession session = request.getSession(true);
+                        session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
 
-                    // Redirect to the home page upon successful login
-                    response.sendRedirect(request.getContextPath() + "/home");
+                        // Redirect to the home page upon successful login
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        // If password doesn't match, set error message and forward to login page
+                        request.setAttribute("email", email);
+                        request.setAttribute("password", password);
+                        request.setAttribute("errorMessage", "We're unable to update your login time at the moment. Please try again later.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
                 } else {
                     // If password doesn't match, set error message and forward to login page
                     request.setAttribute("email", email);

@@ -1,15 +1,35 @@
 <%@page import="shop.model.Voucher"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+
+
+<button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">? Menu</button>
+
+<aside class="admin-sidebar">
+    <%-- Sidebar content--%>
+</aside>
 
 <%
     Voucher voucher = (Voucher) request.getAttribute("voucher");
-    int id = (Integer) request.getAttribute("id");
+    int id = voucher.getVoucherId();
 %>
 
 <main class="admin-main">
     <div class="table-header">
+
         <h2 class="table-title">Edit Voucher</h2>
+        <%
+            if (voucher == null) {
+        %>
+        <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 15px; border-radius: 5px;">
+            <strong>Error:</strong> Voucher not found.
+        </div>
+        <a href="<%= request.getContextPath()%>/manage-vouchers" class="btn btn-secondary mt-3">
+            ? Back to Voucher List
+        </a>
+        <%
+        } else {
+        %>
     </div>
     <%
         String error = (String) request.getAttribute("message");
@@ -34,19 +54,19 @@
                                name="code" placeholder="<%= voucher.getCode()%>" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label admin-manage-label">Value</label>
+                        <label class="form-label admin-manage-label">Value(%)</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="value" placeholder="<%= voucher.getValue()%>" required>
+                               name="value" placeholder="<%= voucher.getValue()%>"  max="100" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="usage_limit" placeholder="<%= voucher.getUsageLimit()%>" required>
+                               name="usage_limit" placeholder="<%= voucher.getUsageLimit()%>" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Minimum Order Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="min_order_value" placeholder="<%= voucher.getMinOrderValue()%>" required>
+                               name="min_order_value" placeholder="<%= voucher.getMinOrderValue()%>"  min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Start Date</label>
@@ -88,44 +108,69 @@
         </div>
     </form>
 
-</main>
 
-<script>
-    function validateDateRange(changedField) {
-        const startInput = document.getElementById("start_date");
-        const endInput = document.getElementById("end_date");
+    <script>
+        function validateDateRange(changedField) {
+            const startInput = document.getElementById("start_date");
+            const endInput = document.getElementById("end_date");
+            const notYetOption = document.querySelector('select[name="active"] option[value="2"]');
+            const select = document.querySelector('select[name="active"]');
 
-        const startDate = new Date(startInput.value);
-        const endDate = new Date(endInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
 
-        // N?u c? hai ô ??u ?ã nh?p
-        if (startInput.value && endInput.value) {
-            if (startDate > endDate) {
-                alert("?? Start date must be earlier than end date.");
+            if (startInput.value) {
+                const startDate = new Date(startInput.value);
+                startDate.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
 
-                // Xóa ô v?a thay ??i
-                if (changedField === "start") {
-                    startInput.value = "";
-                    startInput.focus();
-                } else if (changedField === "end") {
-                    endInput.value = "";
-                    endInput.focus();
+                if (startDate.getTime() > today.getTime()) {
+                    // N?u startDate > h?m nay ? cho ph?p "Not yet started"
+                    notYetOption.disabled = false;
+                } else {
+                    // N?u startDate ? h?m nay ? KH?NG cho ch?n "Not yet started"
+                    notYetOption.disabled = true;
+
+                    // N?u ?ang ch?n "Not yet started" th? reset l?i v? "Inactive"
+                    if (select.value === "2") {
+                        select.value = "0";
+                    }
+                }
+            }
+
+            // Ki?m tra ng?y b?t ??u < ng?y k?t th?c
+            if (startInput.value && endInput.value) {
+                const startDate = new Date(startInput.value);
+                const endDate = new Date(endInput.value);
+
+                if (startDate >= endDate) {
+                    alert("Start date must be earlier than end date.");
+                    if (changedField === "start") {
+                        startInput.value = "";
+                        startInput.focus();
+                    } else if (changedField === "end") {
+                        endInput.value = "";
+                        endInput.focus();
+                    }
                 }
             }
         }
-    }
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("start_date").addEventListener("change", function () {
+                validateDateRange("start");
+            });
+            document.getElementById("end_date").addEventListener("change", function () {
+                validateDateRange("end");
+            });
 
-    // G?n s? ki?n khi trang t?i xong
-    window.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("start_date").addEventListener("change", function () {
+            // G?i l?n ??u khi trang v?a load (n?u ?? c? ng?y start ???c prefill)
             validateDateRange("start");
         });
-        document.getElementById("end_date").addEventListener("change", function () {
-            validateDateRange("end");
-        });
-    });
-</script>
 
+    </script>
 
+    <%
+        } // end else
+    %>
+</main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

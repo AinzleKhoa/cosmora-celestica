@@ -19,15 +19,15 @@ import shop.util.SessionUtil;
  *
  * @author Le Anh Khoa - CE190449
  */
-//@WebFilter(filterName = "AdminStaffAuthFilter", urlPatterns = {"/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers", "/manage-discounts"})
-public class AdminStaffAuthFilter implements Filter {
+//@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {"/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers", "/manage-discounts"})
+public class EmployeeAuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // Kiem tra session co hop le hay khong (dang nhap chua)
         HttpServletRequest req = (HttpServletRequest) request;
 
-        if (SessionUtil.isCustomerLoggedIn(req)) {
+        if (SessionUtil.isEmployeeLoggedIn(req)) {
             chain.doFilter(req, response);
             System.out.println("Staff/Admin has logged in!");
         } else {

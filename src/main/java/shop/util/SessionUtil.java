@@ -17,4 +17,9 @@ public class SessionUtil {
         HttpSession session = request.getSession(false); // Get session without creating a new one
         return session != null && session.getAttribute("currentCustomer") != null; // Return true if session exists and user is set
     }
+    
+    public static boolean isEmployeeLoggedIn(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // Get session without creating a new one
+        return session != null && session.getAttribute("currentEmployee") != null; // Return true if session exists and user is set
+    }
 }

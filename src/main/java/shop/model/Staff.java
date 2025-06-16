@@ -13,20 +13,20 @@ import java.sql.Date;
 public class Staff {
 
     private int Id;
-    private String userName;
+    private String username;
     private String email;
-    private String password;
+    private String passwordHash;
 
     private String phone;
     private String role;
     private Date dateOfBirth;
     private String avatarUrl;
 
-    public Staff(int Id, String userName, String email, String password, String phone, String role, Date dateOfBirth, String avatarUrl) {
+    public Staff(int Id, String username, String email, String passwordHash, String phone, String role, Date dateOfBirth, String avatarUrl) {
         this.Id = Id;
-        this.userName = userName;
+        this.username = username;
         this.email = email;
-        this.password = password;
+        this.passwordHash = passwordHash;
       
         this.phone = phone;
         this.role = role;
@@ -34,10 +34,10 @@ public class Staff {
         this.avatarUrl = avatarUrl;
     }
 
-    public Staff(String userName, String email, String password, String phone, String role, Date dateOfBirth, String avatarUrl) {
-        this.userName = userName;
+    public Staff(String username, String email, String passwordHash, String phone, String role, Date dateOfBirth, String avatarUrl) {
+        this.username = username;
         this.email = email;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.phone = phone;
         this.role = role;
         this.dateOfBirth = dateOfBirth;
@@ -54,12 +54,12 @@ public class Staff {
         this.Id = Id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -70,12 +70,12 @@ public class Staff {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
 
@@ -114,7 +114,7 @@ public class Staff {
 
     @Override
     public String toString() {
-        return "Staff{" + "Id=" + Id + ", userName=" + userName + ", email=" + email + ", password=" + password + ", phone=" + phone + ", role=" + role + ", dateOfBirth=" + dateOfBirth + ", avatarUrl=" + avatarUrl + '}';
+        return "Staff{" + "Id=" + Id + ", username=" + username + ", email=" + email + ", passwordHash=" + passwordHash + ", phone=" + phone + ", role=" + role + ", dateOfBirth=" + dateOfBirth + ", avatarUrl=" + avatarUrl + '}';
     }
 
 }
