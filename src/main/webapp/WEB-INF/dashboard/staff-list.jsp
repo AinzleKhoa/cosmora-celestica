@@ -1,0 +1,131 @@
+<%-- 
+    Document   : staff-list
+    Created on : Jun 11, 2025, 11:52:31 PM
+    Author     : VICTUS
+--%>
+
+<%@page import="java.util.List"%>
+<%@page import="shop.model.Staff"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+
+        <main class="admin-main">
+
+            <div class="table-header">
+                <h2 class="table-title">Manage Staffs</h2>
+            </div>
+
+            <section class="admin-header">
+                <div class="admin-header-top">
+                    <a class="btn-admin-add" href="${pageContext.servletContext.contextPath}/manage-staffs?view=create">+ Add New Staff</a>
+
+                    <!-- Form search -->
+                    <form action="${pageContext.servletContext.contextPath}/manage-staffs" method="POST" class="search-filter-wrapper">
+                        <input type="text" class="search-input" name="keyWord" placeholder="Enter staff name...">
+                        <input type="hidden" class="search-input" name="action" value="search" placeholder="Enter staff name...">
+                       
+                        <button class="search-btn" type="submit">Search</button>
+                    </form>
+                </div>
+
+                <div class="main-filter">
+                    <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
+                    <select class="admin-filter-select">
+                        <option value="ascending">A-Z</option>
+                        <option value="descending">Z-A</option>
+                    </select>
+                    <select class="admin-filter-select">
+                        <option value="all">All Dates</option>
+                        <option value="last30">Last 30 Days</option>
+                        <option value="lastYear">Last Year</option>
+                    </select>
+                    <select class="admin-filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="admin-table-wrapper">
+                <div class="table-responsive shadow-sm rounded overflow-hidden">
+                    <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light text-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Image Staff</th>
+                                <th>Full Name</th>
+
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%
+                                List<Staff> staffs = (List<Staff>) request.getAttribute("s");
+                                if (staffs == null || staffs.isEmpty()) {
+                            %>
+                            <tr>
+                                <td colspan="8" class="text-center text-danger">No Staff Found</td>
+                            </tr>
+                            <%
+                            } else {
+                                for (Staff s : staffs) {
+                            %>
+                            <tr>
+                                <td><%= s.getId()%></td>
+
+                                <td>
+                                    <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
+                                         alt="Avatar" 
+                                         style="width: 150px; height: 140px; border: 50px;">
+
+                                </td>
+                                <td><%= s.getUserName()%></td>
+                                <td><%= s.getEmail()%></td>
+                                <td><%= s.getRole()%></td>
+                                <td><span class="badge-status">Active</span></td>
+                                <td>
+                                    <div class="table-actions-center">
+                                        <a class="btn-action btn-details" href="staff-details?id=<%= s.getId()%>">Details</a>
+                                        <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/manage-staffs?view=edit&id=<%= s.getId()%>">Edit</a>
+                                        <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/manage-staffs?view=delete&id=<%= s.getId()%>">Delete</a>
+                                        <a class="btn-action btn-history" href="staff-activitylog?id=<%= s.getId()%>">Activity Log</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <%
+                                    }
+                                }
+                            %>
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- Pagination -->
+            <nav class="admin-pagination">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">«</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">»</a>
+                    </li>
+                </ul>
+            </nav>
+        </main>
+<%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
