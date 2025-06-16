@@ -15,13 +15,15 @@ public class OrderDetails {
     private int productId;
     private int quantity;
     private BigDecimal price ;
+    private String productName ;
 
-    public OrderDetails(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price) {
+    public OrderDetails(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price, String productName) {
         this.orderDetailId = orderDetailId;
         this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
+        this.productName = productName;
     }
 
    
@@ -29,6 +31,14 @@ public class OrderDetails {
     public OrderDetails() {
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+    
     public int getProductId() {
         return productId;
     }
