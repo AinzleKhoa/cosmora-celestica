@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shop.dao.OrderDAO;
@@ -43,10 +44,31 @@ public class OrderServlet extends HttpServlet {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("list")) {
             OrderDAO OD = new OrderDAO();
-            try {
-                ArrayList<Order> orderlist = OD.getallOrder();
+            String pageParam = request.getParameter("page");
+            int currentPage = 1;
+            if (pageParam != null) {
+                try {
+                    currentPage = Integer.parseInt(pageParam);
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
 
-                request.setAttribute("orderlist", orderlist);
+            int itemsPerPage = 15;
+            try {
+                ArrayList<Order> allOrders = OD.getallOrder();
+                int totalOrders = allOrders.size();
+                int totalPages = (int) Math.ceil((double) totalOrders / itemsPerPage);
+
+                // Tính chỉ số bắt đầu và kết thúc của danh sách con
+                int startIndex = (currentPage - 1) * itemsPerPage;
+                int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
+
+                List<Order> paginatedOrders = allOrders.subList(startIndex, endIndex);
+
+                request.setAttribute("orderlist", paginatedOrders);
+                request.setAttribute("currentPage", currentPage);
+                request.setAttribute("totalPages", totalPages);
                 request.getRequestDispatcher("/WEB-INF/dashboard/order-list.jsp").forward(request, response);
             } catch (SQLException ex) {
                 Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,9 +122,31 @@ public class OrderServlet extends HttpServlet {
         } else if (action.equals("search")) {
             String cusName = request.getParameter("customer_name");
             OrderDAO OD = new OrderDAO();
+            String pageParam = request.getParameter("page");
+            int currentPage = 1;
+            if (pageParam != null) {
+                try {
+                    currentPage = Integer.parseInt(pageParam);
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+
+            int itemsPerPage = 15;
             try {
-                ArrayList<Order> orders = OD.searchOrders(cusName);
-                request.setAttribute("orderlist", orders);
+                ArrayList<Order> allOrders = OD.searchOrders(cusName);
+                int totalOrders = allOrders.size();
+                int totalPages = (int) Math.ceil((double) totalOrders / itemsPerPage);
+
+                // Tính chỉ số bắt đầu và kết thúc của danh sách con
+                int startIndex = (currentPage - 1) * itemsPerPage;
+                int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
+
+                List<Order> paginatedOrders = allOrders.subList(startIndex, endIndex);
+
+                request.setAttribute("orderlist", paginatedOrders);
+                request.setAttribute("currentPage", currentPage);
+                request.setAttribute("totalPages", totalPages);
                 request.getRequestDispatcher("/WEB-INF/dashboard/order-list.jsp").forward(request, response);
 
             } catch (SQLException ex) {

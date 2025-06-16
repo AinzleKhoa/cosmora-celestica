@@ -1,9 +1,12 @@
 <%--
     Document   : product-details
-    Created on : Jun 12, 2025, 10:55:00 PM
+    Created on : Jun 10, 2025, 10:55:00 PM
     Author     : HoangSang
 --%>
 
+<%@page import="shop.model.OperatingSystem"%>
+<%@page import="shop.model.StorePlatform"%>
+<%@page import="shop.model.GameKey"%>
 <%@page import="shop.model.ProductAttribute"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Locale"%>
@@ -11,20 +14,21 @@
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<%--<%@include file="/WEB-INF/include/dashboard-header.jsp" %>--%>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
+<link href="<%= request.getContextPath()%>/assets/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
+
 <%
     Product product = (Product) request.getAttribute("product");
-    Locale localeVN = new Locale("vi", "VN");
-    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
-    SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+    NumberFormat currencyFormatter = (NumberFormat) request.getAttribute("currencyFormatter");
+    SimpleDateFormat timestampFormatter = (SimpleDateFormat) request.getAttribute("timestampFormatter");
+    SimpleDateFormat dateFormatter = (SimpleDateFormat) request.getAttribute("dateFormatter");
+    List<GameKey> gameKeys = (List<GameKey>) request.getAttribute("gameKeys");
+    List<StorePlatform> platforms = (List<StorePlatform>) request.getAttribute("platforms");
+    List<OperatingSystem> operatingSystems = (List<OperatingSystem>) request.getAttribute("operatingSystems");
 %>
 
-<% if (product != null) {
-        out.print(product.getName());
-    } else {
-        out.print("Not Found");
-    } %>
 
 <main class="container-fluid p-4 p-lg-5">
     <% if (product != null) {%>
@@ -34,7 +38,7 @@
             Product Details
         </h1>
         <div class="d-flex gap-2">
-            <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back</a>
+            <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i> Back</a>
             <a href="<%= request.getContextPath()%>/manage-products?action=update&id=<%= product.getProductId()%>" class="btn btn-warning"><i class="fas fa-edit me-1"></i> Edit</a>
             <a href="<%= request.getContextPath()%>/manage-products?action=delete&id=<%= product.getProductId()%>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');"><i class="fas fa-trash me-1"></i> Delete</a>
         </div>
@@ -92,6 +96,48 @@
                             <tr><th style="width: 30%"><i class="fas fa-user-edit fa-fw me-2 text-secondary"></i>Developer</th><td><%= product.getGameDetails().getDeveloper()%></td></tr>
                             <tr><th><i class="fas fa-gamepad fa-fw me-2 text-secondary"></i>Genre</th><td><%= product.getGameDetails().getGenre()%></td></tr>
                             <tr><th><i class="fas fa-calendar-alt fa-fw me-2 text-secondary"></i>Release Date</th><td><%= dateFormatter.format(product.getGameDetails().getReleaseDate())%></td></tr>
+
+                            <tr>
+                                <th><i class="fas fa-desktop fa-fw me-2 text-secondary"></i>Platforms</th>
+                                <td>
+                                    <% if (platforms != null && !platforms.isEmpty()) { %>
+                                        <% for (int i = 0; i < platforms.size(); i++) { %>
+                                            <%= platforms.get(i).getStoreOSName() %><%= (i < platforms.size() - 1) ? ", " : "" %>
+                                        <% } %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th><i class="fab fa-windows fa-fw me-2 text-secondary"></i>Operating Systems</th>
+                                <td>
+                                    <% if (operatingSystems != null && !operatingSystems.isEmpty()) { %>
+                                        <% for (int i = 0; i < operatingSystems.size(); i++) { %>
+                                            <%= operatingSystems.get(i).getOsName() %><%= (i < operatingSystems.size() - 1) ? ", " : "" %>
+                                        <% } %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th><i class="fas fa-key fa-fw me-2 text-secondary"></i>Available Keys</th>
+                                <td>
+                                    <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
+                                        <ul class="list-unstyled mb-0">
+                                            <% for (GameKey key : gameKeys) { %>
+                                                <li><%= key.getKeyCode() %></li>
+                                            <% } %>
+                                        </ul>
+                                    <% } else { %>
+                                        No keys available
+                                    <% } %>
+                                </td>
+                            </tr>
+
                         </tbody>
                     </table>
                     <% } else if (product.getAttributes() != null && !product.getAttributes().isEmpty()) { %>
@@ -128,8 +174,8 @@
                     <div class="thumbnail-scroller">
                         <div class="thumbnail-container" id="thumbnailContainer">
                             <% for (int i = 0; i < imageUrls.size(); i++) {%>
-                            <img src="<%= request.getContextPath()%>/assets/img/<%= imageUrls.get(i)%>" 
-                                 class="thumb <%= (i == 0) ? "active" : ""%>" 
+                            <img src="<%= request.getContextPath()%>/assets/img/<%= imageUrls.get(i)%>"
+                                 class="thumb <%= (i == 0) ? "active" : ""%>"
                                  onclick="changeMainImage(this)">
                             <% } %>
                         </div>
@@ -166,19 +212,5 @@
     <% }%>
 </main>
 
-<script>
-    function changeMainImage(thumbElement) {
-        document.getElementById('mainProductImage').src = thumbElement.src;
-        document.querySelectorAll('.thumbnail-container .thumb').forEach(thumb => {
-            thumb.classList.remove('active');
-        });
-        thumbElement.classList.add('active');
-    }
-
-    function scrollGallery(direction) {
-        const container = document.getElementById('thumbnailContainer');
-        const scrollAmount = (120 + 12) * 3 * direction;
-        container.scrollBy({left: scrollAmount, behavior: 'smooth'});
-    }
-</script>
+    <script src="<%= request.getContextPath()%>/assets/js/products/details-product.js"></script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
