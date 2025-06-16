@@ -81,6 +81,15 @@ public class Customer {
     public Customer() {
     }
 
+    public Customer(int customerId, String username, String email, String fullName, String phone, String address) {
+        this.customerId = customerId;
+        this.username = username;
+        this.email = email;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.address = address;
+    }
+
     public int getCustomerId() {
         return customerId;
     }

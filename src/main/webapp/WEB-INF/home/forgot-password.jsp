@@ -72,7 +72,7 @@
                                         <button type="button" id="verifyOtpForgotBtn" class="sign__btn">Verify OTP</button>
                                     </div>
                                 </form>
-                                <span class="sign__text">We will send a password to your Email</span>
+                                <span class="sign__text">An OTP will be sent to your registered email address.</span>
                                 <a type="button" href="${pageContext.servletContext.contextPath}/login" class="sign__goback">Go Back</a>
                                 <!-- end authorization form -->
                             </div>

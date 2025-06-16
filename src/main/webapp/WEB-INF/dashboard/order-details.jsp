@@ -13,6 +13,7 @@
     </div>
 
     <%
+        Customer customer = (Customer) request.getAttribute("customer");
         Order order = (Order) request.getAttribute("order");
     %>
 
@@ -33,8 +34,8 @@
                 <tbody>
                     <tr>
                         <td><%= request.getParameter("order_id")%></td>
-                        <td><%= order.getCustomerName() %></td>
-                        <td><%= order.getCustomerEmail() %></td>
+                        <td><%= customer.getFullName()%></td>
+                        <td><%= customer.getEmail()%></td>
                         <td><%= order.getOrderDate()%></td>
                         <td><%= order.getTotalAmount()%></td>
                         <td><span class="badge-status"><%= order.getStatus()%></span></td>
@@ -63,12 +64,15 @@
                 <tbody>
                     <%
                         ArrayList<OrderDetails> orderDetails = (ArrayList) request.getAttribute("orderdetails");
+                        Product product = new Product();
+                        OrderDAO OD = new OrderDAO();
                         for (OrderDetails orderdetails : orderDetails) {
 
+                            product = OD.getProductInOrder(orderdetails.getProductId());
                     %>
                     <tr>
                         <td><%= orderdetails.getOrderId()%></td>
-                        <td><%= orderdetails.getProductName()%></td>
+                        <td><%= product.getName()%></td>
                         <td><%= orderdetails.getQuantity()%></td>
                         <td><%= orderdetails.getPrice()%></td>
                     </tr>
@@ -77,9 +81,6 @@
             </table>
         </div>
     </section>
-    <a href="<%= request.getContextPath()%>/manage-orders" class="admin-manage-back">
-        <i class="fas fa-arrow-left mr-1"></i> Back
-    </a>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

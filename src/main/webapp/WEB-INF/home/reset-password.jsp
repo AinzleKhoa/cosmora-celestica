@@ -53,7 +53,7 @@
                                             <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                         </a>
 
-                                        <input type="email" class="sign__input" placeholder="Email" name="email" value="${sessionScope.currentForgotCustomer.email}" hidden>
+                                        <input type="hidden" name="email" value="${sessionScope.currentForgotCustomer.email}">
 
                                         <div id="loadingMessage">Processing...</div>
 
@@ -76,11 +76,11 @@
                                         </span>
 
                                         <div class="sign__group">
-                                            <input type="password" class="sign__input" placeholder="Password" value="${requestScope.password}" id="password" name="password" autocomplete="new-password" required>
+                                            <input type="password" class="sign__input" placeholder="New Password" value="${requestScope.password}" id="password" name="password" autocomplete="new-password" required>
                                         </div>
 
                                         <div class="sign__group">
-                                            <input type="password" class="sign__input" placeholder="Confirm Password" value="${requestScope.confirmPassword}" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                                            <input type="password" class="sign__input" placeholder="Confirm New Password" value="${requestScope.confirmPassword}" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
                                         </div>
 
                                         <button class="sign__btn" type="submit">Submit</button>
