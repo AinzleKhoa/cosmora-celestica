@@ -84,6 +84,14 @@ public class CustomerServlet extends HttpServlet {
 
             request.setAttribute("thisCustomer", thisCustomer);
             request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
+        } else if (view.equals("details")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+
+            request.setAttribute("thisCustomer", thisCustomer);
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-details.jsp").forward(request, response);
         }
     }
 
@@ -129,7 +137,7 @@ public class CustomerServlet extends HttpServlet {
                 }
             } else {
                 request.setAttribute("errorMessage", "This Customer Id does not exist.");
-                request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
             }
         } else if (action.equals("delete")) {
             int id = Integer.parseInt(request.getParameter("id"));
