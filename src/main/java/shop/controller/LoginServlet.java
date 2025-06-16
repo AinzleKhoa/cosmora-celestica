@@ -64,7 +64,7 @@ public class LoginServlet extends HttpServlet {
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
                 if (isPasswordMatched) {
                     HttpSession session = request.getSession(true);
-                    session.setAttribute("currentCustomer", customer);
+                    session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
 
                     // Redirect to the home page upon successful login
                     response.sendRedirect(request.getContextPath() + "/home");
