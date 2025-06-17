@@ -4,12 +4,15 @@
     Author     : ADMIN
 --%>
 
+<%@page import="java.util.List"%>
 <%@page import="shop.dao.OrderDAO"%>
 <%@page import="shop.model.Customer"%>
 <%@page import="shop.model.Order"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<c:set var="isSearch" value="${not empty param.customer_name}" />
+
 
 <main class="admin-main">
 
@@ -25,31 +28,7 @@
                 <button type="submit" class="search-btn">Search</button>
             </form>
         </div>
-        <div class="main-filter">
-            <span><i class="fas fa-filter fas-filter-icon"></i>Filter By:</span>
-            <select class="admin-filter-select">
-                <option value="ascending">A-Z</option>
-                <option value="descending">Z-A</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Dates</option>
-                <option value="last30">Last 30 Days</option>
-                <option value="lastYear">Last Year</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-            </select>
-            <select class="admin-filter-select">
-                <option value="all">All Order Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-            </select>
-        </div>
+
     </section>
 
 
@@ -60,7 +39,7 @@
                 <thead class="table-light text-dark">
                     <tr>
                         <th>ID</th>
-                        <th>CustomerID</th>
+                        <th>Customer Name</th>
                         <th>Order Date</th>
                         <th>Total Amount</th>
                         <th>Status</th>
@@ -69,14 +48,14 @@
                 </thead>
                 <tbody>
                     <%
-                        ArrayList<Order> orderlist = (ArrayList) request.getAttribute("orderlist");
+                        List<Order> orderlist = (List) request.getAttribute("orderlist");
                         for (Order order : orderlist) {
 
 
                     %>
                     <tr>
                         <td><%= order.getOrderId()%></td>
-                        <td><%= order.getCustomerId()%></td>
+                        <td><%= order.getCustomerName()%></td>
                         <td><%= order.getOrderDate()%></td>
                         <td><%= order.getTotalAmount()%></td>
                         <td>
@@ -100,8 +79,6 @@
                                         onclick="location.href = '<%= request.getContextPath()%>/manage-orders?view=details&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
                                     Details
                                 </button>
-                                <button class="btn-action btn-edit" href="./admin-order-edit.html">Edit</button>
-                                <button class="btn-action btn-delete">Cancel</button>
                                 <button class="btn-action btn-history">Customer Details</button>
                             </div>
                         </td>
@@ -113,25 +90,42 @@
     </section>
 
     <!-- Pagination -->
+    <!-- FORM PHÂN TRANG -->
+    <form id="paginationForm" method="POST" action="<%= request.getContextPath()%>/manage-orders">
+        <input type="hidden" name="action" value="search" />
+        <input type="hidden" name="customer_name" value="${param.customer_name}" />
+        <input type="hidden" name="page" id="pageInput" value="${currentPage}" />
+    </form>
+
     <nav class="admin-pagination">
         <ul class="pagination">
-            <li class="page-item disabled">
-                <a class="page-link" href="#">«</a>
+            <!-- Nút Previous -->
+            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                <a href="#" class="page-link" onclick="submitPage(${currentPage - 1})">«</a>
             </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">»</a>
+
+            <!-- Các nút số trang -->
+            <c:forEach var="i" begin="1" end="${totalPages}">
+                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                    <a href="#" class="page-link" onclick="submitPage(${i})">${i}</a>
+                </li>
+            </c:forEach>
+
+            <!-- Nút Next -->
+            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                <a href="#" class="page-link" onclick="submitPage(${currentPage + 1})">»</a>
             </li>
         </ul>
     </nav>
+
+    <script>
+        function submitPage(pageNumber) {
+            document.getElementById('pageInput').value = pageNumber;
+            document.getElementById('paginationForm').submit();
+        }
+    </script>
+
+
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

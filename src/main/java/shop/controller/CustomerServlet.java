@@ -38,7 +38,7 @@ public class CustomerServlet extends HttpServlet {
         if (view == null || view.isEmpty() || view.equals("list")) {
             CustomerDAO cDAO = new CustomerDAO();
             int currentPage = 1;
-            int pageSize = 8;
+            int pageSize = 6;
 
             if (request.getParameter("page") != null) {
                 try {
@@ -48,15 +48,50 @@ public class CustomerServlet extends HttpServlet {
                 }
             }
 
-            List<Customer> paginatedList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
-            int totalCustomers = cDAO.getTotalCustomerCount();
+            String search = request.getParameter("searchName");
+            List<Customer> paginatedList;
+            int totalCustomers;
+
+            if (search != null && !search.trim().isEmpty()) {
+                paginatedList = cDAO.getPaginatedCustomersBySearch(search.trim(), currentPage, pageSize);
+                totalCustomers = cDAO.getTotalCustomerCountBySearch(search.trim());
+            } else {
+                paginatedList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
+                totalCustomers = cDAO.getTotalCustomerCount();
+            }
+
             int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
 
             request.setAttribute("paginatedList", paginatedList);
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
+            request.setAttribute("searchName", search);
 
             request.getRequestDispatcher("/WEB-INF/dashboard/customer-list.jsp").forward(request, response);
+        } else if (view.equals("edit")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+
+            request.setAttribute("thisCustomer", thisCustomer);
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
+        } else if (view.equals("delete")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+
+            request.setAttribute("thisCustomer", thisCustomer);
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
+        } else if (view.equals("details")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+
+            request.setAttribute("thisCustomer", thisCustomer);
+            request.getRequestDispatcher("/WEB-INF/dashboard/customer-details.jsp").forward(request, response);
         }
     }
 
@@ -71,6 +106,58 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if (action.equals("edit")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            String username = request.getParameter("username");
+            String email = request.getParameter("email");
+            String fullName = request.getParameter("fullName");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+
+            if (thisCustomer != null) {
+                if (!cDAO.isUsernameOrEmailTakenByOthers(id, username, email)) {
+                    if (cDAO.updateCustomer(new Customer(id, username, email, fullName, phone, address)) > 0) {
+                        Customer newCustomer = cDAO.getAccountById(id);
+                        request.setAttribute("thisCustomer", newCustomer);
+                        request.setAttribute("successMessage", "Update customer successfully!");
+                        request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
+                    } else {
+                        request.setAttribute("thisCustomer", thisCustomer);
+                        request.setAttribute("errorMessage", "Update Customer to the database failed");
+                        request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
+                    }
+                } else {
+                    request.setAttribute("thisCustomer", thisCustomer);
+                    request.setAttribute("errorMessage", "Username or Email already exists.");
+                    request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("errorMessage", "This Customer Id does not exist.");
+                request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
+            }
+        } else if (action.equals("delete")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            CustomerDAO cDAO = new CustomerDAO();
+            Customer thisCustomer = cDAO.getAccountById(id);
+
+            if (thisCustomer != null) {
+                if (cDAO.deleteCustomer(id) > 0) {
+                    response.sendRedirect(request.getContextPath() + "/manage-customers");
+                } else {
+                    request.setAttribute("thisCustomer", thisCustomer);
+                    request.setAttribute("errorMessage", "Delete Customer from the database failed");
+                    request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("errorMessage", "This Customer Id does not exist.");
+                request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
+            }
+        }
     }
 
     /**
@@ -82,5 +169,4 @@ public class CustomerServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

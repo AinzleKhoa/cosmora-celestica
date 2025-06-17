@@ -13,19 +13,23 @@
         <h2 class="table-title">Manage Customers</h2>
     </div>
 
+    <section class="admin-header">
+        <div class="admin-header-top">
+            <div class="search-filter-wrapper" style="display: flex; margin-left: auto;">
+                <form method="GET" action="${pageContext.servletContext.contextPath}/manage-customers">
+                    <input type="text" name="searchName" class="search-input" placeholder="Enter customer name..." value="${param.searchName}">
+                    <button type="submit" class="search-btn">Search</button>
+                    <a type="button" class="search-btn" href="${pageContext.servletContext.contextPath}/manage-customers">Clear</a>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <c:choose>
         <c:when test="${empty requestScope.paginatedList}">
             <p class="sign__empty">The list is empty</p>
         </c:when>
         <c:otherwise>
-            <section class="admin-header">
-                <div class="admin-header-top">
-                    <div class="search-filter-wrapper" style="display: flex; margin-left: auto;">
-                        <input type="text" class="search-input" placeholder="Enter customer name...">
-                        <button class="search-btn">Search</button>
-                    </div>
-                </div>
-            </section>
 
             <section class="admin-table-wrapper">
                 <div class="table-responsive shadow-sm rounded overflow-hidden">
@@ -62,9 +66,24 @@
                                     </td>
                                     <td>
                                         <div class="table-actions-center">
-                                            <a class="btn-action btn-details" href="./admin-customer-details.html">Details</a>
-                                            <a class="btn-action btn-edit" href="./admin-customer-edit.html">Edit</a>
-                                            <a class="btn-action btn-delete" href="./admin-customer-delete.html">Delete</a>
+                                            <a class="btn-action btn-details" href="
+                                               <c:url value="/manage-customers">
+                                                   <c:param name="view" value="details"/>
+                                                   <c:param name="id" value="${customer.customerId}"/>
+                                               </c:url>
+                                               ">Details</a>
+                                            <a class="btn-action btn-edit" href="
+                                               <c:url value="/manage-customers">
+                                                   <c:param name="view" value="edit"/>
+                                                   <c:param name="id" value="${customer.customerId}"/>
+                                               </c:url>
+                                               ">Edit</a>
+                                            <a class="btn-action btn-delete" href="
+                                               <c:url value="/manage-customers">
+                                                   <c:param name="view" value="delete"/>
+                                                   <c:param name="id" value="${customer.customerId}"/>
+                                               </c:url>
+                                               ">Delete</a>
                                             <a class="btn-action btn-history" href="./admin-customer-orderhistory.html">Order
                                                 History</a>
                                         </div>
@@ -77,6 +96,8 @@
             </section>
 
             <!-- Pagination -->
+            <c:set var="totalPages" value="${requestScope.totalPages}" />
+            <c:set var="currentPage" value="${requestScope.currentPage}" />
             <nav class="admin-pagination">
                 <ul class="pagination">
                     <!-- Previous button -->
@@ -86,22 +107,63 @@
                                 <a class="page-link">«</a>
                             </c:when>
                             <c:otherwise>
-                                <a class="page-link" href="?page=${requestScope.currentPage - 1}">«</a>
+                                <a class="page-link" href="
+                                   <c:url value="/manage-customers">
+                                       <c:param name="page" value="${requestScope.currentPage - 1}"/>
+                                       <c:param name="searchName" value="${param.searchName}"/>
+                                   </c:url>
+                                   ">«</a>
                             </c:otherwise>
                         </c:choose>
                     </li>
-                    <c:forEach begin="1" end="${requestScope.totalPages}" var="pageNum">
+                    <!-- First page -->
+                    <li class="page-item ${currentPage == 1 ? 'active' : ''}">
+                        <a class="page-link" href="<c:url value='/manage-customers'>
+                               <c:param name='page' value='1'/>
+                               <c:param name='searchName' value='${param.searchName}'/>
+                           </c:url>">1</a>
+                    </li>
+                    <!-- Ellipsis after first page if currentPage > 4 -->
+                    <c:if test="${currentPage > 4}">
+                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                        </c:if>
+                    <!-- Show pages around current -->
+                    <c:set var="startPage" value="${currentPage - 2 < 2 ? 2 : currentPage - 2}" />
+                    <c:set var="endPage" value="${currentPage + 2 > totalPages - 1 ? totalPages - 1 : currentPage + 2}" />
+                    <c:forEach begin="${startPage}" end="${endPage}" var="pageNum">
                         <li class="page-item ${currentPage == pageNum ? 'active' : ''}">
-                            <a class="page-link" href="?page=${pageNum}">${pageNum}</a>
+                            <a class="page-link" href="<c:url value='/manage-customers'>
+                                   <c:param name='page' value='${pageNum}'/>
+                                   <c:param name='searchName' value='${param.searchName}'/>
+                               </c:url>">${pageNum}</a>
                         </li>
                     </c:forEach>
+                    <!-- Ellipsis before last page if currentPage < totalPages - 3 -->
+                    <c:if test="${currentPage < totalPages - 3}">
+                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                        </c:if>
+                    <!-- Last page (if more than 1 page) -->
+                    <c:if test="${totalPages > 1}">
+                        <li class="page-item ${currentPage == totalPages ? 'active' : ''}">
+                            <a class="page-link" href="<c:url value='/manage-customers'>
+                                   <c:param name='page' value='${totalPages}'/>
+                                   <c:param name='searchName' value='${param.searchName}'/>
+                               </c:url>">${totalPages}</a>
+                        </li>
+                    </c:if>
+                    <!-- Next button -->
                     <li class="page-item ${requestScope.currentPage == requestScope.totalPages ? 'disabled' : ''}">
                         <c:choose>
                             <c:when test="${requestScope.currentPage == requestScope.totalPages}">
                                 <a class="page-link">»</a>
                             </c:when>
                             <c:otherwise>
-                                <a class="page-link" href="?page=${requestScope.currentPage + 1}">»</a>
+                                <a class="page-link" href="
+                                   <c:url value="/manage-customers">
+                                       <c:param name="page" value="${requestScope.currentPage + 1}"/>
+                                       <c:param name="searchName" value="${param.searchName}"/>
+                                   </c:url>
+                                   ">»</a>
                             </c:otherwise>
                         </c:choose>
                     </li>

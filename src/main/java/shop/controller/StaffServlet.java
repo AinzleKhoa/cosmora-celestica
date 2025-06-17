@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import shop.dao.StaffDAO;
 import shop.model.Staff;
+import shop.util.PasswordUtils;
 
 /**
  *
@@ -37,6 +38,8 @@ import shop.model.Staff;
         maxRequestSize = 1024 * 1024 * 50 // 50MB
 )
 public class StaffServlet extends HttpServlet {
+
+    public static final int PAGE_SIZE = 1;
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -52,8 +55,18 @@ public class StaffServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("list")) {
+            int page = 1;
+            if (request.getParameter("page") != null) {
+                page = Integer.parseInt(request.getParameter("page"));
+            }
+
             StaffDAO sDAO = new StaffDAO();
-            ArrayList<Staff> sList = sDAO.getList();
+            ArrayList<Staff> sList = sDAO.getList(page);
+            request.setAttribute("s", sList);
+
+            int numOfPage = (int) Math.ceil((double) sDAO.countStaffs() / PAGE_SIZE);
+            request.setAttribute("numOfPage", numOfPage);
+
             request.setAttribute("s", sList);
             request.getRequestDispatcher("/WEB-INF/dashboard/staff-list.jsp").forward(request, response);
 
@@ -142,7 +155,11 @@ public class StaffServlet extends HttpServlet {
                     Part img = request.getPart("avatar_url");
                     String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
 
-                    String realPath = request.getServletContext().getRealPath("/img/staff");
+                    // Using context path for the avatar URL
+                    String avatarUrl = "/CosmoraCelestica/assets/img/avatar/" + filename;
+
+                    // Get the real path to save the image
+                    String realPath = request.getServletContext().getRealPath("/assets/img/avatar");
 
                     if (realPath == null) {
                         out.println("<h2>Error: No valid upload path found.</h2>");
@@ -159,8 +176,10 @@ public class StaffServlet extends HttpServlet {
                     File fileToSave = new File(uploadDir, filename);
                     img.write(fileToSave.getAbsolutePath());
 
+                    String hashedPassword = PasswordUtils.hashPassword(password);
+
                     // Lưu thông tin vào DB (chỉ lưu tên file)
-                    Staff staff = new Staff(username, email, password, phone, role, dateOfBirth, filename);
+                    Staff staff = new Staff(username, email, hashedPassword, phone, role, dateOfBirth, avatarUrl);
                     int isCreated = sDAO.create(staff);
 
                     if (isCreated == 1) {
@@ -198,8 +217,9 @@ public class StaffServlet extends HttpServlet {
 
                     Part img = request.getPart("avatar_url");
                     String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
+                    String avatarUrl;
 
-                    String realPath = request.getServletContext().getRealPath("/img/staff");
+                    String realPath = request.getServletContext().getRealPath("/assets/img/avatar");
                     File uploadDir = new File(realPath);
                     if (!uploadDir.exists()) {
                         uploadDir.mkdirs();
@@ -209,13 +229,17 @@ public class StaffServlet extends HttpServlet {
                     if (filename != null && !filename.isEmpty()) {
                         File fileToSave = new File(uploadDir, filename);
                         img.write(fileToSave.getAbsolutePath());
+
+                        avatarUrl = "/CosmoraCelestica/assets/img/avatar/" + filename;
                     } else {
                         // Nếu không chọn ảnh mới, dùng lại avatar cũ
-                        filename = oldStaff.getAvatarUrl();
+                        avatarUrl = oldStaff.getAvatarUrl();
                     }
 
+                    String hashedPassword = PasswordUtils.hashPassword(password);
+
                     // Tạo object Staff
-                    Staff updatedStaff = new Staff(id, username, email, password, phone, role, dateOfBirth, filename);
+                    Staff updatedStaff = new Staff(id, username, email, hashedPassword, phone, role, dateOfBirth, avatarUrl);
 
                     int isUpdate = sDAO.update(updatedStaff);
                     if (isUpdate == 1) {

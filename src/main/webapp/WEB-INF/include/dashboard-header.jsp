@@ -4,7 +4,9 @@
     Author     : Ainzle
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<c:set var="user" value="${sessionScope.currentEmployee}"/>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,27 +47,50 @@
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
 
-                                <div class="admin-dropdown" onclick="toggleDropdown()">
-                                    <div class="admin-profile">
-                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" alt="Avatar" class="admin-avatar">
-                                        <div>
-                                            <p class="admin-name">Jiue Anderson</p>
-                                            <span class="admin-role">Manager</span>
-                                        </div>
-                                    </div>
+                                <c:choose>
+                                    <c:when test="${not empty user}">
+                                        <div class="admin-dropdown" onclick="toggleDropdown()">
+                                            <div class="admin-profile">
+                                                <img src="${user.avatarUrl}" alt="Avatar" class="admin-avatar">
+                                                <div>
+                                                    <p class="admin-name">${user.username}</p>
+                                                    <span class="admin-role">
+                                                        <c:choose>
+                                                            <c:when test="${user.role == 'staff'}">Staff</c:when>
+                                                            <c:when test="${user.role == 'admin'}">Admin</c:when>
+                                                            <c:otherwise>Customer</c:otherwise>
+                                                        </c:choose>
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                    <div class="admin-menu" id="adminDropdown">
-                                        <div class="admin-user">
-                                            <span class="admin-role">Manager</span>
-                                            <p class="admin-name">Jiue Anderson</p>
+                                            <div class="admin-menu" id="adminDropdown">
+                                                <div class="admin-user">
+                                                    <span class="admin-role">Customer</span>
+                                                    <p class="admin-name">${user.username}</p>
+                                                </div>
+                                                <ul class="admin-links">
+                                                    <li><a href="${pageContext.servletContext.contextPath}/logout">Logout</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <ul class="admin-links">
-                                            <li><a href="#">Dashboard</a></li>
-                                            <li><a href="#">My Profile</a></li>
-                                            <li><a href="#">Settings</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="${pageContext.servletContext.contextPath}/login-dashboard" class="header__login">
+                                            <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
+                                                 viewBox='0 0 512 512'>
+                                            <path
+                                                d='M192,176V136a40,40,0,0,1,40-40H392a40,40,0,0,1,40,40V376a40,40,0,0,1-40,40H240c-22.09,0-48-17.91-48-40V336'
+                                                style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                            <polyline points='288 336 368 256 288 176'
+                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                            <line x1='80' y1='256' x2='352' y2='256'
+                                                  style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                            </svg>
+                                            <span>Login</span>
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
 
 
                             </div>

@@ -20,43 +20,6 @@ import shop.model.Customer;
  */
 public class CustomerDAO extends DBContext {
 
-    public List<Customer> getCustomerList() {
-        List<Customer> list = new ArrayList<>();
-        try {
-            String query = "SELECT *\n"
-                    + "FROM customer";
-            ResultSet rs = execSelectQuery(query);
-            while (rs.next()) {
-                list.add(new Customer(
-                        rs.getInt("customer_id"),
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("password_hash"),
-                        rs.getString("full_name"),
-                        rs.getString("phone"),
-                        rs.getString("gender"),
-                        rs.getString("address"),
-                        rs.getString("avatar_url"),
-                        rs.getDate("date_of_birth"),
-                        rs.getBoolean("is_deactivated"),
-                        rs.getTimestamp("last_login"),
-                        rs.getString("google_id"),
-                        rs.getString("remember_me_token"),
-                        rs.getString("reset_token"),
-                        rs.getTimestamp("reset_token_expiry"),
-                        rs.getBoolean("email_verified"),
-                        rs.getString("email_verification_token"),
-                        rs.getTimestamp("email_verification_expiry"),
-                        rs.getTimestamp("created_at"),
-                        rs.getTimestamp("updated_at")
-                ));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return list;
-    }
-
     public List<Customer> getPaginatedCustomerList(int currentPage, int pageSize) {
         List<Customer> list = new ArrayList<>();
         try {
@@ -112,6 +75,70 @@ public class CustomerDAO extends DBContext {
         return 0;
     }
 
+    public List<Customer> getPaginatedCustomersBySearch(String name, int currentPage, int pageSize) {
+        List<Customer> list = new ArrayList<>();
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer\n"
+                    + "WHERE username LIKE ?\n"
+                    + "ORDER BY customer_id\n"
+                    + "OFFSET ? ROWS\n"
+                    + "FETCH NEXT ? ROWS ONLY";
+            Object[] params = {
+                "%" + name + "%",
+                (currentPage - 1) * pageSize,
+                pageSize
+            };
+            ResultSet rs = execSelectQuery(query, params);
+            while (rs.next()) {
+                list.add(new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("full_name"),
+                        rs.getString("phone"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("avatar_url"),
+                        rs.getDate("date_of_birth"),
+                        rs.getBoolean("is_deactivated"),
+                        rs.getTimestamp("last_login"),
+                        rs.getString("google_id"),
+                        rs.getString("remember_me_token"),
+                        rs.getString("reset_token"),
+                        rs.getTimestamp("reset_token_expiry"),
+                        rs.getBoolean("email_verified"),
+                        rs.getString("email_verification_token"),
+                        rs.getTimestamp("email_verification_expiry"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
+                ));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
+    public int getTotalCustomerCountBySearch(String name) {
+        try {
+            String query = "SELECT COUNT(customer_id)\n"
+                    + "FROM customer\n"
+                    + "WHERE username LIKE ?";
+            Object[] params = {
+                "%" + name + "%"
+            };
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
     public Customer getAccountByEmail(String email) {
         try {
             String query = "SELECT *\n"
@@ -148,6 +175,59 @@ public class CustomerDAO extends DBContext {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public Customer getAccountById(int id) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.customer_id = ?";
+            Object[] params = {id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("full_name"),
+                        rs.getString("phone"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("avatar_url"),
+                        rs.getDate("date_of_birth"),
+                        rs.getBoolean("is_deactivated"),
+                        rs.getTimestamp("last_login"),
+                        rs.getString("google_id"),
+                        rs.getString("remember_me_token"),
+                        rs.getString("reset_token"),
+                        rs.getTimestamp("reset_token_expiry"),
+                        rs.getBoolean("email_verified"),
+                        rs.getString("email_verification_token"),
+                        rs.getTimestamp("email_verification_expiry"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
+        try {
+            String query = "SELECT COUNT(*) FROM customer \n"
+                    + "WHERE (username = ? OR email = ?) AND customer_id != ?";
+            Object[] params = {username, email, id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     public boolean isEmailExists(String email) {
@@ -220,6 +300,60 @@ public class CustomerDAO extends DBContext {
                 customer.getEmail(),
                 customer.getPasswordHash(),
                 customer.getAvatarUrl()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateCustomer(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET username = ?,\n"
+                    + "	email = ?,\n"
+                    + "	full_name = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	address = ?,\n"
+                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                customer.getUsername(),
+                customer.getEmail(),
+                customer.getFullName(),
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateLastLoginTime(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET last_login = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int deleteCustomer(int id) {
+        try {
+            String query = "DELETE FROM customer\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                id
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

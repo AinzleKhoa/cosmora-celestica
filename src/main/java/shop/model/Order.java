@@ -6,6 +6,7 @@ package shop.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class Order {
 
     private int orderId;
-    private int customerId; 
+    private int customerId;
     private int voucherId;
     private BigDecimal totalAmount;
     private String paymentMethod;
@@ -22,8 +23,10 @@ public class Order {
     private LocalDateTime orderDate;
     private String status;
     private int staffId;
+    private String customerName;
+    private String customerEmail ;
 
-    public Order(int orderId, int customerId, int voucherId, BigDecimal totalAmount, String paymentMethod, String shippingAddress, LocalDateTime orderDate, String status, int staffId) {
+    public Order(int orderId, int customerId, int voucherId, BigDecimal totalAmount, String paymentMethod, String shippingAddress, LocalDateTime orderDate, String status, int staffId, String customerName) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.voucherId = voucherId;
@@ -33,11 +36,28 @@ public class Order {
         this.orderDate = orderDate;
         this.status = status;
         this.staffId = staffId;
+        this.customerName = customerName;
     }
+    
 
     public Order() {
     }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
     
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 
     public int getOrderId() {
         return orderId;
@@ -87,8 +107,9 @@ public class Order {
         this.shippingAddress = shippingAddress;
     }
 
-    public LocalDateTime getOrderDate() {
-        return orderDate;
+    public String getOrderDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return orderDate.format(formatter);
     }
 
     public void setOrderDate(LocalDateTime orderDate) {
@@ -110,5 +131,5 @@ public class Order {
     public void setStaffId(int staffId) {
         this.staffId = staffId;
     }
-    
+
 }

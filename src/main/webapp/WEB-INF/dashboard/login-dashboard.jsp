@@ -1,6 +1,6 @@
 <%-- 
-    Document   : forgot-password
-    Created on : Jun 10, 2025, 9:14:11 PM
+    Document   : login-dashboard
+    Created on : Jun 16, 2025, 7:18:07 PM
     Author     : CE190449 - Le Anh Khoa
 --%>
 
@@ -37,11 +37,19 @@
                     <div class="col-12">
                         <div class="sign__content">
                             <!-- authorization form -->
-                            <div class="sign__form">
-                                <a href="/home" class="sign__logo">
+                            <form action="${pageContext.servletContext.contextPath}/login-dashboard" method="POST" id="loginDashboardForm" class="sign__form">
+                                <a href="${pageContext.servletContext.contextPath}/home" class="sign__logo">
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
-
+                                <h2 style="    font-size: 2rem;
+                                    font-weight: bold;
+                                    color: #00B0FF;
+                                    text-align: center;
+                                    margin-bottom: 20px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;">
+                                    Dashboard
+                                </h2>
                                 <div id="loadingMessage">Processing...</div>
 
                                 <!-- Success Message Container -->
@@ -58,39 +66,36 @@
                                     </c:if>
                                 </div>
 
-                                <!-- Send OTP Form -->
-                                <form id="sendOtpForm" class="sign__group">
-                                    <div class="sign__group sign__group--otp">
-                                        <input type="email" class="sign__input" placeholder="Email" name="email" id="emailForgotInput" value="${currentForgotEmail}" required>
-                                        <button type="button" id="sendOtpForgotBtn" class="send-otp-link">Send OTP</button>
-                                    </div>
-                                    <p id="cooldownText" style="text-align: right; font-size: 12px; color: #999;"></p>
+                                <div class="sign__group">
+                                    <input type="email" class="sign__input" placeholder="Email" name="email" id="email" value="${requestScope.email}" autocomplete="username">
+                                </div>
 
+                                <div class="sign__group">
+                                    <input type="password" class="sign__input" name="password" id="password" value="${requestScope.password}" placeholder="Password"
+                                           autocomplete="new-password">
+                                </div>
 
-                                    <div class="sign__group" id="otpSection">
-                                        <input type="text" class="sign__input" name="otp" id="otpForgotInput" placeholder="Enter OTP" required>
-                                        <button type="button" id="verifyOtpForgotBtn" class="sign__btn">Verify OTP</button>
-                                    </div>
-                                </form>
-                                <span class="sign__text">An OTP will be sent to your registered email address.</span>
-                                <a type="button" href="${pageContext.servletContext.contextPath}/login" class="sign__goback">Go Back</a>
-                                <!-- end authorization form -->
-                            </div>
+                                <button class="sign__btn" type="submit">Sign in</button>
+
+                                <a type="button" href="${pageContext.servletContext.contextPath}/home" class="sign__goback">Go Back</a>
+                            </form>
+                            <!-- end authorization form -->
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- end sign in -->
-            <!-- JS -->
-            <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/owl.carousel.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.magnific-popup.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/wNumb.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/nouislider.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
-            <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
+        </div>
+        <!-- end sign in -->
+        <!-- JS -->
+        <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/owl.carousel.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/wNumb.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/nouislider.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
+        <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
     </body>
 
 </html>
