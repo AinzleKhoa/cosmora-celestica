@@ -1,6 +1,5 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="shop.model.Voucher"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
 <main class="admin-main">
@@ -33,100 +32,79 @@
                 session.removeAttribute("message");
             }
         %>
-    </section>
-    <section class="admin-table-wrapper">
-        <div class="table-responsive shadow-sm rounded overflow-hidden">
-            <table class="table table-dark table-bordered table-hover align-middle mb-0">
-                <thead class="table-light text-dark">
+        <section class="admin-table-wrapper">
+            <div class="table-responsive shadow-sm rounded overflow-hidden">
+                <table class="table table-dark table-bordered table-hover align-middle mb-0">
+                    <thead class="table-light text-dark">
 
-                    <tr>
-                        <th>ID</th>
-                        <th>Code</th>
-                        <th>Discount (%)</th>
-                        <th>Usage</th>
-                        <th>Valid From</th>
-                        <th>Valid Until</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th style="text-align: center;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <%
-                        ArrayList<Voucher> voucherlist = (ArrayList) request.getAttribute("voucherslist");
-
-                        for (Voucher voucher : voucherlist) {
+                        <tr>
+                            <th>Code</th>
+                            <th>Discount (%)</th>
+                            <th>Usage</th>
+                            <th>Valid From</th>
+                            <th>Valid Until</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%
+                            ArrayList<Voucher> voucherlist = (ArrayList) request.getAttribute("voucherslist");
+                            if (voucherlist != null && !voucherlist.isEmpty()) {
+                                for (Voucher voucher : voucherlist) {
 
 
-                    %>
-                    <tr>
-                        <td><%= voucher.getVoucherId()%></td>
-                        <td> <%= voucher.getCode()%></td>
-                        <td><%= voucher.getValue()%></td>
-                        <td><%= voucher.getUsageLimit()%></td>
-                        <td><%= voucher.getStartDate()%></td>
-                        <td><%= voucher.getEndDate()%></td>
-                        <td><%= voucher.getDescription()%></td>
-                        <td>
-                            <%
+                        %>
+                        <tr>
 
-                                if (voucher.getActive() == 1) {
-                            %>
-                            Active
-                            <%
-                            } else if (voucher.getActive() == 0) {
-                            %>
-                            Expired
-                            <%
-                            } else if (voucher.getActive() == 2) {
-                            %>
-                            Not yet started
-                            <%
-                            } else {
-                            %>
-                            Unknown
-                            <%
-                                }
-                            %>
-                        </td> 
-                        <td> <div class="table-actions-center">                                      
-                                <button class="btn-action btn-edit"
-                                        onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
-                                    Edit
-                                </button>
-                                <button class="btn-action btn-delete">Delete</button>
-                            </div> </td> <%}%>
+                            <td> <%= voucher.getCode()%></td>
+                            <td><%= voucher.getValue()%></td>
+                            <td><%= voucher.getUsageLimit()%></td>
+                            <td><%= voucher.getStartDate()%></td>
+                            <td><%= voucher.getEndDate()%></td>
+                            <td><%= voucher.getDescription()%></td>
+                            <td>
+                                <%
+
+                                    if (voucher.getActive() == 1) {
+                                %>
+                                Active
+                                <%
+                                } else if (voucher.getActive() == 0) {
+                                %>
+                                Expired
+                                <%
+                                } else if (voucher.getActive() == 2) {
+                                %>
+                                Not yet started
+                                <%
+                                } else {
+                                %>
+                                Unknown
+                                <%
+                                    }
+                                %>
+                            </td> 
+                            <td> <div class="table-actions-center">                                      
+                                    <button class="btn-action btn-edit"
+                                            onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
+                                        Edit
+                                    </button>
+                                    <button class="btn-action btn-delete"
+                                            onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=delete&id=<%= voucher.getVoucherId()%>'">Delete</button>
+                                </div> </td> <% }
+                                        } else {%>
+                            <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>
+                            <%}%>
 
 
+                        </tr>
+                    </tbody>
 
-                    </tr>
-                </tbody>
+                </table>
 
-            </table>
-
-        </div>
-    </section>
-
-    <!-- Pagination -->
-    <nav class="admin-pagination">
-        <ul class="pagination">
-            <li class="page-item disabled">
-                <a class="page-link" href="#">«</a>
-            </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">»</a>
-            </li>
-        </ul>
-    </nav>
+            </div>
+        </section>
 </main>
-
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

@@ -315,7 +315,8 @@ public class CustomerDAO extends DBContext {
                     + "	email = ?,\n"
                     + "	full_name = ?,\n"
                     + "	phone = ?,\n"
-                    + "	address = ?\n"
+                    + "	address = ?,\n"
+                    + " updated_at = CURRENT_TIMESTAMP\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
                 customer.getUsername(),
@@ -323,6 +324,21 @@ public class CustomerDAO extends DBContext {
                 customer.getFullName(),
                 customer.getPhone(),
                 customer.getAddress(),
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateLastLoginTime(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET last_login = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
                 customer.getCustomerId()
             };
             return execQuery(query, params);

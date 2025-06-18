@@ -240,7 +240,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
-            
+
+            showLoadingMessage(true);
+
+            const errorMessage = isValidLogin(email, password);
+            if (errorMessage) {
+                showLoadingMessage(false);
+                event.preventDefault(); // Prevent submission
+                showError(errorMessage);
+                return;
+            }
+            // Form submits normally after this
+        });
+    }
+
+    const loginDashboardForm = document.getElementById("loginDashboardForm");
+
+    if (loginDashboardForm) {
+        loginDashboardForm.addEventListener("submit", function (event) {
+            clearMessages();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
             showLoadingMessage(true);
 
             const errorMessage = isValidLogin(email, password);
@@ -283,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
-            
+
             showLoadingMessage(true);
 
             const errorMessage = isValidRegister(username, email, password, confirmPassword);
@@ -381,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = emailForgotInput.value.trim();
 
             clearMessages();
-            
+
             showLoadingMessage(true);
 
             const errorMessage = isValidEmail(email);
@@ -405,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const otp = otpForgotInput.value.trim();
 
             clearMessages();
-            
+
             showLoadingMessage(true);
 
             const errorMessage = validateFormForgotPassword(email, otp);

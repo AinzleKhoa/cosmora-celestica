@@ -43,19 +43,4 @@ public class GameKeyDAO extends DBContext{
         return list;
     }
 
-    public void add(int gameDetailsId, String keyCode) throws SQLException {
-        PreparedStatement ps = null;
-        String query = "INSERT INTO game_key (game_details_id, key_code) VALUES (?, ?)";
-        try {
-            ps = conn.prepareStatement(query);
-            ps.setInt(1, gameDetailsId);
-            ps.setString(2, keyCode);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (ps != null) ps.close();
-            if (conn != null) conn.close();
-        }
-    }
 }
