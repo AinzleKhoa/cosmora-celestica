@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Date;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
 
@@ -51,9 +52,28 @@ public class ProfileServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action.equals("updateProfile")) {
             int id = Integer.parseInt(request.getParameter("id"));
-            
+
+            String firstName = request.getParameter("firstName");
+            String lastName = request.getParameter("lastName");
+            String fullName = firstName + " " + lastName;
+            String username = request.getParameter("username");
+            String email = request.getParameter("email");
+
+            String phone = request.getParameter("phone");
+            int gender = Integer.parseInt(request.getParameter("gender"));
+            String address = request.getParameter("address");
+            String avatarUrl = request.getParameter("avatarUrl");
+            String dateOfBirthParameter = request.getParameter("dateOfBirth");
+            if (dateOfBirthParameter != null && !dateOfBirthParameter.isEmpty()) {
+                Date dateOfBirth = Date.valueOf(dateOfBirthParameter);
+            }
+
             CustomerDAO cDAO = new CustomerDAO();
             Customer customer = cDAO.getAccountById(id);
+
+            if (customer != null) {
+                
+            }
         }
     }
 

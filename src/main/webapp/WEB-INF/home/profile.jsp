@@ -272,9 +272,24 @@
 
             <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
                 <div class="row">
+                    <div id="loadingMessage">Processing...</div>
+
+                    <!-- Success Message Container -->
+                    <div id="successMessage" style="color: green; margin-bottom: 15px;">
+                        <c:if test="${not empty successMessage}">
+                            <p>${successMessage}</p>
+                        </c:if>
+                    </div>
+
+                    <!-- Error Message Container -->
+                    <div id="errorMessage" style="color: red; margin-bottom: 15px;">
+                        <c:if test="${not empty requestScope.errorMessage}">
+                            <p>${requestScope.errorMessage}</p>
+                        </c:if>
+                    </div>
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
-                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" class="form">
+                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="profileCommonUpdate" class="form">
                             <input type="hidden" name="action" value="updateProfile"/>
                             <input type="hidden" name="id" value="${sessionScope.customerId}"/>
                             <div class="row">
@@ -349,10 +364,10 @@
 
                                 <div class="col-12 mt-5">
                                     <p class="profile__info"><strong>Account Created At:</strong> 
-                                    <fmt:formatDate value="${user.createdAt}" pattern="dd MMM yyyy HH:mm" />
+                                        <fmt:formatDate value="${user.createdAt}" pattern="dd MMM yyyy HH:mm" />
                                     </p>
                                     <p class="profile__info"><strong>Last Updated At:</strong> 
-                                    <fmt:formatDate value="${user.updatedAt}" pattern="dd MMM yyyy HH:mm" />
+                                        <fmt:formatDate value="${user.updatedAt}" pattern="dd MMM yyyy HH:mm" />
                                     </p>
                                     <p class="profile__info"><strong>Email Verified:</strong> 
                                         <c:choose>
@@ -691,5 +706,47 @@
         });
     });
 
+    document.getElementById('profileCommonUpdate').addEventListener('submit', function (e) {
+        const username = this.querySelector('[name="username"]').value.trim();
+        const email = this.querySelector('[name="email"]').value.trim();
+        const fullName = this.querySelector('[name="fullName"]').value.trim();
+        const phone = this.querySelector('[name="phone"]').value.trim();
+
+        // Username - required
+        if (username === '') {
+            alert('Username is required.');
+            e.preventDefault();
+            return;
+        }
+
+        // Email - required + valid format
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
+        if (email === '') {
+            alert('Email is required.');
+            e.preventDefault();
+            return;
+        } else if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            e.preventDefault();
+            return;
+        }
+
+        // Full Name - optional but must be 2–50 chars if provided
+        if (fullName !== '' && (fullName.length < 2 || fullName.length > 50)) {
+            alert('Full name must be between 2 and 50 characters.');
+            e.preventDefault();
+            return;
+        }
+
+        // Phone - optional but must be digits and 9–15 chars if provided
+        const phoneRegex = /^[0-9]{9,15}$/;
+        if (phone !== '' && !phoneRegex.test(phone)) {
+            alert('Phone number must contain 9 to 15 digits only.');
+            e.preventDefault();
+            return;
+        }
+
+        // No validation for address
+    });
 </script>
 <%@include file="/WEB-INF/include/home-footer.jsp" %>

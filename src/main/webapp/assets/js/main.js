@@ -305,10 +305,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
 
             showLoadingMessage(true);
 
-            const errorMessage = isValidRegister(username, email, password, confirmPassword);
+            const errorMessage = isValidRegister(username, email, password, confirmPassword, firstName, lastName);
             if (errorMessage) {
                 showLoadingMessage(false);
                 event.preventDefault(); // prevent form from submitting if invalid
@@ -318,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function isValidRegister(username, email, password, confirmPassword) {
+    function isValidRegister(username, email, password, confirmPassword, firstName, lastName) {
         const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
         if (!username || !usernameRegex.test(username)) {
             return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
@@ -338,6 +340,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (password !== confirmPassword) {
             return "Passwords do not match.";
+        }
+
+        const nameRegex = /^[a-zA-Z]+$/; // Allow only alphabetic characters
+        if (!firstName || !lastName) {
+            return "First Name and Last Name cannot be empty.";
+        }
+        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+            return "First Name and Last Name can only contain letters.";
         }
 
         return null;

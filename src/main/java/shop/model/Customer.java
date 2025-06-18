@@ -14,10 +14,10 @@ import java.sql.Timestamp;
 public class Customer {
 
     private int customerId;
+    private String fullName;
     private String username;
     private String email;
     private String passwordHash;
-    private String fullName;
     private String phone;
     private String gender;
     private String address;
@@ -35,12 +35,12 @@ public class Customer {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp createdAt, Timestamp updatedAt) {
+    public Customer(int customerId, String fullName, String username, String email, String passwordHash, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp createdAt, Timestamp updatedAt) {
         this.customerId = customerId;
+        this.fullName = fullName;
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.fullName = fullName;
         this.phone = phone;
         this.gender = gender;
         this.address = address;
@@ -59,7 +59,8 @@ public class Customer {
         this.updatedAt = updatedAt;
     }
 
-    public Customer(String username, String email, String passwordHash, String avatarUrl) {
+    public Customer(String fullName, String username, String email, String passwordHash, String avatarUrl) {
+        this.fullName = fullName;
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
