@@ -70,10 +70,10 @@
                         <td><span class="badge-status">Active</span></td>
                         <td>
                             <div class="table-actions-center">
-                                <a class="btn-action btn-details" href="staff-details?id=<%= s.getId()%>">Details</a>
+                                <a class="btn-action btn-details" href="${pageContext.servletContext.contextPath}/manage-staffs?view=details&id=<%= s.getId()%>">Details</a>
                                 <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/manage-staffs?view=edit&id=<%= s.getId()%>">Edit</a>
                                 <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/manage-staffs?view=delete&id=<%= s.getId()%>">Delete</a>
-                                <a class="btn-action btn-history" href="staff-activitylog?id=<%= s.getId()%>">Activity Log</a>
+                                
                             </div>
                         </td>
                     </tr>

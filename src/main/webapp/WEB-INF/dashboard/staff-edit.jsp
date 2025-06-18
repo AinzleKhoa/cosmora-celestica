@@ -9,11 +9,7 @@
     </div>
 
     <div class="admin-manage-wrapper container py-4">
-        <div class="mb-4">
-            <a href="${pageContext.servletContext.contextPath}/manage-staffs?view=list" class="admin-manage-back mb-5">
-                <i class="fas fa-arrow-left mr-1"></i> Back
-            </a>
-        </div>
+    
 
         <!-- General Information -->
         <form action="${pageContext.servletContext.contextPath}/manage-staffs" method="POST" id="editStaffForm" enctype="multipart/form-data">
@@ -60,7 +56,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Avatar Image</label>
-                        <img src="<%= request.getContextPath() + "/img/staff/" + s.getAvatarUrl()%>" 
+                        <img src="<%= s.getAvatarUrl()%>" 
                              alt="Avatar" 
                              style="width: 150px; height: 140px; border: 50px;">
                         <input type="file" class="form-control admin-manage-input"  value="<%=s.getAvatarUrl()%>"name="avatar_url" accept=".png">

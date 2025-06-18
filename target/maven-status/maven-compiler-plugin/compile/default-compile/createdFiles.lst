@@ -16,6 +16,7 @@ shop\controller\CustomerServlet.class
 shop\dao\OrderDAO.class
 shop\util\SecurityTokenUtils.class
 shop\util\PasswordUtils.class
+shop\controller\NotFoundServlet.class
 shop\dao\AttributeDAO.class
 shop\model\Brand.class
 shop\filter\CustomerAuthFilter.class
@@ -26,6 +27,7 @@ shop\util\SessionUtil.class
 shop\model\Image.class
 shop\dao\StorePlatformDAO.class
 shop\model\ProductAttribute.class
+shop\controller\LoginDashboardServlet.class
 shop\model\Order.class
 shop\model\Game.class
 shop\dao\VouchersDAO.class
@@ -34,6 +36,7 @@ shop\db\DBContext.class
 shop\model\Discount.class
 shop\dao\OperatingSystemDAO.class
 shop\dao\CategoryDAO.class
+shop\filter\EmployeeAuthFilter.class
 shop\model\GameKey.class
 shop\dao\BrandDAO.class
 shop\controller\ResetPasswordServlet.class

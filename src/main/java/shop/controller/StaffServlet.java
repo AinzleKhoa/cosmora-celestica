@@ -39,7 +39,7 @@ import shop.util.PasswordUtils;
 )
 public class StaffServlet extends HttpServlet {
 
-    public static final int PAGE_SIZE = 1;
+    public static final int PAGE_SIZE = 10;
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -117,6 +117,29 @@ public class StaffServlet extends HttpServlet {
 
             request.getRequestDispatcher("/WEB-INF/dashboard/staff-delete.jsp").forward(request, response);
 
+        } else if (view.equals("details")) {
+            try {
+                String idParam = request.getParameter("id");
+
+                int id = Integer.parseInt(idParam);
+                StaffDAO sDAO = new StaffDAO();
+                Staff oneStaff = sDAO.getOneById(id);
+
+                if (oneStaff == null) {
+                    response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
+                    return;
+                }
+
+                request.setAttribute("s", oneStaff);
+                request.getRequestDispatcher("/WEB-INF/dashboard/details-staff.jsp").forward(request, response);
+
+            } catch (NumberFormatException e) {
+                System.err.println("Lỗi định dạng ID: " + e.getMessage());
+                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
+            } catch (Exception e) {
+                System.err.println("Lỗi không mong muốn: " + e.getMessage());
+                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
+            }
         }
 
     }
