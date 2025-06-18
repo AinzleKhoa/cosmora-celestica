@@ -45,6 +45,37 @@ body {
     max-width: 100%;
 }
 
+
+ .game-key-list {
+        list-style: none; 
+        padding: 0;
+        margin: 0;
+        max-height: 180px;
+        overflow-y: auto; 
+        border: 1px solid #ddd;
+        border-radius: 5px; 
+    }
+    .game-key-list li {
+        padding: 8px 12px;
+        border-bottom: 1px solid #eee; 
+    }
+    .game-key-list li:last-child {
+        border-bottom: none; 
+    }
+    
+    
+     .key-list-scroller {
+        max-height: 180px;
+        overflow-y: auto; 
+        border: 1px solid #f0f0f0;
+        padding: 0.75rem;
+        border-radius: 5px;
+        background-color: #fafafa;
+    }
+    .key-list-scroller ul {
+        margin-bottom: 0;
+    }
+
 /* =============================================================================
    HEADER STYLES
    ============================================================================= */
@@ -536,6 +567,7 @@ body {
     color: #ef4444;
     border-left: 4px solid #ef4444;
 }
+
 
 
 
