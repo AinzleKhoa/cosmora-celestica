@@ -33,10 +33,10 @@ public class CustomerDAO extends DBContext {
             while (rs.next()) {
                 list.add(new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -93,10 +93,10 @@ public class CustomerDAO extends DBContext {
             while (rs.next()) {
                 list.add(new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -149,10 +149,10 @@ public class CustomerDAO extends DBContext {
             if (rs.next()) {
                 return new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -187,10 +187,10 @@ public class CustomerDAO extends DBContext {
             if (rs.next()) {
                 return new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -320,9 +320,9 @@ public class CustomerDAO extends DBContext {
     public int updateProfileCustomer(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
-                    + "SET username = ?,\n"
+                    + "SET full_name = ?,\n"
+                    + "	username = ?,\n"
                     + "	email = ?,\n"
-                    + "	full_name = ?,\n"
                     + "	phone = ?,\n"
                     + "	gender = ?,\n"
                     + "	address = ?,\n"
@@ -330,9 +330,9 @@ public class CustomerDAO extends DBContext {
                     + " updated_at = CURRENT_TIMESTAMP\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
+                customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
-                customer.getFullName(),
                 customer.getPhone(),
                 customer.getGender(),
                 customer.getAddress(),

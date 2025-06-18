@@ -54,9 +54,12 @@ public class LoginServlet extends HttpServlet {
         // Retrieve form parameters
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-
+        System.out.println("plain: " + password);
+        
         CustomerDAO cDAO = new CustomerDAO();
         Customer customer = cDAO.getAccountByEmail(email);
+        
+        System.out.println("hash: " + customer.getPasswordHash());
 
         if (customer != null) {
             if (!customer.isIsDeactivated()) {
