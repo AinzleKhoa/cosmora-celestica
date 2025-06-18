@@ -59,6 +59,19 @@
                                     </c:if>
                                 </div>
 
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="sign__group">
+                                            <input type="text" class="sign__input" placeholder="First Name" id="firstName" name="firstName" value="${requestScope.firstName}" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="sign__group">
+                                            <input type="text" class="sign__input" placeholder="Last Name" id="lastName" name="lastName" value="${requestScope.lastName}" required>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="sign__group">
                                     <input type="text" class="sign__input" placeholder="Username" id="username" name="username" value="${requestScope.username}" required>

@@ -32,10 +32,10 @@ public class Customer {
     private boolean emailVerified;
     private String emailVerificationToken;
     private Timestamp emailVerificationExpiry;
-    private Timestamp updatedAt;
     private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp updatedAt, Timestamp createdAt) {
+    public Customer(int customerId, String username, String email, String passwordHash, String fullName, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp createdAt, Timestamp updatedAt) {
         this.customerId = customerId;
         this.username = username;
         this.email = email;
@@ -55,8 +55,8 @@ public class Customer {
         this.emailVerified = emailVerified;
         this.emailVerificationToken = emailVerificationToken;
         this.emailVerificationExpiry = emailVerificationExpiry;
-        this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Customer(String username, String email, String passwordHash, String avatarUrl) {

@@ -332,6 +332,35 @@ public class CustomerDAO extends DBContext {
         }
         return 0;
     }
+    
+    public int updateProfileCustomer(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET username = ?,\n"
+                    + "	email = ?,\n"
+                    + "	full_name = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	gender = ?,\n"
+                    + "	address = ?,\n"
+                    + "	date_of_birth = ?,\n"
+                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                customer.getUsername(),
+                customer.getEmail(),
+                customer.getFullName(),
+                customer.getPhone(),
+                customer.getGender(),
+                customer.getAddress(),
+                customer.getDateOfBirth(),
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
 
     public int updateLastLoginTime(Customer customer) {
         try {
