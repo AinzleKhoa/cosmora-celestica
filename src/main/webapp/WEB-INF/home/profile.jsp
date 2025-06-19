@@ -272,21 +272,14 @@
 
             <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
                 <div class="row">
-                    <div id="loadingMessage">Processing...</div>
-
-                    <!-- Success Message Container -->
-                    <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                        <c:if test="${not empty successMessage}">
-                            <p>${successMessage}</p>
+                    
+                    <!-- Message Container -->
+                    <div id="message" style="color: yellow; margin-bottom: 15px;">
+                        <c:if test="${not empty message}">
+                            <p>${message}</p>
                         </c:if>
                     </div>
-
-                    <!-- Error Message Container -->
-                    <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-                        <c:if test="${not empty requestScope.errorMessage}">
-                            <p>${requestScope.errorMessage}</p>
-                        </c:if>
-                    </div>
+                    
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
                         <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="profileCommonUpdate" class="form">

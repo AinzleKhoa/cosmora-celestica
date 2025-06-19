@@ -220,138 +220,14 @@ $(document).ready(function () {
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 document.addEventListener('DOMContentLoaded', function () {
     const contextPath = window.location.pathname.split('/')[1]; // Get the context path dynamically
-    function showLoadingMessage(show) {
-        const loadingMessage = document.getElementById("loadingMessage");
-        if (show) {
-            loadingMessage.style.display = 'block';
-        } else {
-            loadingMessage.style.display = 'none';
-        }
-    }
-
     /*==============================
      Login
      ==============================*/
-    const loginForm = document.getElementById("loginForm");
-
-    if (loginForm) {
-        loginForm.addEventListener("submit", function (event) {
-            clearMessages();
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-            showLoadingMessage(true);
-
-            const errorMessage = isValidLogin(email, password);
-            if (errorMessage) {
-                showLoadingMessage(false);
-                event.preventDefault(); // Prevent submission
-                showError(errorMessage);
-                return;
-            }
-            // Form submits normally after this
-        });
-    }
-
-    const loginDashboardForm = document.getElementById("loginDashboardForm");
-
-    if (loginDashboardForm) {
-        loginDashboardForm.addEventListener("submit", function (event) {
-            clearMessages();
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-            showLoadingMessage(true);
-
-            const errorMessage = isValidLogin(email, password);
-            if (errorMessage) {
-                showLoadingMessage(false);
-                event.preventDefault(); // Prevent submission
-                showError(errorMessage);
-                return;
-            }
-            // Form submits normally after this
-        });
-    }
-
-    function isValidLogin(email, password) {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
-        if (!emailRegex.test(email)) {
-            return "Please enter a valid Google email address (gmail.com or googlemail.com).";
-        }
-
-        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if (password.length < 8) {
-            return "Password must be at least 8 characters long.";
-        } else if (!passwordRegex.test(password)) {
-            return "Password must contain at least 1 letter and 1 number.";
-        }
-
-        return null;
-    }
 
     /*==============================
      Register
      ==============================*/
-    const registerForm = document.getElementById("registerForm");
 
-    if (registerForm) {
-        registerForm.addEventListener("submit", function (event) {
-            clearMessages();
-
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirmPassword = document.getElementById('confirmPassword').value.trim();
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-
-            showLoadingMessage(true);
-
-            const errorMessage = isValidRegister(username, email, password, confirmPassword, firstName, lastName);
-            if (errorMessage) {
-                showLoadingMessage(false);
-                event.preventDefault(); // prevent form from submitting if invalid
-                showError(errorMessage);
-                return;
-            }
-        });
-    }
-
-    function isValidRegister(username, email, password, confirmPassword, firstName, lastName) {
-        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-        if (!username || !usernameRegex.test(username)) {
-            return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
-        }
-
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
-        if (!emailRegex.test(email)) {
-            return "Please enter a valid Google email address (gmail.com or googlemail.com).";
-        }
-
-        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if (password.length < 8) {
-            return "Password must be at least 8 characters long.";
-        } else if (!passwordRegex.test(password)) {
-            return "Password must contain at least 1 letter and 1 number.";
-        }
-
-        if (password !== confirmPassword) {
-            return "Passwords do not match.";
-        }
-
-        const nameRegex = /^[a-zA-Z]+$/; // Allow only alphabetic characters
-        if (!firstName || !lastName) {
-            return "First Name and Last Name cannot be empty.";
-        }
-        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
-            return "First Name and Last Name can only contain letters.";
-        }
-
-        return null;
-    }
 
     /*==============================
      Reset Password
@@ -360,18 +236,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (resetPasswordForm) {
         resetPasswordForm.addEventListener("submit", function (event) {
-            clearMessages();
 
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
-            showLoadingMessage(true);
+            showMessage("Processing...");
 
             const errorMessage = isValidResetForm(password, confirmPassword);
             if (errorMessage) {
-                showLoadingMessage(false);
                 event.preventDefault(); // Block form submission
-                showError(errorMessage);
+                showMessage(errorMessage);
                 return;
             }
 
@@ -412,14 +286,11 @@ document.addEventListener('DOMContentLoaded', function () {
         sendOtpForgotBtn.addEventListener('click', function () {
             const email = emailForgotInput.value.trim();
 
-            clearMessages();
-
-            showLoadingMessage(true);
+            showMessage("Processing...");
 
             const errorMessage = isValidEmail(email);
             if (errorMessage) {
-                showLoadingMessage(false);
-                showError(errorMessage);
+                showMessage(errorMessage);
                 return;
             }
 
@@ -436,14 +307,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = emailForgotInput.value.trim();
             const otp = otpForgotInput.value.trim();
 
-            clearMessages();
-
-            showLoadingMessage(true);
+            showMessage("Processing");
 
             const errorMessage = validateFormForgotPassword(email, otp);
             if (errorMessage) {
-                showLoadingMessage(false);
-                showError(errorMessage);
+                showMessage(errorMessage);
                 return;
             }
 
@@ -499,19 +367,17 @@ document.addEventListener('DOMContentLoaded', function () {
         })
                 .then(res => res.json())  // Parse response as JSON
                 .then(data => {
-                    showLoadingMessage(false);
                     if (data.success) {
-                        showSuccess(data.message);
+                        showMessage(data.message);
                     } else {
-                        showError(data.message);
+                        showMessage(data.message);
                         sendOtpForgotBtn.disabled = false;
                         clearInterval(countdownInterval);
                         cooldownText.textContent = '';
                     }
                 })
                 .catch(() => {
-                    showLoadingMessage(false);
-                    showError("An error occurred. Please try again.");
+                    showMessage("An error occurred. Please try again.");
                     sendOtpForgotBtn.disabled = false;
                     clearInterval(countdownInterval);
                     cooldownText.textContent = '';
@@ -528,17 +394,15 @@ document.addEventListener('DOMContentLoaded', function () {
         })
                 .then(res => res.json())  // Parse response as JSON
                 .then(data => {
-                    showLoadingMessage(false);
                     if (data.success) {
-                        showSuccess(data.message);
+                        showMessage(data.message);
                         window.location.href = data.redirectUrl;
                     } else {
-                        showError(data.message);
+                        showMessage(data.message);
                     }
                 })
                 .catch(() => {
-                    showLoadingMessage(false);
-                    showError("An error occurred. Please try again.");
+                    showMessage("An error occurred. Please try again.");
                 });
     }
 
@@ -559,16 +423,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
 
-    function showSuccess(message) {
-        document.getElementById('successMessage').innerHTML = `<p>${message}</p>`;
-    }
-
-    function showError(message) {
-        document.getElementById('errorMessage').innerHTML = `<p>${message}</p>`;
-    }
-
-    function clearMessages() {
-        document.getElementById('successMessage').innerHTML = '';
-        document.getElementById('errorMessage').innerHTML = '';
-    }
 });

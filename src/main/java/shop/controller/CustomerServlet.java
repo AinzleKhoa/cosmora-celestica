@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
@@ -36,6 +37,14 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("list")) {
+            // Get message
+            HttpSession session = request.getSession();
+            String msg = (String) session.getAttribute("message");
+            if (msg != null) {
+                request.setAttribute("message", msg);
+                session.removeAttribute("message");
+            }
+
             CustomerDAO cDAO = new CustomerDAO();
             int currentPage = 1;
             int pageSize = 6;

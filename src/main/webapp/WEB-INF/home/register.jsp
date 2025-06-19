@@ -43,20 +43,13 @@
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
 
-                                <div id="loadingMessage">Processing...</div>
-
-                                <!-- Success Message Container -->
-                                <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                                    <c:if test="${not empty successMessage}">
-                                        <p>${successMessage}</p>
-                                    </c:if>
-                                </div>
-
-                                <!-- Error Message Container -->
-                                <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-                                    <c:if test="${not empty requestScope.errorMessage}">
-                                        <p>${requestScope.errorMessage}</p>
-                                    </c:if>
+                                <!-- Message Container -->
+                                <div id="message" style="color: yellow; margin-bottom: 15px;">
+                                    <p id="messageText">
+                                        <c:if test="${not empty message}">
+                                            ${message}
+                                        </c:if>
+                                    </p>
                                 </div>
 
                                 <div class="sign__group">
@@ -111,6 +104,64 @@
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
+        <script>
+            const registerForm = document.getElementById("registerForm");
+
+            if (registerForm) {
+                registerForm.addEventListener("submit", function (event) {
+
+                    const username = document.getElementById('username').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value.trim();
+                    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+                    const fullName = document.getElementById('fullName').value.trim();
+
+                    showMessage("Processing...");
+
+                    const errorMessage = isValidRegister(username, email, password, confirmPassword, fullName);
+                    if (errorMessage) {
+                        event.preventDefault(); // prevent form from submitting if invalid
+                        showMessage(errorMessage);
+                        return;
+                    }
+                });
+            }
+
+            function isValidRegister(username, email, password, confirmPassword, fullName) {
+                const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+                if (!username || !usernameRegex.test(username)) {
+                    return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
+                }
+
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
+                if (!emailRegex.test(email)) {
+                    return "Please enter a valid Google email address (gmail.com or googlemail.com).";
+                }
+
+                const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+                if (password.length < 8) {
+                    return "Password must be at least 8 characters long.";
+                } else if (!passwordRegex.test(password)) {
+                    return "Password must contain at least 1 letter and 1 number.";
+                }
+
+                if (password !== confirmPassword) {
+                    return "Passwords do not match.";
+                }
+
+                const nameRegex = /^[a-zA-Z\s]+$/;
+                if (!nameRegex.test(fullName)) {
+                    return "Full Name can only contain letters and spaces.";
+                }
+
+                return null;
+            }
+
+            function showMessage(msg) {
+                document.getElementById('messageText').textContent = "";
+                document.getElementById('messageText').textContent = msg;
+            }
+        </script>
     </body>
 
 </html>
