@@ -16,7 +16,7 @@
 %>
 
 <style>
-    
+
 </style>
 
 <section class="section details-section">
@@ -63,13 +63,13 @@
                             <% }%>
                 </div>
 
-                <form action="cart" method="POST" class="mt-4">
-                    <input type="hidden" name="action" value="add">
-                    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
-                    <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="btn btn-cart">Add to Cart</button>
-                    <button type="button" class="btn btn-buy ms-2">Buy Now</button>
-                </form>
+ <form action="cart" method="POST" class="mt-4 product-buttons">
+    <input type="hidden" name="action" value="add">
+    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit" class="btn btn-cart">Add to Cart</button>
+    <button type="button" class="btn btn-buy">Buy Now</button>
+</form>
             </div>
         </div>
 

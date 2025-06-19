@@ -2,35 +2,34 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
 */
-/* 
+/*
     Created on : Jun 18, 2025, 12:28:20 AM
     Author     : HoangSang
 */
 
 
- .slider-wrapper { position: relative; }
-    .slider-viewport { 
-        overflow: hidden; 
+.slider-wrapper { position: relative; }
+    .slider-viewport {
+        overflow: hidden;
     }
-    .slider-track { 
-        display: flex; 
+    .slider-track {
+        display: flex;
     }
 
     .slider-item {
         width: 280px; /* Chiều rộng cố định cho mỗi sản phẩm */
-        flex-shrink: 0; 
+        flex-shrink: 0;
         box-sizing: border-box;
         padding: 0 10px;
     }
-    
+
     .slider-nav { position: absolute; top: 40%; transform: translateY(-50%); z-index: 10; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease; }
     .slider-nav:hover { background-color: rgba(255, 255, 255, 0.4); }
     .slider-nav:disabled { opacity: 0.3; cursor: not-allowed; }
     .prev-nav { left: -15px; }
     .next-nav { right: -15px; }
 
-    
-    
+
     .section{
         margin-top: 3%;
     }
@@ -160,6 +159,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
         font-weight: bold;
         padding: 12px 30px;
         border-radius: 8px;
+
     }
     .btn-cart {
         background-color: transparent;
@@ -169,3 +169,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
         padding: 12px 30px;
         border-radius: 8px;
     }
+
+/* Ensure these rules are at the end of the file */
+/* Add these rules at the very end of product-list.css */
+.product-info form.product-buttons { /* More specific selector */
+    display: flex !important; /* Ensure flexbox is applied */
+    flex-direction: column !important; /* Force vertical stacking */
+    gap: 15px; /* Add space between items */
+}
+
+.product-info form.product-buttons .btn {
+    width: 100% !important; /* Ensure full width */
+    margin-left: 0 !important; /* Remove any lingering margin-left from Bootstrap */
+    margin-right: 0 !important; /* Remove any lingering margin-right */
+}
