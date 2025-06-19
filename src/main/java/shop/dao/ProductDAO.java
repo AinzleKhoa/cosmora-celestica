@@ -625,4 +625,88 @@ public class ProductDAO extends DBContext {
         details.setReleaseDate(rs.getDate("release_date"));
         return details;
     }
+    
+    /**
+     * Lấy danh sách các sản phẩm là phụ kiện (không phải game).
+     * @return Danh sách sản phẩm phụ kiện.
+     */
+    public List<Product> getAccessoryProducts() {
+        List<Product> productList = new ArrayList<>();
+        // Lấy sản phẩm có game_details_id là NULL (không phải game)
+        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, c.name AS category_name, b.brand_name, "
+                   + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
+                   + "FROM product p "
+                   + "LEFT JOIN category c ON p.category_id = c.category_id "
+                   + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
+                   + "WHERE p.game_details_id IS NULL " // Điều kiện quan trọng
+                   + "ORDER BY p.product_id";
+
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                productList.add(mapProductFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
+    }
+
+    /**
+     * Lấy danh sách các sản phẩm là game.
+     * @return Danh sách sản phẩm game.
+     */
+    public List<Product> getGameProducts() {
+        List<Product> productList = new ArrayList<>();
+        // Lấy sản phẩm có game_details_id không phải là NULL (là game)
+        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, gd.developer AS brand_name, " // Sử dụng developer làm brand cho game
+                   + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
+                   + "FROM product p "
+                   + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id "
+                   + "WHERE p.game_details_id IS NOT NULL " // Điều kiện quan trọng
+                   + "ORDER BY p.product_id";
+
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                productList.add(mapProductFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
+    }
+    // Phương thức phụ trợ để tránh lặp code
+    private Product mapProductFromResultSet(ResultSet rs) throws SQLException {
+        Product product = new Product();
+        product.setProductId(rs.getInt("product_id"));
+        product.setName(rs.getString("name"));
+        product.setPrice(rs.getBigDecimal("price"));
+        // Kiểm tra xem cột sale_price có tồn tại không trước khi lấy
+        if (hasColumn(rs, "sale_price")) {
+             product.setSalePrice(rs.getBigDecimal("sale_price"));
+        }
+        product.setQuantity(rs.getInt("quantity"));
+        // Trong câu SQL cho game, tôi đã alias gd.developer thành brand_name
+        product.setBrandName(rs.getString("brand_name"));
+
+        String singleImageUrl = rs.getString("image_url");
+        List<String> imageUrls = new ArrayList<>();
+        if (singleImageUrl != null && !singleImageUrl.isEmpty()) {
+            imageUrls.add(singleImageUrl);
+        }
+        product.setImageUrls(imageUrls);
+        return product;
+    }
+    // Tiện ích kiểm tra sự tồn tại của cột trong ResultSet
+    private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+        try {
+            rs.findColumn(columnName);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 }
