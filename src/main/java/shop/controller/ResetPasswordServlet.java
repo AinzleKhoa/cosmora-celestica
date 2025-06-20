@@ -74,24 +74,24 @@ public class ResetPasswordServlet extends HttpServlet {
                         session.removeAttribute("currentForgotCustomer");
                     }
 
-                    request.setAttribute("successMessage", "Password reset successfully! Please log in.");
+                    request.setAttribute("message", "Password reset successfully! Please log in.");
                     request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 } else {
                     request.setAttribute("email", email);
                     request.setAttribute("password", password);
                     request.setAttribute("confirmPassword", confirmPassword);
-                    request.setAttribute("errorMessage", "Something went wrong. Please try again.");
+                    request.setAttribute("message", "Something went wrong. Please try again.");
                     request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);
-                request.setAttribute("errorMessage", "Your new password must be different from your current password.");
+                request.setAttribute("message", "Your new password must be different from your current password.");
                 request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp").forward(request, response);
             }
         } else {
-            request.setAttribute("errorMessage", "Your session has expired. Please go through the OTP process again.");
+            request.setAttribute("message", "Your session has expired. Please go through the OTP process again.");
             request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
         }
     }
