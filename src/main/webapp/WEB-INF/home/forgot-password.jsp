@@ -97,7 +97,6 @@
                 const otpForgotInput = document.getElementById('otpForgotInput');
                 const cooldownText = document.getElementById('cooldownText');
 
-                // Only add event listeners if the buttons exist on the page
                 if (sendOtpForgotBtn) {
                     sendOtpForgotBtn.addEventListener('click', function () {
                         const email = emailForgotInput.value.trim();
@@ -123,7 +122,7 @@
                         const email = emailForgotInput.value.trim();
                         const otp = otpForgotInput.value.trim();
 
-                        showMessage("Processing");
+                        showMessage("Processing...");
 
                         const errorMessage = validateFormForgotPassword(email, otp);
                         if (errorMessage) {
@@ -174,7 +173,7 @@
                 }
 
                 function sendOtpToBackend(email) {
-                    fetch(`/${contextPath}/forgot-password`, {
+                    fetch('/' + contextPath + '/forgot-password', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -201,7 +200,7 @@
                 }
 
                 function sendOtpForVerification(email, otp) {
-                    fetch(`/${contextPath}/forgot-password`, {
+                    fetch('/' + contextPath + '/reset-password', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                         body: 'email=' + encodeURIComponent(email) +
@@ -224,17 +223,18 @@
 
                 function startCountdown() {
                     countdown = 30;
-                    cooldownText.textContent = `You can resend OTP in ${countdown}s`;
+                    cooldownText.textContent = "You can resend OTP in " + countdown + "s";  // Initial message
 
                     countdownInterval = setInterval(() => {
                         countdown--;
+
                         if (countdown <= 0) {
                             clearInterval(countdownInterval);
                             cooldownText.textContent = '';
                             sendOtpForgotBtn.disabled = false;
                             sendOtpForgotBtn.textContent = 'Resend OTP';
                         } else {
-                            cooldownText.textContent = `You can resend OTP in ${countdown}s`;
+                            cooldownText.textContent = "You can resend OTP in " + countdown + "s";  // Update the countdown text
                         }
                     }, 1000);
                 }
