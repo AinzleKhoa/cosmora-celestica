@@ -79,7 +79,8 @@
                                         onclick="location.href = '<%= request.getContextPath()%>/manage-orders?view=details&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
                                     Details
                                 </button>
-                                <button class="btn-action btn-history">Customer Details</button>
+                                <button class="btn-action btn-history" onclick="location.href = '<%= request.getContextPath()%>/manage-customers?view=details&id=<%= order.getCustomerId()%>'">
+                                    >Customer Details</button>
                             </div>
                         </td>
                     </tr>
