@@ -361,21 +361,6 @@ public class CustomerDAO extends DBContext {
         return 0;
     }
 
-    public int updateLastLoginTime(Customer customer) {
-        try {
-            String query = "UPDATE Customer\n"
-                    + "SET last_login = CURRENT_TIMESTAMP\n"
-                    + "WHERE customer_id = ?";
-            Object[] params = {
-                customer.getCustomerId()
-            };
-            return execQuery(query, params);
-        } catch (SQLException ex) {
-            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
-
     public int deleteCustomer(int id) {
         try {
             String query = "DELETE FROM customer\n"
