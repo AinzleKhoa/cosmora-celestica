@@ -4162,6 +4162,93 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 /*==============================
+        Profile Details
+==============================*/
+/* Profile container */
+.profile__details {
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 900px;
+    width: 100%;
+    margin: 20px;
+    overflow: hidden;
+}
+
+/* Text styling for profile */
+.profile__text {
+    color: #fff;
+}
+
+/* Profile info (labels) styling */
+.profile__info {
+    font-size: 0.95em;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-weight: normal;
+}
+
+/* Highlight label (strong text) */
+.profile__info strong {
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* Display the info value text */
+.profile__info {
+    color: #b0b0b0; /* Light grey text for info */
+}
+
+/* Styling for empty or unspecified data */
+.profile__info c:when, .profile__info c:otherwise {
+    color: #ff6961; /* Red color for unspecified info */
+    font-style: italic;
+}
+
+/* Flex layout for columns */
+.profile__details .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Column styling */
+.profile__details .col-md-6 {
+    flex: 1;
+    min-width: 300px;
+}
+
+.profile__details .col-12 {
+    flex-basis: 100%;
+}
+
+/* Adjust text on smaller screens */
+@media (max-width: 768px) {
+    .profile__details {
+        padding: 15px;
+    }
+    .profile__info {
+        font-size: 1.1em;
+    }
+}
+
+/* Button styles */
+.profile__logout {
+    display: inline-block;
+    background-color: #ff3b30;
+    color: white;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.profile__logout:hover {
+    background-color: #e32e1f; /* Darker red when hovered */
+}
+
+/*==============================
         Profile
 ==============================*/
 .profile {
