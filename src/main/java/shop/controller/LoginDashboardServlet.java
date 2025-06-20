@@ -70,14 +70,14 @@ public class LoginDashboardServlet extends HttpServlet {
                 // If password doesn't match, set error message and forward to login page
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
-                request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
+                request.setAttribute("message", "Email or password is incorrect. Try again.");
                 request.getRequestDispatcher("/WEB-INF/dashboard/login-dashboard.jsp").forward(request, response);
             }
         } else {
             // If email doesn't exist, set error message and forward to login page
             request.setAttribute("email", email);
             request.setAttribute("password", password);
-            request.setAttribute("errorMessage", "Email doesn't exist.");
+            request.setAttribute("message", "Email doesn't exist.");
             request.getRequestDispatcher("/WEB-INF/dashboard/login-dashboard.jsp").forward(request, response);
         }
     }
