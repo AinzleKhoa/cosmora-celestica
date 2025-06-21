@@ -74,8 +74,13 @@ body {
     border: 1px solid #f0f0f0;
     padding: 0.75rem;
     border-radius: 5px;
+    background-color: #fafafa;
 
 }
+.key-item {
+    color: #000 !important;
+}
+
 .key-list-scroller ul {
     margin-bottom: 0;
     
