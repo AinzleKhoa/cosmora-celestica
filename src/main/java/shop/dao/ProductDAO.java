@@ -709,4 +709,51 @@ public class ProductDAO extends DBContext {
             return false;
         }
     }
+    
+    public List<Product> searchProductsByName(String query) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        // Câu lệnh SQL sử dụng LOWER() để tìm kiếm không phân biệt chữ hoa/thường
+        // và LIKE với ký tự đại diện '%' để tìm kiếm chuỗi con.
+        String sql = "SELECT p.*, c.name as categoryName, b.brand_name as brandName " +
+                     "FROM Products p " +
+                     "LEFT JOIN Categories c ON p.category_id = c.category_id " +
+                     "LEFT JOIN Brands b ON p.brand_id = b.brand_id " +
+                     "WHERE LOWER(p.name) LIKE ?";
+        
+        try (// Thay DBContext.getConnection() bằng cách lấy kết nối của bạn
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Thiết lập tham số cho PreparedStatement để tránh SQL Injection.
+            // Thêm ký tự '%' vào đầu và cuối chuỗi tìm kiếm.
+            ps.setString(1, "%" + query.toLowerCase() + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    // Giả sử bạn có một phương thức để map ResultSet sang Product object
+                    // hoặc bạn sẽ map thủ công ở đây.
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setName(rs.getString("name"));
+                    product.setDescription(rs.getString("description"));
+                    product.setPrice(rs.getBigDecimal("price"));
+                    product.setSalePrice(rs.getBigDecimal("sale_price"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setCategoryId(rs.getInt("category_id"));
+                    product.setBrandId(rs.getInt("brand_id"));
+                    product.setGameDetailsId(rs.getInt("game_details_id"));
+                    product.setCreatedAt(rs.getTimestamp("created_at"));
+                    product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    
+                    // Lấy tên từ các bảng đã JOIN
+                    product.setCategoryName(rs.getString("categoryName"));
+                    product.setBrandName(rs.getString("brandName"));
+                    
+                    // (Bạn cũng cần logic để lấy danh sách ảnh cho mỗi sản phẩm)
+                    
+                    productList.add(product);
+                }
+            }
+        }
+        return productList;
+    }
 }

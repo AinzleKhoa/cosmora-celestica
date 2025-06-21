@@ -1,7 +1,7 @@
 <%--
-    Document   : product-edit.jsp
-    Created on : Jun 10, 2025 ,10:55:00 PM
-    Author     : HoangSang
+    Document    : product-edit.jsp
+    Created on  : Jun 10, 2025, 10:55:00 PM
+    Author      : HoangSang
 --%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
@@ -23,6 +23,9 @@
     List<Category> categories = (List<Category>) request.getAttribute("categoriesList");
     List<Brand> brands = (List<Brand>) request.getAttribute("brandsList");
     Map<String, String> attributeMap = (Map<String, String>) request.getAttribute("attributeMap");
+    if (attributeMap == null) {
+        attributeMap = new java.util.HashMap<>();
+    }
 
     GameDetails gameDetails = (GameDetails) request.getAttribute("gameDetails");
     List<GameKey> gameKeys = (List<GameKey>) request.getAttribute("gameKeys");
@@ -30,27 +33,38 @@
     List<OperatingSystem> allOS = (List<OperatingSystem>) request.getAttribute("allOS");
     Set<Integer> selectedPlatformIds = (Set<Integer>) request.getAttribute("selectedPlatformIds");
     Set<Integer> selectedOsIds = (Set<Integer>) request.getAttribute("selectedOsIds");
+
+    String initialProductType = "";
+    if (product != null && categories != null) {
+        for (Category cat : categories) {
+            if (product.getCategoryId() == cat.getCategoryId()) {
+                initialProductType = cat.getName().toLowerCase().replaceAll("\\s+", "")
+                        .replace("chuột", "mouse")
+                        .replace("bànphím", "keyboard")
+                        .replace("tainghe", "headphone")
+                        .replace("taycầm(controller)", "controller")
+                        .replace("game", "game");
+                break;
+            }
+        }
+    }
+    boolean isGameProduct = "game".equals(initialProductType);
 %>
 
 <style>
+    /* CSS chung */
     .admin-manage-subtitle {
         font-size: 1.25rem;
         font-weight: 500;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
     }
-    .admin-manage-image-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-    .image-uploader-container {
-        width: calc(33.333% - 1rem);
-    }
+
+    /* === BẮT ĐẦU CSS CHO UPLOAD ẢNH ĐÃ ĐƯỢC THỐNG NHẤT === */
     .image-uploader {
         border: 2px dashed #ddd;
         border-radius: 8px;
-        padding: 10px;
+        padding: 20px;
         text-align: center;
         cursor: pointer;
         position: relative;
@@ -60,17 +74,23 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #f8f9fa;
+        background-color: #4a4e69;
         transition: border-color 0.3s;
     }
     .image-uploader:hover {
         border-color: #007bff;
     }
-    .image-uploader__content i {
-        font-size: 30px;
+    .image-uploader__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .image-uploader__icon {
+        font-size: 40px;
         color: #6c757d;
     }
-    .image-uploader__content p {
+    .image-uploader p {
         margin: 10px 0 0;
         color: #6c757d;
         font-size: 0.9em;
@@ -85,7 +105,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: none;
+        display: none; /* Mặc định ẩn */
     }
     .remove-image-btn {
         position: absolute;
@@ -101,8 +121,19 @@
         line-height: 25px;
         text-align: center;
         cursor: pointer;
-        display: none;
+        display: none; /* Mặc định ẩn */
         z-index: 10;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Class quản lý trạng thái có ảnh */
+    .image-uploader.has-image .image-preview,
+    .image-uploader.has-image .remove-image-btn {
+        display: flex;
+    }
+    .image-uploader.has-image .image-uploader__content {
+        display: none;
     }
 </style>
 
@@ -125,19 +156,34 @@
         <% if (product != null) {%>
         <form action="<%= request.getContextPath()%>/manage-products?action=update" method="post" enctype="multipart/form-data">
             <input type="hidden" name="productId" value="<%= product.getProductId()%>">
-            <input type="hidden" name="gameDetailsId" value="<%= (gameDetails != null && gameDetails.getGameDetailsId() > 0) ? gameDetails.getGameDetailsId() : ""%>">
+            <input type="hidden" name="gameDetailsId" value="<%= (gameDetails != null && gameDetails.getGameDetailsId() > 0) ? gameDetails.getGameDetailsId() : "0"%>">
+            <input type="hidden" id="productTypeField" name="productType" value="">
 
             <div class="mb-4">
                 <label for="categoryId" class="form-label admin-manage-label">Product Type</label>
-                <select class="form-select admin-manage-input" id="categoryId" name="categoryId" required onchange="handleProductTypeChange(this)">
+                <select class="form-select admin-manage-input" id="categoryId" name="categoryId" required onchange="handleProductTypeChange(this)" <%= isGameProduct ? "disabled" : ""%>>
                     <% if (categories != null) {
                             for (Category cat : categories) {
-                                String normalizedName = cat.getName().toLowerCase().replaceAll("\\s+", "").replace("chuột", "mouse").replace("bànphím", "keyboard").replace("tainghe", "headset").replace("taycầm(controller)", "controller").replace("game", "game");
-                                boolean isSelected = product.getCategoryId() == cat.getCategoryId();%>
+                                String normalizedName = cat.getName().toLowerCase().replaceAll("\\s+", "")
+                                        .replace("chuột", "mouse")
+                                        .replace("bànphím", "keyboard")
+                                        .replace("tainghe", "headphone")
+                                        .replace("taycầm(controller)", "controller")
+                                        .replace("game", "game");
+
+                                if (!isGameProduct && "game".equals(normalizedName)) {
+                                    continue;
+                                }
+
+                                boolean isSelected = product.getCategoryId() == cat.getCategoryId();
+                    %>
                     <option value="<%= cat.getCategoryId()%>" data-normalized-name="<%= normalizedName%>" <%= isSelected ? "selected" : ""%>><%= cat.getName()%></option>
                     <% }
                         }%>
                 </select>
+                <% if (isGameProduct) {%>
+                <input type="hidden" name="categoryId" value="<%= product.getCategoryId()%>" />
+                <% }%>
             </div>
 
             <div class="mb-4 admin-manage-fieldset">
@@ -149,7 +195,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Price ($)</label>
-                        <input type="number" class="form-control admin-manage-input" name="price" value="<%= product.getPrice()%>" required>
+                        <input type="number" class="form-control admin-manage-input" step="0.01" name="price" value="<%= product.getPrice()%>" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Quantity</label>
@@ -162,27 +208,28 @@
                 </div>
             </div>
 
-            <div class="mb-4 admin-manage-fieldset">
-                <h3 class="admin-manage-subtitle">Product Images</h3>
-                <div class="admin-manage-image-gallery">
+            <div class="mb-4 admin-manage-fieldset p-4 border rounded">
+                <h3 class="admin-manage-subtitle">Product Images (Up to 6 images)</h3>
+                <div class="row g-3">
                     <%
                         List<String> imageUrls = product.getImageUrls();
                         if (imageUrls == null) {
-                            imageUrls = new ArrayList<>();
+                            imageUrls = new java.util.ArrayList<>();
                         }
                         for (int i = 0; i < 6; i++) {
                             String existingImageUrl = (i < imageUrls.size()) ? imageUrls.get(i) : null;
+                            boolean hasImage = existingImageUrl != null && !existingImageUrl.isEmpty();
                     %>
-                    <div class="image-uploader-container">
-                        <label class="form-label admin-manage-label">Image <%= i + 1%></label>
-                        <label class="image-uploader" for="productImage<%= i%>">
-                            <div class="image-uploader__content" style="<%= (existingImageUrl != null) ? "display: none;" : "display: flex;"%>">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p>Click to upload</p>
+                    <div class="col-md-4 col-sm-6 mb-3">
+                        <label class="image-uploader <%= hasImage ? "has-image" : ""%>" for="productImage<%= i%>">
+                            <div class="image-uploader__content">
+                                <i class="fas fa-cloud-upload-alt image-uploader__icon"></i>
+                                <p>Click to upload Image <%= i + 1%></p>
                             </div>
-                            <img src="<%= (existingImageUrl != null) ? request.getContextPath() + "/assets/img/" + existingImageUrl : ""%>" alt="Preview" class="image-preview" style="<%= (existingImageUrl != null) ? "display: block;" : "display: none;"%>">
+                            <img src="<%= hasImage ? request.getContextPath() + "/assets/img/" + existingImageUrl : ""%>" alt="Preview" class="image-preview">
                             <input type="file" id="productImage<%= i%>" name="productImages" accept="image/*">
-                            <button type="button" class="remove-image-btn" style="<%= (existingImageUrl != null) ? "display: flex;" : "display: none;"%>">&times;</button>
+                            <input type="hidden" name="originalImageViews" value="<%= hasImage ? existingImageUrl : ""%>">
+                            <button type="button" class="remove-image-btn">&times;</button>
                         </label>
                     </div>
                     <% }%>
@@ -190,6 +237,7 @@
             </div>
 
             <div id="dynamicFieldsContainer">
+                <%-- Game Section --%>
                 <div class="admin-manage-type game-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Game Details</h3>
@@ -239,11 +287,11 @@
                         <h3 class="admin-manage-subtitle">Game Keys</h3>
                         <label class="form-label admin-manage-label">Existing Keys (<%= (gameKeys != null ? gameKeys.size() : 0)%>)</label>
                         <div class="border p-2" style="max-height: 150px; overflow-y: auto; background-color: #f1f1f1; border-radius: 4px;">
-                            <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
-                            <% for (GameKey key : gameKeys) {%>
+                            <% if (gameKeys != null && !gameKeys.isEmpty()) {
+                                    for (GameKey key : gameKeys) {%>
                             <code><%= key.getKeyCode()%></code><br>
-                            <% } %>
-                            <% } else { %>
+                            <% }
+                            } else { %>
                             <p class="text-muted small mb-0">No existing keys.</p>
                             <% } %>
                         </div>
@@ -254,9 +302,9 @@
                     </div>
                 </div>
 
-                <%-- Accessory Sections --%>
+                <%-- Accessory Sections Start --%>
                 <%
-                    String[] accessoryTypes = {"mouse", "headset", "keyboard", "controller"};
+                    String[] accessoryTypes = {"mouse", "headphone", "keyboard", "controller"};
                     for (String type : accessoryTypes) {
                 %>
                 <div class="admin-manage-type <%= type%>-details" style="display: none;">
@@ -265,7 +313,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Brand</label>
-                                <select class="form-select admin-manage-input" name="<%= type%>_brandId">
+                                <select class="form-select admin-manage-input" name="brandId">
                                     <option value="">-- Select Brand --</option>
                                     <% if (brands != null) {
                                             for (Brand brand : brands) {
@@ -277,16 +325,20 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Warranty</label>
-                                <input type="text" class="form-control admin-manage-input" name="<%= type%>_warranty" value="<%= attributeMap.getOrDefault("Warranty", "")%>">
+                                <label class="form-label admin-manage-label">Warranty (Months)</label>
+                                <input type="number" class="form-control admin-manage-input" name="warrantyMonths" value="<%= attributeMap.getOrDefault("Warranty", "")%>">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Connection Type</label>
-                                <input type="text" class="form-control admin-manage-input" name="<%= type%>_connectionType" value="<%= attributeMap.getOrDefault("Connection Type", "")%>">
+                                <input type="text" class="form-control admin-manage-input" name="connectionType" value="<%= attributeMap.getOrDefault("Connection Type", "")%>">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Weight</label>
-                                <input type="text" class="form-control admin-manage-input" name="<%= type%>_weight" value="<%= attributeMap.getOrDefault("Weight", "")%>">
+                                <label class="form-label admin-manage-label">Weight (grams)</label>
+                                <input type="number" class="form-control admin-manage-input" name="weightGrams" value="<%= attributeMap.getOrDefault("Weight", "")%>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label admin-manage-label">Usage Time (Hours)</label>
+                                <input type="text" class="form-control admin-manage-input" name="usageTimeHours" value="<%= attributeMap.getOrDefault("Usage Time", "")%>">
                             </div>
                         </div>
                     </div>
@@ -295,36 +347,68 @@
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Mouse Specifics</h3>
                         <div class="row g-3">
-                            <div class="col-md-6"><label class="form-label admin-manage-label">Mouse Type</label><input type="text" class="form-control admin-manage-input" name="mouse_mouseType" value="<%= attributeMap.getOrDefault("Mouse Type", "")%>"></div>
-                            <div class="col-md-6"><label class="form-label admin-manage-label">Battery Life</label><input type="text" class="form-control admin-manage-input" name="mouse_batteryLife" value="<%= attributeMap.getOrDefault("BatteryLife", "")%>"></div>
+                            <div class="col-md-6">
+                                <label class="form-label admin-manage-label">Mouse Type</label>
+                                <input type="text" class="form-control admin-manage-input" name="mouseType" value="<%= attributeMap.getOrDefault("Mouse Type", "")%>">
+                            </div>
                         </div>
                     </div>
-                    <% } else if (type.equals("headset")) {%>
+                    <% } else if (type.equals("headphone")) {%>
                     <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Headset Specifics</h3>
+                        <h3 class="admin-manage-subtitle">Headphone Specifics</h3>
                         <div class="row g-3">
-                            <div class="col-md-6"><label class="form-label admin-manage-label">Headset Type</label><input type="text" class="form-control admin-manage-input" name="headset_headsetType" value="<%= attributeMap.getOrDefault("Headset Type", "")%>"></div>
-                            <div class="col-md-6"><label class="form-label admin-manage-label">Material</label><input type="text" class="form-control admin-manage-input" name="headset_material" value="<%= attributeMap.getOrDefault("Material", "")%>"></div>
-                            <div class="col-md-6"><label class="form-label admin-manage-label">Battery Capacity</label><input type="text" class="form-control admin-manage-input" name="headset_batteryCapacity" value="<%= attributeMap.getOrDefault("Battery Capacity", "")%>"></div>
-                            <div class="col-md-6"><label class="form-label admin-manage-label">Battery Life</label><input type="text" class="form-control admin-manage-input" name="headset_batteryLife" value="<%= attributeMap.getOrDefault("Battery Life", "")%>"></div>
+                            <div class="col-md-6">
+                                <label class="form-label admin-manage-label">Headphone Type</label>
+                                <input type="text" class="form-control admin-manage-input" name="headphoneType" value="<%= attributeMap.getOrDefault("Headphone Type", "")%>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label admin-manage-label">Material</label>
+                                <input type="text" class="form-control admin-manage-input" name="headphoneMaterial" value="<%= attributeMap.getOrDefault("Material", "")%>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label admin-manage-label">Battery Capacity</label>
+                                <input type="text" class="form-control admin-manage-input" name="headphoneBattery" value="<%= attributeMap.getOrDefault("Battery Capacity", "")%>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label admin-manage-label">Features</label>
+                                <input type="text" class="form-control admin-manage-input" name="headphoneFeatures" value="<%= attributeMap.getOrDefault("Features", "")%>">
+                            </div>
                         </div>
                     </div>
                     <% } else if (type.equals("keyboard")) {%>
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Keyboard Specifics</h3>
                         <div class="row g-3">
-                            <div class="col-md-4"><label class="form-label admin-manage-label">Size</label><input type="text" class="form-control admin-manage-input" name="keyboard_size" value="<%= attributeMap.getOrDefault("Size", "")%>"></div>
-                            <div class="col-md-4"><label class="form-label admin-manage-label">Keyboard Type</label><input type="text" class="form-control admin-manage-input" name="keyboard_keyboardType" value="<%= attributeMap.getOrDefault("Keyboard Type", "")%>"></div>
-                            <div class="col-md-4"><label class="form-label admin-manage-label">Battery Life</label><input type="text" class="form-control admin-manage-input" name="keyboard_batteryLife" value="<%= attributeMap.getOrDefault("Battery Life", "")%>"></div>
+                            <div class="col-md-4">
+                                <label class="form-label admin-manage-label">Size</label>
+                                <input type="text" class="form-control admin-manage-input" name="keyboardSize" value="<%= attributeMap.getOrDefault("Size", "")%>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label admin-manage-label">Keyboard Type</label>
+                                <input type="text" class="form-control admin-manage-input" name="keyboardType" value="<%= attributeMap.getOrDefault("Keyboard Type", "")%>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label admin-manage-label">Material</label>
+                                <input type="text" class="form-control admin-manage-input" name="keyboardMaterial" value="<%= attributeMap.getOrDefault("Material", "")%>">
+                            </div>
                         </div>
                     </div>
                     <% } else if (type.equals("controller")) {%>
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Controller Specifics</h3>
                         <div class="row g-3">
-                            <div class="col-md-4"><label class="form-label admin-manage-label">Material</label><input type="text" class="form-control admin-manage-input" name="controller_material" value="<%= attributeMap.getOrDefault("Material", "")%>"></div>
-                            <div class="col-md-4"><label class="form-label admin-manage-label">Battery Capacity</label><input type="text" class="form-control admin-manage-input" name="controller_batteryCapacity" value="<%= attributeMap.getOrDefault("Battery Capacity", "")%>"></div>
-                            <div class="col-md-4"><label class="form-label admin-manage-label">Battery Life</label><input type="text" class="form-control admin-manage-input" name="controller_batteryLife" value="<%= attributeMap.getOrDefault("Battery Life", "")%>"></div>
+                            <div class="col-md-4">
+                                <label class="form-label admin-manage-label">Material</label>
+                                <input type="text" class="form-control admin-manage-input" name="controllerMaterial" value="<%= attributeMap.getOrDefault("Material", "")%>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label admin-manage-label">Battery Capacity</label>
+                                <input type="text" class="form-control admin-manage-input" name="controllerBattery" value="<%= attributeMap.getOrDefault("Battery Capacity", "")%>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label admin-manage-label">Charging Time</label>
+                                <input type="text" class="form-control admin-manage-input" name="controllerChargingTime" value="<%= attributeMap.getOrDefault("Charging Time", "")%>">
+                            </div>
                         </div>
                     </div>
                     <% } %>
@@ -354,62 +438,73 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Gọi hàm xử lý loại sản phẩm khi trang được tải
         const initialSelect = document.getElementById('categoryId');
         if (initialSelect) {
             handleProductTypeChange(initialSelect);
         }
 
-        for (let i = 0; i < 6; i++) {
-            const uploader = document.querySelector(`#productImage${i}`).closest('.image-uploader');
-            if (!uploader)
-                continue;
-
+        // Bắt đầu logic upload ảnh đã được thống nhất
+        document.querySelectorAll('.image-uploader').forEach(uploader => {
             const input = uploader.querySelector('input[type="file"]');
+            const hiddenInput = uploader.querySelector('input[type="hidden"][name="originalImageViews"]');
             const preview = uploader.querySelector('.image-preview');
-            const content = uploader.querySelector('.image-uploader__content');
             const removeBtn = uploader.querySelector('.remove-image-btn');
 
+            // Khi người dùng chọn một file mới
             input.addEventListener('change', function () {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         preview.src = e.target.result;
-                        preview.style.display = 'block';
-                        removeBtn.style.display = 'flex';
-                        content.style.display = 'none';
+                        uploader.classList.add('has-image');
                     }
                     reader.readAsDataURL(file);
                 }
             });
 
+            // Khi người dùng nhấn nút xóa (×)
             removeBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
                 input.value = '';
                 preview.src = '';
-                preview.style.display = 'none';
-                removeBtn.style.display = 'none';
-                content.style.display = 'flex';
+
+                if (hiddenInput) {
+                    hiddenInput.value = ''; // Xóa giá trị để báo cho server biết ảnh đã bị xóa
+                }
+                uploader.classList.remove('has-image');
             });
-        }
+        });
+        // Kết thúc logic upload ảnh
     });
 
+    // Hàm xử lý việc hiển thị các trường động dựa trên loại sản phẩm
     function handleProductTypeChange(selectElement) {
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         const productType = selectedOption.getAttribute('data-normalized-name');
 
+        document.getElementById('productTypeField').value = productType;
+
         document.querySelectorAll('.admin-manage-type').forEach(div => {
             div.style.display = 'none';
+            div.querySelectorAll('input, select, textarea').forEach(input => {
+                input.disabled = true;
+            });
         });
 
         if (productType) {
             const section = document.querySelector('.' + productType + '-details');
             if (section) {
                 section.style.display = 'block';
+                section.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = false;
+                });
             }
         }
     }
 </script>
+
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

@@ -104,12 +104,13 @@
 
         <aside class="admin-sidebar">
             <div class="admin-sidebar__logo">Dashboard</div>
-            <li class="admin-sidebar__item">
-                <a href="${pageContext.servletContext.contextPath}/dashboard" class="admin-sidebar__link">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
+
             <ul class="admin-sidebar__nav">
+                <li class="admin-sidebar__item">
+                    <a href="${pageContext.servletContext.contextPath}/dashboard" class="admin-sidebar__link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
                 <li class="admin-sidebar__item">
                     <a href="${pageContext.servletContext.contextPath}/manage-products" class="admin-sidebar__link">
                         <i class="fas fa-box"></i> Manage Products

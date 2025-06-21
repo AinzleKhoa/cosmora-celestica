@@ -10,10 +10,19 @@
 <%@page import="shop.model.Brand"%>
 <%@ page import="java.util.List" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
+<%
+    List<Category> categoriesList = (List<Category>) request.getAttribute("categoriesList");
+    List<Brand> brandsList = (List<Brand>) request.getAttribute("brandsList");
+    List<StorePlatform> allPlatforms = (List<StorePlatform>) request.getAttribute("allPlatforms");
+    List<OperatingSystem> allOS = (List<OperatingSystem>) request.getAttribute("allOS");
+    String successMessage = (String) request.getAttribute("successMessage");
+    String errorMessage = (String) request.getAttribute("errorMessage");
+%>
+
 <style>
+    /* CSS không thay đổi */
     .image-uploader {
         border: 2px dashed #ddd;
         border-radius: 8px;
@@ -76,19 +85,11 @@
         display: none;
         z-index: 10;
     }
-    .admin-manage-checkbox-group {
-        max-height: 150px;
-        overflow-y: auto;
-    }
-    .admin-manage-checkbox-group .custom-control {
-        margin-bottom: 0.5rem;
-    }
     .admin-manage-subtitle {
         font-size: 1.25rem;
         font-weight: 500;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
-
     }
 </style>
 
@@ -107,33 +108,29 @@
         <form action="<%= request.getContextPath()%>/manage-products?action=add" method="post" enctype="multipart/form-data">
             <input type="hidden" id="productType" name="productType" value="">
 
-            <%-- Hiển thị thông báo --%>
-            <%
-                String successMessage = (String) request.getAttribute("successMessage");
-                if (successMessage != null && !successMessage.isEmpty()) {%>
+            <% if (successMessage != null && !successMessage.isEmpty()) {%>
             <div class="alert alert-success" role="alert"><%= successMessage%></div>
-            <% }
-                String errorMessage = (String) request.getAttribute("errorMessage");
-                if (errorMessage != null && !errorMessage.isEmpty()) {%>
+            <% } %>
+            <% if (errorMessage != null && !errorMessage.isEmpty()) {%>
             <div class="alert alert-danger" role="alert"><%= errorMessage%></div>
             <% } %>
 
-            <%-- Product Type Selector --%>
             <div class="mb-4">
                 <label for="categoryId" class="form-label admin-manage-label">Product Type</label>
                 <select class="custom-select admin-manage-input" id="categoryId" name="categoryId" required onchange="handleProductTypeChange(this)">
                     <option value="">-- Choose a Product Type --</option>
-                    <%
-                        List<Category> categoriesList = (List<Category>) request.getAttribute("categoriesList");
-                        if (categoriesList != null) {
+                    <% if (categoriesList != null) {
                             for (Category cat : categoriesList) {
-                                String normalizedName = cat.getName().toLowerCase().replaceAll("\\s+", "").replace("chuột", "mouse").replace("bànphím", "keyboard").replace("tainghe", "headphone").replace("taycầm(controller)", "controller").replace("game", "game");
+                                String normalizedName = cat.getName().toLowerCase().replaceAll("\\s+", "")
+                                        .replace("chuột", "mouse")
+                                        .replace("bànphím", "keyboard")
+                                        .replace("tainghe", "headphone")
+                                        .replace("taycầm(controller)", "controller")
+                                        .replace("game", "game");
                     %>
                     <option value="<%= cat.getCategoryId()%>" data-normalized-name="<%= normalizedName%>"><%= cat.getName()%></option>
-                    <%
-                            }
-                        }
-                    %>
+                    <% }
+                        } %>
                 </select>
             </div>
 
@@ -164,13 +161,13 @@
                 <div class="row g-3">
                     <% for (int i = 1; i <= 6; i++) {%>
                     <div class="col-md-4 col-sm-6 mb-3">
-                        <label class="image-uploader" for="productImage<%= i%>" id="uploader<%= i%>">
+                        <label class="image-uploader" for="productImage<%= i%>">
                             <div class="image-uploader__content">
                                 <i class="fas fa-cloud-upload-alt image-uploader__icon"></i>
                                 <p>Click to upload Image <%=i%></p>
                             </div>
                             <img src="" alt="Preview <%= i%>" class="image-preview">
-                            <input type="file" class="form-control-file" id="productImage<%= i%>" name="productImages" accept="image/*">
+                            <input type="file" id="productImage<%= i%>" name="productImages" accept="image/*">
                             <button type="button" class="remove-image-btn">&times;</button>
                         </label>
                     </div>
@@ -180,6 +177,7 @@
 
             <div id="dynamicFieldsContainer">
 
+                <%-- Game Section --%>
                 <div class="admin-manage-type game-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset p-4 border rounded">
                         <h3 class="admin-manage-subtitle">Game Details</h3>
@@ -203,42 +201,17 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Store Platform</label>
-                                <select multiple class="custom-select admin-manage-input" name="platformIds" size="4">
-                                    <%
-                                        List<StorePlatform> allPlatforms = (List<StorePlatform>) request.getAttribute("allPlatforms");
-                                        if (allPlatforms != null && !allPlatforms.isEmpty()) {
-                                            for (StorePlatform platform : allPlatforms) {
-                                    %>
-                                    <option value="<%= platform.getPlatformId()%>"><%= platform.getStoreOSName()%></option>
-                                    <%
-                                        }
-                                    } else {
-                                    %>
-                                    <option disabled>No platforms available</option>
-                                    <%
-                                        }
-                                    %>
-                                </select>
+                                <select multiple class="custom-select admin-manage-input" name="platformIds" size="4"><% if (allPlatforms != null) {
+                                        for (StorePlatform p : allPlatforms) {%>
+                                    <option value="<%= p.getPlatformId()%>"><%= p.getStoreOSName()%></option><% }
+                                        } %></select>
                             </div>
-
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Supported OS</label>
-                                <select multiple class="custom-select admin-manage-input" name="osIds" size="4">
-                                    <%
-                                        List<OperatingSystem> allOS = (List<OperatingSystem>) request.getAttribute("allOS");
-                                        if (allOS != null && !allOS.isEmpty()) {
-                                            for (OperatingSystem os : allOS) {
-                                    %>
-                                    <option value="<%= os.getOsId()%>"><%= os.getOsName()%></option>
-                                    <%
-                                        }
-                                    } else {
-                                    %>
-                                    <option disabled>No OS available</option>
-                                    <%
-                                        }
-                                    %>
-                                </select>
+                                <select multiple class="custom-select admin-manage-input" name="osIds" size="4"><% if (allOS != null) {
+                                        for (OperatingSystem os : allOS) {%>
+                                    <option value="<%= os.getOsId()%>"><%= os.getOsName()%></option><% }
+                                        } %></select>
                             </div>
                             <div class="col-12">
                                 <label for="gameKeys" class="form-label admin-manage-label">Game Keys (one key per line)</label>
@@ -248,7 +221,7 @@
                     </div>
                 </div>
 
-                <%-- Khối chung cho tất cả phụ kiện --%>
+                <%-- Common Accessory Details Section --%>
                 <div class="admin-manage-type accessory-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset p-4 border rounded">
                         <h3 class="admin-manage-subtitle">Accessory Details</h3>
@@ -273,19 +246,16 @@
                                 <label class="form-label admin-manage-label">Brand</label>
                                 <select class="custom-select admin-manage-input" name="brandId">
                                     <option value="">-- Select Brand --</option>
-                                    <%
-                                        List<Brand> brands = (List<Brand>) request.getAttribute("brandsList");
-                                        if (brands != null) {
-                                            for (Brand brand : brands) {%><option value="<%= brand.getBrandId()%>"><%= brand.getBrandName()%></option><% }
-                                                }
-                                    %>
-                                </select>
+                                    <% if (brandsList != null) {
+                                            for (Brand brand : brandsList) {%>
+                                    <option value="<%= brand.getBrandId()%>"><%= brand.getBrandName()%></option><% }
+                                        }%></select>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <%-- Khối riêng cho tai nghe --%>
+                <%-- Headphone Specifics --%>
                 <div class="admin-manage-type headphone-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset p-4 border rounded">
                         <h3 class="admin-manage-subtitle">Headphone Specifics</h3>
@@ -310,7 +280,7 @@
                     </div>
                 </div>
 
-                <%-- Khối riêng cho bàn phím --%>
+                <%-- Keyboard Specifics --%>
                 <div class="admin-manage-type keyboard-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset p-4 border rounded">
                         <h3 class="admin-manage-subtitle">Keyboard Specifics</h3>
@@ -331,7 +301,7 @@
                     </div>
                 </div>
 
-                <%-- Khối riêng cho chuột --%>
+                <%-- Mouse Specifics --%>
                 <div class="admin-manage-type mouse-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset p-4 border rounded">
                         <h3 class="admin-manage-subtitle">Mouse Specifics</h3>
@@ -344,7 +314,7 @@
                     </div>
                 </div>
 
-                <%-- Khối riêng cho tay cầm --%>
+                <%-- Controller Specifics --%>
                 <div class="admin-manage-type controller-details" style="display: none;">
                     <div class="mb-4 admin-manage-fieldset p-4 border rounded">
                         <h3 class="admin-manage-subtitle">Controller Specifics</h3>
@@ -366,31 +336,23 @@
                 </div>
 
             </div>
-    </div>
 
-    <%-- Nút bấm cuối form --%>
-    <div class="d-flex justify-content-end align-items-center mt-4">
-        <button type="reset" class="btn admin-manage-reset mr-2">
-            <i class="fas fa-xmark mr-1"></i> Reset
-        </button>
-        <button type="submit" class="btn admin-manage-button">
-            <i class="fas fa-plus mr-1"></i> Create
-        </button>
+            <div class="d-flex justify-content-end align-items:center mt-4">
+                <button type="reset" class="btn admin-manage-reset mr-2"><i class="fas fa-xmark mr-1"></i> Reset</button>
+                <button type="submit" class="btn admin-manage-button"><i class="fas fa-plus mr-1"></i> Create</button>
+            </div>
+        </form>
     </div>
-</form>
-</div>
 </main>
 
-
 <script>
+    // Javascript không thay đổi
     document.addEventListener('DOMContentLoaded', function () {
-        // Xử lý cho 6 ô tải ảnh
         document.querySelectorAll('.image-uploader').forEach(uploader => {
             const input = uploader.querySelector('input[type="file"]');
             const preview = uploader.querySelector('.image-preview');
             const content = uploader.querySelector('.image-uploader__content');
             const removeBtn = uploader.querySelector('.remove-image-btn');
-
             input.addEventListener('change', function () {
                 const file = this.files[0];
                 if (file) {
@@ -400,15 +362,13 @@
                         preview.style.display = 'block';
                         removeBtn.style.display = 'block';
                         content.style.display = 'none';
-                    }
+                    };
                     reader.readAsDataURL(file);
                 }
             });
-
             removeBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-
                 input.value = '';
                 preview.src = '';
                 preview.style.display = 'none';
@@ -418,46 +378,29 @@
         });
     });
 
-    // =======================================================
-    // === JAVASCRIPT ĐƯỢC CẬP NHẬT ĐỂ XỬ LÝ PHỤ KIỆN ===
-    // =======================================================
     function handleProductTypeChange(selectElement) {
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         const productType = selectedOption.getAttribute('data-normalized-name');
-
         document.getElementById('productType').value = productType;
-
-        // Danh sách tất cả các khối chi tiết động
-        const allFieldWrappers = document.querySelectorAll('.admin-manage-type');
-
-        // Ẩn tất cả các khối
-        allFieldWrappers.forEach(wrapper => {
+        document.querySelectorAll('.admin-manage-type').forEach(wrapper => {
             wrapper.style.display = 'none';
         });
-
-
-        if (!productType) {
-            return; // Không làm gì nếu không có loại nào được chọn
-        }
-
-        // Hiển thị các khối tương ứng
+        if (!productType)
+            return;
         if (productType === 'game') {
             document.querySelector('.game-details').style.display = 'block';
         } else {
-            // Nếu là một loại phụ kiện, hiển thị cả khối chung và khối riêng
             const accessoryTypes = ['mouse', 'keyboard', 'headphone', 'controller'];
             if (accessoryTypes.includes(productType)) {
-                // Hiển thị khối chung
-                const commonAccessoryBlock = document.querySelector('.accessory-details');
-                if (commonAccessoryBlock)
-                    commonAccessoryBlock.style.display = 'block';
-
-                // Hiển thị khối riêng của loại phụ kiện đó
-                const specificAccessoryBlock = document.querySelector('.' + productType + '-details');
-                if (specificAccessoryBlock)
-                    specificAccessoryBlock.style.display = 'block';
+                const commonBlock = document.querySelector('.accessory-details');
+                if (commonBlock)
+                    commonBlock.style.display = 'block';
+                const specificBlock = document.querySelector('.' + productType + '-details');
+                if (specificBlock)
+                    specificBlock.style.display = 'block';
             }
         }
     }
 </script>
+
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
