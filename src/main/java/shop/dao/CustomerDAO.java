@@ -229,7 +229,7 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
-    
+
     public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
         try {
             String query = "SELECT COUNT(*) FROM customer \n"
@@ -244,7 +244,7 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
-    
+
     public int storeOtpForEmail(String email, String otp, Timestamp expiry) {
         try {
             String query = "UPDATE customer SET email_verification_token = ?, email_verification_expiry = ? WHERE email = ?";
@@ -316,7 +316,7 @@ public class CustomerDAO extends DBContext {
         }
         return 0;
     }
-    
+
     public int updateProfileCustomer(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
@@ -389,6 +389,22 @@ public class CustomerDAO extends DBContext {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
+    }
+
+    public int GetIdByName(String username) {
+        try {
+            String query = "SELECT customer_id\n"
+                    + "FROM customer\n"
+                    + "WHERE username=?";
+            Object[] params = {username};
+            ResultSet rs = execSelectQuery(query, params);
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
     }
 
 }

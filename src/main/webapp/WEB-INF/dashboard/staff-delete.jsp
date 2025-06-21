@@ -14,11 +14,7 @@
 		</div>
 
 		<div class="admin-manage-wrapper container py-4">
-			<div class="mb-4">
-				<a href="${pageContext.servletContext.contextPath}/manage-staffs?view=list" class="admin-manage-back mb-5">
-					<i class="fas fa-arrow-left mr-1"></i> Back
-				</a>
-			</div>
+		
 
 			<!-- Summary -->
                        <%
