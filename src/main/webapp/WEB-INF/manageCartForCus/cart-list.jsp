@@ -1,3 +1,7 @@
+<%@page import="shop.model.cartItem"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Locale"%>
+
 <%@include file="../include/home-header.jsp" %>
 
 <!DOCTYPE html>
@@ -34,141 +38,137 @@
             <div class="row">
                 <div class="col-12 col-lg-8">
                     <!-- cart -->
-
-
                     <div class="cart">
-                        <div class="table-responsive">
-                            <table class="cart__table">
-                                <thead>
-                                    <tr>
-                                        <th>?</th>
-                                        <th>Product</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
+                        <div style="padding: 20px;">
+                            <div class="table-responsive">
+                                <table class="cart__table">
+                                    <thead>
+                                        <tr>
+                                            <th>Check</th>
+                                            <th>Image</th>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <%
+                                            List<cartItem> cartItems = (List<cartItem>) request.getAttribute("cartItems");
+                                            for (cartItem item : cartItems) {
+                                        %>
+                                        <tr>
+                                            <!-- Checkbox -->
+                                            <td>
+                                                <%
+                                                    double unitPrice = item.getSalePrice() != null ? item.getSalePrice() : item.getPrice();
+                                                    double totalPrice = unitPrice * item.getQuantity();
+                                                %>
+                                                <!-- DEBUG: <%= item.getProductName()%> | unitPrice: <%= unitPrice%> | quantity: <%= item.getQuantity()%> | totalPrice: <%= totalPrice%> -->
+                                                <input type="checkbox"
+                                                       class="product-check"
+                                                       data-price="<%= String.format(Locale.ENGLISH, "%.2f", totalPrice)%>"
+                                                       onclick="updateTotalPrice()" 
 
-                                        <th></th>
-                                    </tr>
-                                </thead>
+                                                       style="transform: scale(1.5); appearance: auto; margin-right: 10px;" />
+                                            </td>
 
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" class="product-check" data-price="19.99" onclick="updateTotalPrice()">
-                                        </td>
-                                        <td>
-                                            <div class="cart__img">
-                                                <img src="img/cards/8.jpg" alt="">
-                                            </div>
-                                        </td>
-                                        <td><a href="#">Baldur's Gate: Enhanced Edition</a></td>
-                                        <td>Game</td>
-                                        <td><span class="cart__price">$19.99</span></td>
-                                        <td>
-                                            <button class="cart__delete" type="button">
-                                                <!-- icon delete -->
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" class="product-check" data-price="7.99" onclick="updateTotalPrice()">
-                                        </td>
-                                        <td>
-                                            <div class="cart__img">
-                                                <img src="img/accessories/headset1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td><a href="#">Dandara: Trials of Fear Edition</a></td>
-                                        <td>Headset</td>
-                                        <td><span class="cart__price">$7.99</span></td>
-                                        <td>
-                                            <button class="cart__delete" type="button">
-                                                <!-- icon delete -->
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" class="product-check" data-price="7.99" onclick="updateTotalPrice()">
-                                        </td>
-                                        <td>
-                                            <div class="cart__img">
-                                                <img src="img/controller/controller1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td><a href="#">Dandara: Trials of Fear Edition</a></td>
-                                        <td>Controller</td>
-                                        <td><span class="cart__price">$7.99</span></td>
-                                        <td><div class ="quantity" >
-                                            <button style="color: white"  type="button">+</button>
-                                            <span class="cart__price">1</span>
-                                            <button style="color: white" type="button"> - </button>
-                                            </div>
-                                        </td>
+                                            <!-- Image -->
+                                            <td>
+                                                <div class="cart__img">
+                                                    <img src="<%= request.getContextPath()%>/assets/img/<%= item.getImageUrl()%>" alt="">
+                                                </div>
+                                            </td>
 
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                            <!-- Product Name -->
+                                            <td><a href="#"> <%= item.getProductName()%> </a></td>
 
-                        <div class="cart__info">
-                            <div class="cart__total">
-                                <p>Total:</p>
-                                <span id="totalAmount">$0.00</span>
+                                            <!-- Category -->
+                                            <td><%= item.getCategoryName()%></td>
+
+                                            <!-- Price * Quantity -->
+                                            <td>
+                                                <span class="cart__price">
+                                                    $<%= String.format("%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getQuantity())%>
+                                                </span>
+                                            </td>
+
+                                            <!-- Quantity display -->
+                                            <td>
+                                                <div class="quantity">
+                                                    <button style="color: white" type="button">+</button>
+                                                    <span class="cart__price"><%= item.getQuantity()%></span>
+                                                    <button style="color: white" type="button">-</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }%>
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div class="cart__systems">
-                                <i class="pf pf-visa"></i>
-                                <i class="pf pf-mastercard"></i>
-                                <i class="pf pf-paypal"></i>
+                            <!-- Cart Info -->
+                            <div class="cart__info">
+
+                                <div class="cart__total">
+                                    <p>Total:</p>
+                                    <span id="totalAmount">
+                                        <span id="dollarSign">$</span><span id="totalNumber">0.00</span>
+                                    </span>
+                                </div>
+
+                                <div class="cart__systems">
+                                    <i class="pf pf-visa"></i>
+                                    <i class="pf pf-mastercard"></i>
+                                    <i class="pf pf-paypal"></i>
+                                </div>
+                                <div class="checkout_btn">
+                                    <button type="button" class="form__btn">Proceed to checkout</button>
+                                </div>
+
+
+
                             </div>
+
+
+                            <!-- end cart -->
                         </div>
-
-                        <button type="button" class="form__btn">Proceed to checkout</button>
-                    </div>
-
-                    <!-- end cart -->
-                </div>
-
-
-            </div>
-        </div>
-    </div>
-    <!-- end section -->
-
-    <!-- footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-
-                <div class="col-12">
-                    <div class="footer__wrap">
-                        <a class="footer__logo" href="index.html">
-                            <img src="img/logo.png" alt="">
-                        </a>
-
-                        <span class="footer__copyright">© GG.template, 2020?2021 <br> Create by <a
-                                href="https://themeforest.net/user/dmitryvolkov/portfolio" target="_blank">Dmitry
-                                Volkov</a></span>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
-    <!-- end footer -->
 
-    <!-- JS -->
-    <script src="js/jquery-3.5.1.min.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/jquery.magnific-popup.min.js"></script>
-    <script src="js/wNumb.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/jquery.mousewheel.min.js"></script>
-    <script src="js/jquery.mCustomScrollbar.min.js"></script>
-    <script src="js/main.js"></script>
-</body>
+        <!-- Script tính t?ng -->
+        <script>
+            function updateTotalPrice() {
+                let total = 0;
+                const checkboxes = document.querySelectorAll('.product-check:checked');
+
+                checkboxes.forEach(cb => {
+                    const rawPrice = cb.getAttribute('data-price');
+                    console.log("? Checkbox selected - data-price:", rawPrice); // <-- DEBUG
+
+                    const price = parseFloat(rawPrice);
+                    if (!isNaN(price)) {
+                        total += price;
+                    } else {
+                        console.warn("? Invalid price encountered:", rawPrice); // <-- DEBUG
+                    }
+                });
+
+
+
+                const totalSpan = document.getElementById("totalNumber").textContent = total.toFixed(2);
+                totalSpan.textContent = `$${total.toFixed(2)}`;
+                console.log("? Total updated:", total.toFixed(2)); // <-- DEBUG
+            }
+
+
+        </script>
+
+
+
+    </body>
 
 </html>
+<%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

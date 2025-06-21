@@ -9,6 +9,7 @@ D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\controller\RegisterServlet.java
 D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\model\Staff.java
 D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\controller\OrderServlet.java
 D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\controller\StaffServlet.java
+D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\model\cartItem.java
 D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\filter\CustomerAuthFilter.java
 D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\dao\GameKeyDAO.java
 D:\Ky_5\SWP\cosmora-celestica\src\main\java\shop\dao\ProductDAO.java

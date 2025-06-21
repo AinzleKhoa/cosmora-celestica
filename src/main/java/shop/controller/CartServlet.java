@@ -11,9 +11,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
+import java.util.List;
 import shop.dao.CartDAO;
 import shop.dao.CustomerDAO;
 import shop.model.Cart;
+import shop.model.Customer;
+import shop.model.cartItem;
 
 /**
  *
@@ -60,16 +65,31 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String view = request.getParameter("view");
+
         if (view == null || view.isEmpty() || view.equals("list")) {
+            HttpSession session = request.getSession(false);
 
-//            StaffDAO sDAO = new StaffDAO();
-//            ArrayList<Staff> sList = sDAO.getList(page);
-//            request.setAttribute("s", sList);
-//
-//            request.setAttribute("s", sList);
-            request.getRequestDispatcher("/WEB-INF/manageCartForCus/cart-list.jsp").forward(request, response);
+            if (session == null || session.getAttribute("currentCustomer") == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
 
+            // Ép kiểu đúng
+            Customer customer = (Customer) session.getAttribute("currentCustomer");
+            int customerId = customer.getCustomerId(); // ✅ Lấy ID trực tiếp từ object
+
+            try {
+                CartDAO cartDAO = new CartDAO();
+                List<cartItem> cartItems = cartDAO.getCartItemsByCustomerId(customerId);
+
+                request.setAttribute("cartItems", cartItems);
+                request.getRequestDispatcher("/WEB-INF/manageCartForCus/cart-list.jsp").forward(request, response);
+
+            } catch (SQLException e) {
+                throw new ServletException("Lỗi khi lấy danh sách giỏ hàng", e);
+            }
         } else if (view.equals("create")) {
             request.getRequestDispatcher("/WEB-INF/dashboard/staff-create.jsp").forward(request, response);
 
@@ -187,7 +207,7 @@ public class CartServlet extends HttpServlet {
                     }
 
                     // 3. Chuyển hướng về trang sản phẩm hoặc giỏ hàng
-                     response.sendRedirect(request.getContextPath() + "/cart");
+                    response.sendRedirect(request.getContextPath() + "/cart");
                 }
 
                 break;

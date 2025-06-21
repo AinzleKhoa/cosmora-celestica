@@ -5496,6 +5496,24 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     color: #fff;
 }
 
+
+#totalAmount {
+    color: white;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    display: inline-block;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#dollarSign {
+    color: white;
+    background-color: transparent;
+}
+
+
+
 .cart__table th a:hover svg {
     fill: #4aa2dd;
 }
@@ -5609,6 +5627,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     color: #fff;
     line-height: 100%;
     font-weight: 600;
+    
 }
 
 .cart__systems {

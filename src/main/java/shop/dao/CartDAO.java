@@ -6,8 +6,11 @@ package shop.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import shop.db.DBContext;
 import shop.model.Cart;
+import shop.model.cartItem;
 
 /**
  *
@@ -33,6 +36,41 @@ public class CartDAO extends DBContext {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public List<cartItem> getCartItemsByCustomerId(int customerId) throws SQLException {
+        List<cartItem> cartItems = new ArrayList<>();
+
+        String sql = "SELECT c.cart_id, c.customer_id, c.product_id, c.quantity, " +
+                     "p.name AS product_name, p.price, p.sale_price, " +
+                     "i.image_id, i.image_URL AS image_url, " +
+                     "cat.name AS category_name " +
+                     "FROM cart c " +
+                     "JOIN product p ON c.product_id = p.product_id " +
+                     "LEFT JOIN category cat ON p.category_id = cat.category_id " +
+                     "LEFT JOIN image i ON i.image_id = ( " +
+                     "    SELECT MIN(image_id) FROM image WHERE product_id = p.product_id" +
+                     ") " +
+                     "WHERE c.customer_id = ?   ";
+
+        Object[] params = { customerId };
+        ResultSet rs = execSelectQuery(sql, params);
+
+        while (rs.next()) {
+            cartItem item = new cartItem();
+            item.setCartId(rs.getInt("cart_id"));
+            item.setCustomerId(rs.getInt("customer_id"));
+            item.setProductId(rs.getInt("product_id"));
+            item.setQuantity(rs.getInt("quantity"));
+            item.setProductName(rs.getString("product_name"));
+            item.setPrice(rs.getDouble("price"));
+            item.setSalePrice(rs.getObject("sale_price") != null ? rs.getDouble("sale_price") : null);
+            item.setImageUrl(rs.getString("image_url"));
+            item.setCategoryName(rs.getString("category_name"));
+            cartItems.add(item);
+        }
+
+        return cartItems;
     }
 
     // Thêm sản phẩm mới vào giỏ

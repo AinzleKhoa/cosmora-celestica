@@ -20,6 +20,17 @@
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
+        <style>
+    #totalAmount {
+        visibility: visible !important;
+        display: inline-block !important;
+        color: black !important;
+        background-color: yellow !important;
+        position: relative !important;
+        z-index: 9999 !important;
+    }
+</style>
+
 
         <!-- Favicons -->
         <link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">

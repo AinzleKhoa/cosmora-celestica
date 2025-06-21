@@ -26,6 +26,7 @@ shop\model\Category.class
 shop\controller\LoginServlet.class
 shop\dao\ProductDAO.class
 shop\util\SessionUtil.class
+shop\model\cartItem.class
 shop\model\Cart.class
 shop\model\Image.class
 shop\dao\StorePlatformDAO.class
