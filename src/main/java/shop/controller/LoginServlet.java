@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import shop.dao.CartDAO;
 import shop.dao.CustomerDAO;
 import shop.util.PasswordUtils;
 import shop.model.Customer;
@@ -55,10 +56,10 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         System.out.println("plain: " + password);
-        
+
         CustomerDAO cDAO = new CustomerDAO();
         Customer customer = cDAO.getAccountByEmail(email);
-        
+
         if (customer != null) {
             if (!customer.isIsDeactivated()) {
                 // Check password match before setting session
@@ -67,6 +68,11 @@ public class LoginServlet extends HttpServlet {
                     if (cDAO.updateLastLoginTime(customer) > 0) {
                         HttpSession session = request.getSession(true);
                         session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
+
+                        CartDAO cartDAO = new CartDAO();
+                        int customerId = customer.getCustomerId();
+                        int cartCount = cartDAO.countCartItems(customerId);
+                        session.setAttribute("cartCount", cartCount);
 
                         // Redirect to the home page upon successful login
                         response.sendRedirect(request.getContextPath() + "/home");

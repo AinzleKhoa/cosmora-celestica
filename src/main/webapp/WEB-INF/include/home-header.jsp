@@ -21,15 +21,8 @@
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
         <style>
-    #totalAmount {
-        visibility: visible !important;
-        display: inline-block !important;
-        color: black !important;
-        background-color: yellow !important;
-        position: relative !important;
-        z-index: 9999 !important;
-    }
-</style>
+
+        </style>
 
 
         <!-- Favicons -->
@@ -62,22 +55,39 @@
 
                                 <ul class="header__nav">
                                 </ul>
+                                <%
+                                    Integer cartCount = (Integer) session.getAttribute("cartCount");
+                                    if (cartCount == null)
+                                        cartCount = 0;
+                                %>
 
                                 <div class="header__actions">
-                                    <a href="/checkout" class="header__link">
-                                        <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                             viewBox='0 0 512 512'>
-                                        <circle cx='176' cy='416' r='16'
-                                                style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                        <circle cx='400' cy='416' r='16'
-                                                style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                        <polyline points='48 80 112 80 160 352 416 352'
-                                                  style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                        <path d='M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128'
-                                              style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                    <a href="<%= request.getContextPath()%>/cart" class="header__link" style="position: relative; display: inline-block;">
+                                        <%-- Badge số lượng --%>
+                                        <span style="
+                                              position: absolute;
+                                              top: -8px;
+                                              right: -8px;
+                                              background-color: red;
+                                              color: white;
+                                              font-size: 12px;
+                                              font-weight: bold;
+                                              padding: 2px 6px;
+                                              border-radius: 50%;
+                                              z-index: 10;
+                                              min-width: 20px;
+                                              text-align: center;
+                                              "><%= cartCount%></span>
+
+                                        <%-- Icon cart --%>
+                                        <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 512 512'>
+                                        <circle cx='176' cy='416' r='16' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                        <circle cx='400' cy='416' r='16' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                        <polyline points='48 80 112 80 160 352 416 352' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
+                                        <path d='M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
                                         </svg>
-                                        <span>$00.00</span>
                                     </a>
+
                                     <c:choose>
                                         <c:when test="${not empty user}">
                                             <div class="admin-dropdown" onclick="toggleDropdown()">

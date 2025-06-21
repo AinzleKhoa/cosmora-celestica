@@ -64,18 +64,25 @@
                             <% }%>
                 </div>
 
-<%
-    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
-%>
+                <%
+                    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
+                %>
 
-<form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons">
-    <input type="hidden" name="action" value="add">
-    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : "" %>">
-    <input type="hidden" name="productId" value="<%= product.getProductId() %>">
-    <input type="hidden" name="quantity" value="1">
-    <button type="submit" class="btn btn-cart">Add to Cart</button>
-</form>
-    <button type="submit" class="btn btn-cart">Buy</button>
+                <form action="${pageContext.servletContext.contextPath}/cart" method="POST" >
+                    <input type="hidden" name="action" value="add">
+                     <input type="hidden" name="page" value="cart">
+                    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
+                    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-cart">Add to Cart</button>
+
+                </form>
+                <button type="submit" class="btn btn-cart">Buy</button>
+
+
+
+
+
 
             </div>
         </div>
