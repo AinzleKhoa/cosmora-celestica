@@ -8,8 +8,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List, shop.model.Product, java.text.NumberFormat, java.util.Locale" %>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/dashboard.css">
 
 
