@@ -80,7 +80,7 @@
                                     Details
                                 </button>
                                 <button class="btn-action btn-history" onclick="location.href = '<%= request.getContextPath()%>/manage-customers?view=details&id=<%= order.getCustomerId()%>'">
-                                    >Customer Details</button>
+                                    Customer Details</button>
                             </div>
                         </td>
                     </tr>

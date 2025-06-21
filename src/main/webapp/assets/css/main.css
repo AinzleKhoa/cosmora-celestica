@@ -7708,3 +7708,8 @@ input[type="file"].admin-manage-input {
 .mCS-custom-bar2.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar {
     background-color: #4aa2dd;
 }
+
+.address {
+    display: flex;
+    justify-content: space-between;
+}
