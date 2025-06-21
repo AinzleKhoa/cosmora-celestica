@@ -41,8 +41,7 @@
                     <div class="cart">
                         <div style="padding: 20px;">
                             <div class="table-responsive">
-                                <%
-                                    List<cartItem> cartItems = (List<cartItem>) request.getAttribute("cartItems");
+                                <%                                    List<cartItem> cartItems = (List<cartItem>) request.getAttribute("cartItems");
 
                                     if (cartItems == null || cartItems.isEmpty()) {
                                 %>
@@ -108,6 +107,7 @@
                                                         <!-- Decrease -->
                                                         <form method="post" action="cart" style="display:inline;">
                                                             <input type="hidden" name="action" value="decrease">
+                                                            <input type="hidden" name="page" value="cart">
                                                             <input type="hidden" name="productId" value="<%= item.getProductId()%>">
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">-</button>
@@ -115,6 +115,7 @@
                                                         <span class="cart__price"><%= item.getQuantity()%></span>
                                                         <!-- Increase -->
                                                         <form method="post" action="cart" style="display:inline;">
+                                                            <input type="hidden" name="page" value="cart">
                                                             <input type="hidden" name="action" value="add">
                                                             <input type="hidden" name="productId" value="<%= item.getProductId()%>">
                                                             <input type="hidden" name="quantity" value="1">
