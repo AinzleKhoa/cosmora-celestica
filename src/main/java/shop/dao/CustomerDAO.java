@@ -391,20 +391,6 @@ public class CustomerDAO extends DBContext {
         return 0;
     }
 
-    public int GetIdByName(String username) {
-        try {
-            String query = "SELECT customer_id\n"
-                    + "FROM customer\n"
-                    + "WHERE username=?";
-            Object[] params = {username};
-            ResultSet rs = execSelectQuery(query, params);
-            while (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return -1;
-    }
+
 
 }
