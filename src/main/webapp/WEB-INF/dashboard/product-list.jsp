@@ -4,26 +4,68 @@
     Author     : HoangSang
 --%>
 
-<%@page import="java.math.BigDecimal"%>
-<%@page import="java.text.NumberFormat"%>
-<%@page import="java.util.Locale"%>
 <%@page import="java.util.List"%>
 <%@page import="shop.model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
-<% String contextPath = request.getContextPath();%>
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/bootstrap-reboot.min.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/bootstrap-grid.min.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/owl.carousel.min.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/magnific-popup.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/nouislider.min.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/jquery.mCustomScrollbar.min.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/paymentfont.min.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/main.css">
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/product-style.css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<%
+    String contextPath = request.getContextPath();
+    int currentPage = (Integer) request.getAttribute("currentPage");
+    int totalPages = (Integer) request.getAttribute("totalPages");
+    int rowNumber = (Integer) request.getAttribute("startRowNumber");
+    List<Product> productList = (List<Product>) request.getAttribute("productList");
 
+    String pageUrl = (String) request.getAttribute("pageUrl");
+    String previousPageUrl = (String) request.getAttribute("previousPageUrl");
+    String nextPageUrl = (String) request.getAttribute("nextPageUrl");
+%>
+<link rel="stylesheet" href="<%= contextPath%>/assets/css/product-style.css">
+<style>
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+    .pagination {
+        padding-left: 0;
+        list-style: none;
+        border-radius: .25rem;
+        display: flex;
+    }
+    .page-item .page-link {
+        position: relative;
+        display: block;
+        padding: .5rem .75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: #007bff;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+    }
+    .page-item.active .page-link {
+        z-index: 1;
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        cursor: auto;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+    .page-item:first-child .page-link {
+        margin-left: 0;
+        border-top-left-radius: .25rem;
+        border-bottom-left-radius: .25rem;
+    }
+    .page-item:last-child .page-link {
+        border-top-right-radius: .25rem;
+        border-bottom-right-radius: .25rem;
+    }
+</style>
 
 <main class="admin-main">
     <div class="table-header">
@@ -61,28 +103,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <%
-                        List<Product> productList = (List<Product>) request.getAttribute("productList");
-                        int rowNumber = 1;
-                        if (productList != null && !productList.isEmpty()) {
-
+                    <% if (productList != null && !productList.isEmpty()) {
                             for (Product p : productList) {
                     %>
                     <tr>
                         <td><%= rowNumber++%></td> 
                         <td>
-                            <% if (p.getImageUrls() != null && !p.getImageUrls().isEmpty()) { %>
-                            <% String imageUrl = p.getImageUrls().get(0);%>
-                            <img src="<%= contextPath%>/assets/img/<%= imageUrl%>" alt="<%= p.getName()%>" class="table-product-img">
+                            <% if (p.getImageUrls() != null && !p.getImageUrls().isEmpty()) {%>
+                            <img src="<%= contextPath%>/assets/img/<%= p.getImageUrls().get(0)%>" alt="<%= p.getName()%>" class="table-product-img">
                             <% } else { %>
                             <span>No Image</span>
                             <% }%>
                         </td>
                         <td><%= p.getName()%></td>
-                        <td><%= p.getPrice()%></td>
+                        <td>$<%= p.getPrice()%></td>
                         <td>
                             <% if (p.getSalePrice() != null) {%>
-                            <%= p.getSalePrice()%>
+                            $<%= p.getSalePrice()%>
                             <% } else { %>
                             N/A
                             <% }%>
@@ -96,21 +133,43 @@
                             </div>
                         </td>
                     </tr>
-                    <%
-                        }
+                    <%      }
                     } else {
                     %>
                     <tr>
                         <td colspan="7" class="text-center">No products found.</td>
                     </tr>
-                    <%
-                        }
-                    %>
+                    <%  } %>
                 </tbody>
             </table>
         </div>
-    </section>
 
+        <% if (totalPages > 1) {%>
+        <div class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item <%= (currentPage <= 1) ? "disabled" : ""%>">
+                        <a class="page-link" href="<%= previousPageUrl%>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <% for (int i = 1; i <= totalPages; i++) {%>
+                    <li class="page-item <%= (i == currentPage) ? "active" : ""%>">
+                        <a class="page-link" href="<%= pageUrl + i%>"><%= i%></a>
+                    </li>
+                    <% }%>
+
+                    <li class="page-item <%= (currentPage >= totalPages) ? "disabled" : ""%>">
+                        <a class="page-link" href="<%= nextPageUrl%>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <% }%>
+    </section>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
