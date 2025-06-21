@@ -11,6 +11,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import shop.dao.CheckoutDAO;
+import shop.dao.ProductDAO;
+import shop.model.Checkout;
+import shop.model.Product;
 
 /**
  *
@@ -59,8 +67,18 @@ public class CheckoutServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("single")) {
-            
-            request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
+            String idtemp = request.getParameter("id");
+            int id = Integer.parseInt(idtemp);
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            CheckoutDAO CD = new CheckoutDAO();
+            try {
+                Checkout temp = CD.getInfoToCheckout(id);
+                temp.setQuantity(quantity);
+                request.setAttribute("checkout", temp);
+                request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(CheckoutServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
     }

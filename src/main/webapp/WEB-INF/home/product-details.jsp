@@ -74,9 +74,8 @@
     <input type="hidden" name="productId" value="<%= product.getProductId() %>">
     <input type="hidden" name="quantity" value="1">
     <button type="submit" class="btn btn-cart">Add to Cart</button>
-    <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id= <%= product.getProductId() %>'" >Buy Now</button>
+    <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId() %>&quantity=<%= 1%>'" >Buy Now</button>
 </form>
-    <button type="submit" class="btn btn-cart">Buy</button>
 
             </div>
         </div>

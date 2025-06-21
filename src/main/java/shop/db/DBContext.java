@@ -29,7 +29,7 @@ public class DBContext {
     private final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=CosmoraCelestica1;encrypt=true;trustServerCertificate=true;user=sa;password=123456";
 
     private final String DB_USER = "sa";
-    private final String DB_PWD = "16022004";
+    private final String DB_PWD = "123456";
 
 
     /**
