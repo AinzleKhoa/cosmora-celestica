@@ -151,7 +151,7 @@
                                         <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
                                         <ul class="list-unstyled">
                                             <% for (GameKey key : gameKeys) {%>
-                                            <li><%= key.getKeyCode()%></li>
+                                            <li class="key-item"><%= key.getKeyCode()%></li>
                                                 <% } %>
                                         </ul>
                                         <% } else { %>
