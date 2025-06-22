@@ -84,7 +84,7 @@
                                                         <p class="admin-name">${user.username}</p>
                                                     </div>
                                                     <ul class="admin-links">
-                                                        <li><a href="#">My Profile</a></li>
+                                                        <li><a href="${pageContext.servletContext.contextPath}/profile">My Profile</a></li>
                                                         <li><a href="${pageContext.servletContext.contextPath}/logout">Logout</a></li>
                                                     </ul>
                                                 </div>

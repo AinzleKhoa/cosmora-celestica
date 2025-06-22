@@ -68,7 +68,7 @@ public class RegisterServlet extends HttpServlet {
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);
-                request.getSession().setAttribute("message", "Registration successful! Please log in.");
+                request.setAttribute("message", "Registration successful! Please log in.");
                 request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             } else {
                 // DB insert failed
