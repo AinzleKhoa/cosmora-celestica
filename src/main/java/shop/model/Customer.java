@@ -59,6 +59,18 @@ public class Customer {
         this.updatedAt = updatedAt;
     }
 
+    public Customer(int customerId, String fullName, String username, String email, String phone, String gender, String address, String avatarUrl, Date dateOfBirth) {
+        this.customerId = customerId;
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.phone = phone;
+        this.gender = gender;
+        this.address = address;
+        this.avatarUrl = avatarUrl;
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public Customer(String fullName, String username, String email, String passwordHash, String avatarUrl) {
         this.fullName = fullName;
         this.username = username;

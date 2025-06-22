@@ -298,6 +298,7 @@ public class CustomerDAO extends DBContext {
                     + "SET full_name = ?,\n"
                     + "	username = ?,\n"
                     + "	email = ?,\n"
+                    + "	full_name = ?,\n"
                     + "	phone = ?,\n"
                     + "	address = ?,\n"
                     + " updated_at = CURRENT_TIMESTAMP\n"
@@ -306,6 +307,7 @@ public class CustomerDAO extends DBContext {
                 customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
+                customer.getFullName(),
                 customer.getPhone(),
                 customer.getAddress(),
                 customer.getCustomerId()
@@ -326,6 +328,7 @@ public class CustomerDAO extends DBContext {
                     + "	phone = ?,\n"
                     + "	gender = ?,\n"
                     + "	address = ?,\n"
+                    + "	avatar_url = ?,\n"
                     + "	date_of_birth = ?,\n"
                     + " updated_at = CURRENT_TIMESTAMP\n"
                     + "WHERE customer_id = ?";
@@ -336,6 +339,7 @@ public class CustomerDAO extends DBContext {
                 customer.getPhone(),
                 customer.getGender(),
                 customer.getAddress(),
+                customer.getAvatarUrl(),
                 customer.getDateOfBirth(),
                 customer.getCustomerId()
             };

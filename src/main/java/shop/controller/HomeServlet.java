@@ -18,39 +18,38 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) {
-            showHomePage(request, response);
-        } else if (action.equals("details")) {
-            showProductDetails(request, response);
-        } else {
-            showHomePage(request, response);
+            action = "list";
         }
-    }
-    
-    private void showHomePage(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        ProductDAO productDAO = new ProductDAO();       
-        List<Product> accessoryList = productDAO.getAccessoryProducts();
-        List<Product> gameList = productDAO.getGameProducts();
-        request.setAttribute("gameList", gameList);
-        request.setAttribute("accessoryList", accessoryList);
-        request.getRequestDispatcher("/WEB-INF/home/home.jsp")
-               .forward(request, response);
-    }
-    
-    private void showProductDetails(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+
+        ProductDAO productDAO = new ProductDAO();
+
         try {
-            int productId = Integer.parseInt(request.getParameter("productId"));        
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);         
-            request.setAttribute("product", product);           
-            request.getRequestDispatcher("/WEB-INF/home/product-details.jsp").forward(request, response);     
-        } catch (NumberFormatException e) {
-            response.sendRedirect("home");
+            switch (action) {
+                case "details": {
+                    try {
+                        int productId = Integer.parseInt(request.getParameter("productId"));
+                        Product product = productDAO.getProductById(productId);
+                        request.setAttribute("product", product);
+                        request.getRequestDispatcher("/WEB-INF/home/product-details.jsp").forward(request, response);
+                    } catch (NumberFormatException e) {
+                        response.sendRedirect("home");
+                    }
+                    break;
+                }
+                default: {
+                    List<Product> accessoryList = productDAO.getAccessoryProducts();
+                    List<Product> gameList = productDAO.getGameProducts();
+                    request.setAttribute("gameList", gameList);
+                    request.setAttribute("accessoryList", accessoryList);
+                    request.getRequestDispatcher("/WEB-INF/home/home.jsp")
+                            .forward(request, response);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new ServletException("Error in HomeServlet: " + e.getMessage(), e);
         }
     }
-    
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

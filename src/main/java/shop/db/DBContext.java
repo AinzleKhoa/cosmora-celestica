@@ -26,7 +26,7 @@ public class DBContext {
      */
     public Connection conn;
 
-    private final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=CosmoraCelestica1;encrypt=true;trustServerCertificate=true;user=sa;password=123456";
+    private final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=CosmoraCelestica;encrypt=true;trustServerCertificate=true;user=sa;password=123456";
     private final String DB_USER = "sa";
     private final String DB_PWD = "123456";
 

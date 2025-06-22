@@ -286,7 +286,7 @@
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Game Keys</h3>
                         <label class="form-label admin-manage-label">Existing Keys (<%= (gameKeys != null ? gameKeys.size() : 0)%>)</label>
-                        <div class="border p-2" style="max-height: 150px; overflow-y: auto; background-color: #f1f1f1; border-radius: 4px;">
+                        <div class="border p-2" style="max-height: 150px; overflow-y: auto;color: #000 ; background-color: #f1f1f1; border-radius: 4px;">
                             <% if (gameKeys != null && !gameKeys.isEmpty()) {
                                     for (GameKey key : gameKeys) {%>
                             <code><%= key.getKeyCode()%></code><br>
@@ -302,7 +302,6 @@
                     </div>
                 </div>
 
-                <%-- Accessory Sections Start --%>
                 <%
                     String[] accessoryTypes = {"mouse", "headphone", "keyboard", "controller"};
                     for (String type : accessoryTypes) {

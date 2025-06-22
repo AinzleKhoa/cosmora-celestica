@@ -4,10 +4,13 @@ shop\controller\ProductServlet.class
 shop\util\EmailUtils$1.class
 shop\model\Staff.class
 shop\controller\StaffServlet.class
+shop\controller\CartServlet.class
 shop\model\GameDetails.class
 shop\controller\HomeServlet.class
 shop\model\Voucher.class
+shop\model\CartItem.class
 shop\model\Customer.class
+shop\dao\CartDAO.class
 shop\controller\RegisterServlet.class
 shop\util\EmailUtils.class
 shop\model\OperatingSystem.class
@@ -16,6 +19,7 @@ shop\controller\CustomerServlet.class
 shop\dao\OrderDAO.class
 shop\util\SecurityTokenUtils.class
 shop\util\PasswordUtils.class
+shop\controller\NotFoundServlet.class
 shop\dao\AttributeDAO.class
 shop\model\Brand.class
 shop\filter\CustomerAuthFilter.class
@@ -23,9 +27,11 @@ shop\model\Category.class
 shop\controller\LoginServlet.class
 shop\dao\ProductDAO.class
 shop\util\SessionUtil.class
+shop\model\Cart.class
 shop\model\Image.class
 shop\dao\StorePlatformDAO.class
 shop\model\ProductAttribute.class
+shop\controller\LoginDashboardServlet.class
 shop\model\Order.class
 shop\model\Game.class
 shop\dao\VouchersDAO.class
@@ -34,11 +40,13 @@ shop\db\DBContext.class
 shop\model\Discount.class
 shop\dao\OperatingSystemDAO.class
 shop\dao\CategoryDAO.class
+shop\filter\EmployeeAuthFilter.class
 shop\model\GameKey.class
 shop\dao\BrandDAO.class
 shop\controller\ResetPasswordServlet.class
 shop\model\OrderDetails.class
 shop\controller\LogoutServlet.class
+shop\controller\ProfileServlet.class
 shop\model\Admin.class
 shop\model\StorePlatform.class
 shop\controller\ForgotPasswordServlet.class
