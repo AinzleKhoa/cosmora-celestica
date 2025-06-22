@@ -1,8 +1,10 @@
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\GameDetails.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\controller\RegisterServlet.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\OrderDAO.java
+E:\D\.github\cosmora-celestica\src\main\java\shop\model\Cart.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Product.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\controller\LoginDashboardServlet.java
+E:\D\.github\cosmora-celestica\src\main\java\shop\model\CartItem.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\StorePlatformDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Game.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\controller\OrderServlet.java
@@ -18,6 +20,7 @@ E:\D\.github\cosmora-celestica\src\main\java\shop\model\OrderDetails.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\ProductDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Customer.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\AttributeDAO.java
+E:\D\.github\cosmora-celestica\src\main\java\shop\controller\CartServlet.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\GameKeyDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Brand.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Voucher.java
@@ -42,6 +45,7 @@ E:\D\.github\cosmora-celestica\src\main\java\shop\util\SessionUtil.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Admin.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\OperatingSystem.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\controller\NotFoundServlet.java
+E:\D\.github\cosmora-celestica\src\main\java\shop\dao\CartDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\GameKey.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Order.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\util\EmailUtils.java

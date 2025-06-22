@@ -25,7 +25,6 @@ public class ProductDAO extends DBContext {
 
    
     public void addFullGameProduct(Product product, GameDetails gameDetails, List<String> imageUrls, String[] platformIds, String[] osIds, String[] newKeys) throws SQLException {
-        Connection conn = null;
         try {
             conn = new DBContext().getConnection();
             conn.setAutoCommit(false);
@@ -141,7 +140,6 @@ public class ProductDAO extends DBContext {
     }
     
     public void deleteProduct(int productId) throws SQLException {
-        Connection conn = null;
         Integer gameDetailsIdToDelete = null;
 
         try {
@@ -318,12 +316,10 @@ public class ProductDAO extends DBContext {
     }
     
     public void addGameProduct(Product product, GameDetails details, List<String> imageUrls) throws SQLException {
-        Connection conn = null;
         try {
             conn = new DBContext().getConnection();
             conn.setAutoCommit(false);
             
-            // Chèn game_details và lấy ID
             String sqlDetails = "INSERT INTO game_details (developer, genre, release_date) VALUES (?, ?, ?)";
             try (PreparedStatement psDetails = conn.prepareStatement(sqlDetails, Statement.RETURN_GENERATED_KEYS)) {
                 psDetails.setString(1, details.getDeveloper());
@@ -355,7 +351,6 @@ public class ProductDAO extends DBContext {
     }
 
     public void addAccessoryProduct(Product product, List<ProductAttribute> attributes, List<String> imageUrls) throws SQLException {
-        Connection conn = null;
         try {
             conn = new DBContext().getConnection();
             conn.setAutoCommit(false);
@@ -394,7 +389,6 @@ public class ProductDAO extends DBContext {
 
     public void updateProduct(Product product, GameDetails gameDetails, List<ProductAttribute> attributes,
                           List<String> newImageUrls, String[] platformIds, String[] osIds, String[] newKeys) throws SQLException {
-        Connection conn = null;
         try {
             conn = new DBContext().getConnection();
             conn.setAutoCommit(false);
@@ -419,7 +413,6 @@ public class ProductDAO extends DBContext {
             Integer gameDetailsId = product.getGameDetailsId();
             
             if (gameDetailsId != null && gameDetails != null) { 
-                // Cập nhật game_details
                 String sqlUpdateGame = "UPDATE game_details SET developer=?, genre=?, release_date=? WHERE game_details_id=?";
                 try (PreparedStatement ps = conn.prepareStatement(sqlUpdateGame)) {
                     ps.setString(1, gameDetails.getDeveloper());
@@ -626,13 +619,8 @@ public class ProductDAO extends DBContext {
         return details;
     }
     
-    /**
-     * Lấy danh sách các sản phẩm là phụ kiện (không phải game).
-     * @return Danh sách sản phẩm phụ kiện.
-     */
     public List<Product> getAccessoryProducts() {
         List<Product> productList = new ArrayList<>();
-        // Lấy sản phẩm có game_details_id là NULL (không phải game)
         String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, c.name AS category_name, b.brand_name, "
                    + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                    + "FROM product p "
@@ -653,18 +641,13 @@ public class ProductDAO extends DBContext {
         return productList;
     }
 
-    /**
-     * Lấy danh sách các sản phẩm là game.
-     * @return Danh sách sản phẩm game.
-     */
     public List<Product> getGameProducts() {
         List<Product> productList = new ArrayList<>();
-        // Lấy sản phẩm có game_details_id không phải là NULL (là game)
-        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, gd.developer AS brand_name, " // Sử dụng developer làm brand cho game
+        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, gd.developer AS brand_name, " 
                    + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                    + "FROM product p "
                    + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id "
-                   + "WHERE p.game_details_id IS NOT NULL " // Điều kiện quan trọng
+                   + "WHERE p.game_details_id IS NOT NULL " 
                    + "ORDER BY p.product_id";
 
         try (Connection conn = new DBContext().getConnection();
@@ -678,20 +661,17 @@ public class ProductDAO extends DBContext {
         }
         return productList;
     }
-    // Phương thức phụ trợ để tránh lặp code
+
     private Product mapProductFromResultSet(ResultSet rs) throws SQLException {
         Product product = new Product();
         product.setProductId(rs.getInt("product_id"));
         product.setName(rs.getString("name"));
         product.setPrice(rs.getBigDecimal("price"));
-        // Kiểm tra xem cột sale_price có tồn tại không trước khi lấy
         if (hasColumn(rs, "sale_price")) {
              product.setSalePrice(rs.getBigDecimal("sale_price"));
         }
         product.setQuantity(rs.getInt("quantity"));
-        // Trong câu SQL cho game, tôi đã alias gd.developer thành brand_name
         product.setBrandName(rs.getString("brand_name"));
-
         String singleImageUrl = rs.getString("image_url");
         List<String> imageUrls = new ArrayList<>();
         if (singleImageUrl != null && !singleImageUrl.isEmpty()) {
@@ -700,7 +680,6 @@ public class ProductDAO extends DBContext {
         product.setImageUrls(imageUrls);
         return product;
     }
-    // Tiện ích kiểm tra sự tồn tại của cột trong ResultSet
     private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
         try {
             rs.findColumn(columnName);
@@ -708,5 +687,42 @@ public class ProductDAO extends DBContext {
         } catch (SQLException e) {
             return false;
         }
+    }
+    
+    public List<Product> searchProductsByName(String query) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.*, c.name as categoryName, b.brand_name as brandName " +
+                     "FROM Products p " +
+                     "LEFT JOIN Categories c ON p.category_id = c.category_id " +
+                     "LEFT JOIN Brands b ON p.brand_id = b.brand_id " +
+                     "WHERE LOWER(p.name) LIKE ?";
+        
+        try (
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + query.toLowerCase() + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setName(rs.getString("name"));
+                    product.setDescription(rs.getString("description"));
+                    product.setPrice(rs.getBigDecimal("price"));
+                    product.setSalePrice(rs.getBigDecimal("sale_price"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setCategoryId(rs.getInt("category_id"));
+                    product.setBrandId(rs.getInt("brand_id"));
+                    product.setGameDetailsId(rs.getInt("game_details_id"));
+                    product.setCreatedAt(rs.getTimestamp("created_at"));
+                    product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    
+                    product.setCategoryName(rs.getString("categoryName"));
+                    product.setBrandName(rs.getString("brandName"));   
+                    
+                    productList.add(product);
+                }
+            }
+        }
+        return productList;
     }
 }
