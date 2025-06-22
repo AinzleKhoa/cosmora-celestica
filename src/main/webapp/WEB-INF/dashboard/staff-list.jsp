@@ -64,7 +64,7 @@
                                  style="width: 150px; height: 140px; border: 50px;">
 
                         </td>
-                        <td><%= s.getUsername()%></td>
+                        <td><%= s.getFullName()%></td>
                         <td><%= s.getEmail()%></td>
                         <td><%= s.getRole()%></td>
                         <td><span class="badge-status">Active</span></td>
@@ -73,7 +73,7 @@
                                 <a class="btn-action btn-details" href="${pageContext.servletContext.contextPath}/manage-staffs?view=details&id=<%= s.getId()%>">Details</a>
                                 <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/manage-staffs?view=edit&id=<%= s.getId()%>">Edit</a>
                                 <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/manage-staffs?view=delete&id=<%= s.getId()%>">Delete</a>
-                                
+
                             </div>
                         </td>
                     </tr>

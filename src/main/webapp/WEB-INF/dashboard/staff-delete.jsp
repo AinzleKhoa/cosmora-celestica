@@ -22,7 +22,7 @@
                        
                        %>
 			<div class="admin-manage-fieldset mb-4">
-				<p class="mb-2"><strong>Full Name:</strong><%=s.getUsername()  %></p>
+				<p class="mb-2"><strong>Full Name:</strong><%=s.getFullName()%></p>
 				
 				<p class="mb-2"><strong>Email:</strong> <%=s.getEmail()  %></p>
 				<p class="mb-2"><strong>Role:</strong> <%=s.getRole()  %></p>

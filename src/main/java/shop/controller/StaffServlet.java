@@ -162,12 +162,13 @@ public class StaffServlet extends HttpServlet {
             StaffDAO sDAO = new StaffDAO();
             switch (act) {
                 case "create":
-                try ( PrintWriter out = response.getWriter()) {
-                    String username = request.getParameter("username");
+    try ( PrintWriter out = response.getWriter()) {
+                    String fullName = request.getParameter("username"); // "username" field ở form = full name
                     String email = request.getParameter("email");
                     String password = request.getParameter("password");
                     String phone = request.getParameter("phone");
                     String role = request.getParameter("role");
+                    String gender = request.getParameter("gender"); // Thêm dòng này
                     String dobStr = request.getParameter("date_of_birth");
 
                     Date dateOfBirth = null;
@@ -177,11 +178,8 @@ public class StaffServlet extends HttpServlet {
 
                     Part img = request.getPart("avatar_url");
                     String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
-
-                    // Using context path for the avatar URL
                     String avatarUrl = "/CosmoraCelestica/assets/img/avatar/" + filename;
 
-                    // Get the real path to save the image
                     String realPath = request.getServletContext().getRealPath("/assets/img/avatar");
 
                     if (realPath == null) {
@@ -189,24 +187,22 @@ public class StaffServlet extends HttpServlet {
                         return;
                     }
 
-                    // Tạo thư mục nếu chưa tồn tại
                     File uploadDir = new File(realPath);
                     if (!uploadDir.exists()) {
                         uploadDir.mkdirs();
                     }
 
-                    // Ghi file
                     File fileToSave = new File(uploadDir, filename);
                     img.write(fileToSave.getAbsolutePath());
 
                     String hashedPassword = PasswordUtils.hashPassword(password);
 
-                    // Lưu thông tin vào DB (chỉ lưu tên file)
-                    Staff staff = new Staff(username, email, hashedPassword, phone, role, dateOfBirth, avatarUrl);
+                    // ✅ Tạo Staff với fullName và gender
+                    Staff staff = new Staff(fullName, email, hashedPassword, gender, phone, role, dateOfBirth, avatarUrl);
                     int isCreated = sDAO.create(staff);
 
                     if (isCreated == 1) {
-                        response.sendRedirect(request.getContextPath() + "/manage-staffs");//load lại trang
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs");
                     } else {
                         out.println("<h2>Error: Can't add staff into database.</h2>");
                     }
@@ -218,16 +214,17 @@ public class StaffServlet extends HttpServlet {
                 break;
 
                 case "edit":
-     try ( PrintWriter out = response.getWriter()) {
+    try ( PrintWriter out = response.getWriter()) {
 
                     String idParam = request.getParameter("id");
                     int id = Integer.parseInt(idParam);
 
-                    String username = request.getParameter("username");
+                    String fullName = request.getParameter("username"); // Tên trường trong form vẫn là "username"
                     String email = request.getParameter("email");
                     String password = request.getParameter("password");
                     String phone = request.getParameter("phone");
                     String role = request.getParameter("role");
+                    String gender = request.getParameter("gender"); // ✅ Thêm gender
                     String dobStr = request.getParameter("date_of_birth");
 
                     Date dateOfBirth = null;
@@ -235,7 +232,7 @@ public class StaffServlet extends HttpServlet {
                         dateOfBirth = Date.valueOf(dobStr);
                     }
 
-                    // Lấy staff hiện tại để giữ avatar cũ nếu cần
+                    // Lấy staff cũ để giữ avatar nếu người dùng không chọn ảnh mới
                     Staff oldStaff = sDAO.getOneById(id);
 
                     Part img = request.getPart("avatar_url");
@@ -248,21 +245,20 @@ public class StaffServlet extends HttpServlet {
                         uploadDir.mkdirs();
                     }
 
-                    // Nếu có file mới, ghi đè và dùng tên mới
+                    // Nếu có file mới
                     if (filename != null && !filename.isEmpty()) {
                         File fileToSave = new File(uploadDir, filename);
                         img.write(fileToSave.getAbsolutePath());
 
                         avatarUrl = "/CosmoraCelestica/assets/img/avatar/" + filename;
                     } else {
-                        // Nếu không chọn ảnh mới, dùng lại avatar cũ
-                        avatarUrl = oldStaff.getAvatarUrl();
+                        avatarUrl = oldStaff.getAvatarUrl(); // Dùng lại avatar cũ
                     }
 
                     String hashedPassword = PasswordUtils.hashPassword(password);
 
-                    // Tạo object Staff
-                    Staff updatedStaff = new Staff(id, username, email, hashedPassword, phone, role, dateOfBirth, avatarUrl);
+                    // ✅ Tạo Staff object với đầy đủ thông tin
+                    Staff updatedStaff = new Staff(id, fullName, email, hashedPassword, gender, phone, role, dateOfBirth, avatarUrl);
 
                     int isUpdate = sDAO.update(updatedStaff);
                     if (isUpdate == 1) {
