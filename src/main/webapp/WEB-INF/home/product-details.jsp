@@ -9,8 +9,7 @@
 
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 
-<%    
-    Product product = (Product) request.getAttribute("product");
+<%    Product product = (Product) request.getAttribute("product");
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
     Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
 %>
@@ -57,9 +56,10 @@
             }
             .thumbnail-container {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                grid-template-columns: repeat(6, 1fr);
                 gap: 0.75rem;
                 padding-top: 1rem;
+                width: 100%;
             }
             .thumbnail-container .thumb {
                 width: 100%;
@@ -123,7 +123,7 @@
                 padding: 2%;
                 border-radius: 8px;
             }
-             /* === CSS CHO SAO === */
+            /* === CSS CHO SAO === */
             .product-rating {
                 display: flex;
                 gap: 3px;
@@ -138,7 +138,7 @@
             }
             /* === KẾT THÚC CSS CHO SAO === */
 
-           
+
         </style>
     </head>
 
@@ -192,7 +192,7 @@
                             <div class="product-card">
                                 <div class="product-brand"><%= (product.getBrandName() != null ? product.getBrandName() : "N/A")%></div>
                                 <h1 class="product-title"><%= product.getName()%></h1>
-                                 
+
                                 <div class="product-price my-3">
                                     <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
                                     <%= currencyFormatter.format(product.getSalePrice())%> <span class="old-price"><s><%= currencyFormatter.format(product.getPrice())%></s></span>
@@ -207,11 +207,11 @@
                                         for (int i = 1; i <= 5; i++) {
                                             if (i <= roundedStars) {
                                     %>
-                                            <span class="star-icon full">&#9733;</span>
+                                    <span class="star-icon full">&#9733;</span>
                                     <%
-                                            } else {
+                                    } else {
                                     %>
-                                            <span class="star-icon empty">&#9733;</span>
+                                    <span class="star-icon empty">&#9733;</span>
                                     <%
                                             }
                                         }
@@ -238,7 +238,7 @@
                                     <dt class="col-sm-4">Category</dt><dd class="col-sm-8"><%= product.getCategoryName()%></dd>
                                     <dt class="col-sm-4">In Stock</dt><dd class="col-sm-8"><%= product.getQuantity()%></dd>
                                     <% if (product.getGameDetails() != null) {
-                                        GameDetails details = product.getGameDetails();%>
+                                            GameDetails details = product.getGameDetails();%>
                                     <dt class="col-sm-4">Developer</dt><dd class="col-sm-8"><%= details.getDeveloper()%></dd>
                                     <dt class="col-sm-4">Genre</dt><dd class="col-sm-8"><%= details.getGenre()%></dd>
                                     <dt class="col-sm-4">Release Date</dt><dd class="col-sm-8"><%= new SimpleDateFormat("dd MMM, yyyy").format(details.getReleaseDate())%></dd>
@@ -250,7 +250,7 @@
                                     <% for (ProductAttribute attr : product.getAttributes()) {%>
                                     <dt class="col-sm-4"><%= attr.getAttributeName()%></dt><dd class="col-sm-8"><%= attr.getValue()%></dd>
                                         <% }
-                                        }%>
+                                            }%>
                                 </dl>
                             </div>
                         </div>

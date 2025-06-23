@@ -35,7 +35,7 @@
         <p><strong>Category:</strong> <%= product.getCategoryName()%></p>
     </div>
 
-    <form method="post" action="<%= request.getContextPath()%>/manage-products?action=list">
+    <form method="post" action="<%= request.getContextPath()%>/manage-products">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" value="<%= product.getProductId()%>">
 
