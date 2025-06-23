@@ -86,25 +86,24 @@ public class ApplyVoucherServlet extends HttpServlet {
         try {
             if (VD.checkCodeIsValid(voucher)[0].equalsIgnoreCase("Valid") && total >= Double.parseDouble(VD.checkCodeIsValid(voucher)[2])) {
                 vouchervalue = Double.parseDouble(VD.checkCodeIsValid(voucher)[1]);
-                
-                    ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
-                    double totallist = total - vouchervalue;
-                    session.setAttribute("checkout", product);
-                    request.setAttribute("voucherApplied", true);
-                    request.setAttribute("voucherCode", voucher);
-                    session.setAttribute("totalAmount", totallist);
-                    request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
-                
+                int voucherID = VD.getVoucherIdByCode(voucher);
+                VD.decreaseLimit(voucherID);
+                ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
+                double totallist = total - vouchervalue;
+
+                session.setAttribute("checkout", product);
+                request.setAttribute("voucherApplied", true);
+                request.setAttribute("voucherCode", voucher);
+                session.setAttribute("totalAmount", totallist);
+                request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
 
             } else {
-               
-                    ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
-                    session.setAttribute("checkout", product);
-                    session.setAttribute("totalAmount", total);
-                    request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
-                }
 
-            
+                ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
+                session.setAttribute("checkout", product);
+                session.setAttribute("totalAmount", total);
+                request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
+            }
 
         } catch (SQLException ex) {
             Logger.getLogger(ApplyVoucherServlet.class.getName()).log(Level.SEVERE, null, ex);

@@ -235,4 +235,13 @@ public class VouchersDAO extends DBContext {
         return id;
     }
 
+    public int decreaseLimit(int voucherId) throws SQLException {
+        String query = "UPDATE voucher\n"
+                + "SET usage_limit = usage_limit - 1\n"
+                + "WHERE voucher_id = ? AND usage_limit > 0;";
+        Object [] params = {voucherId};
+        return execQuery(query, params);
+
+    }
+
 }
