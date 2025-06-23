@@ -63,9 +63,9 @@ public class ResetPasswordServlet extends HttpServlet {
             CustomerDAO cDAO = new CustomerDAO();
             Customer customer = cDAO.getAccountByEmail(email);
 
-            boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+            boolean isNewPasswordExists = PasswordUtils.checkPassword(password, customer.getPasswordHash());
             // Password is different from customer current password
-            if (!isPasswordMatched) {
+            if (!isNewPasswordExists) {
                 String hashedPassword = PasswordUtils.hashPassword(password);
                 // Update customer password
                 if (cDAO.updateCustomerPassword(new Customer(email, hashedPassword)) > 0) {
@@ -73,25 +73,24 @@ public class ResetPasswordServlet extends HttpServlet {
                     if (session != null) {
                         session.removeAttribute("currentForgotCustomer");
                     }
-
-                    request.setAttribute("successMessage", "Password reset successfully! Please log in.");
+                    request.setAttribute("message", "Password reset successfully! Please log in.");
                     request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 } else {
                     request.setAttribute("email", email);
                     request.setAttribute("password", password);
                     request.setAttribute("confirmPassword", confirmPassword);
-                    request.setAttribute("errorMessage", "Something went wrong. Please try again.");
+                    request.setAttribute("message", "Something went wrong. Please try again.");
                     request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);
-                request.setAttribute("errorMessage", "Your new password must be different from your current password.");
+                request.setAttribute("message", "Your new password must be different from your current password.");
                 request.getRequestDispatcher("/WEB-INF/home/reset-password.jsp").forward(request, response);
             }
         } else {
-            request.setAttribute("errorMessage", "Your session has expired. Please go through the OTP process again.");
+            request.setAttribute("message", "Your session has expired. Please go through the OTP process again.");
             request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
         }
     }

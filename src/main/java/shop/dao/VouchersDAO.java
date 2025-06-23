@@ -186,4 +186,62 @@ public class VouchersDAO extends DBContext {
         return 0;
     }
 
+    public String[] checkCodeIsValid(String code) throws SQLException {
+        String[] check = new String[3];
+        String query = "SELECT \n"
+                + "    CASE \n"
+                + "        WHEN EXISTS (\n"
+                + "            SELECT 1 \n"
+                + "            FROM Voucher \n"
+                + "            WHERE code = ? \n"
+                + "              AND active = 1 \n"
+                + "              AND GETDATE() BETWEEN start_date AND end_date\n"
+                + "        ) THEN 'Valid'\n"
+                + "        ELSE 'Invalid'\n"
+                + "    END AS VoucherStatus,\n"
+                + "    \n"
+                + "    -- Lấy thêm value và min_order_value nếu hợp lệ, ngược lại để NULL\n"
+                + "    (SELECT value \n"
+                + "     FROM Voucher \n"
+                + "     WHERE code = ? \n"
+                + "       AND active = 1 \n"
+                + "       AND GETDATE() BETWEEN start_date AND end_date) AS value,\n"
+                + "\n"
+                + "    (SELECT min_order_value \n"
+                + "     FROM Voucher \n"
+                + "     WHERE code = ? \n"
+                + "       AND active = 1 \n"
+                + "       AND GETDATE() BETWEEN start_date AND end_date) AS min_order_value;";
+        Object[] params = {code, code, code};
+        ResultSet rs = execSelectQuery(query, params);
+        while (rs.next()) {
+            check[0] = rs.getString("VoucherStatus");
+            check[1] = rs.getString("value");
+            check[2] = rs.getString("min_order_value");
+        }
+        return check;
+    }
+
+    public int getVoucherIdByCode(String code) throws SQLException {
+        int id = 0;
+        String query = "select voucher_id \n"
+                + "from voucher\n"
+                + "where code = ?;";
+        Object[] params = {code};
+        ResultSet rs = execSelectQuery(query, params);
+        while (rs.next()) {
+            id = rs.getInt(1);
+        }
+        return id;
+    }
+
+    public int decreaseLimit(int voucherId) throws SQLException {
+        String query = "UPDATE voucher\n"
+                + "SET usage_limit = usage_limit - 1\n"
+                + "WHERE voucher_id = ? AND usage_limit > 0;";
+        Object [] params = {voucherId};
+        return execQuery(query, params);
+
+    }
+
 }

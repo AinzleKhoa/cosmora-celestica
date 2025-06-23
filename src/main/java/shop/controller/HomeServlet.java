@@ -29,6 +29,12 @@ public class HomeServlet extends HttpServlet {
                     try {
                         int productId = Integer.parseInt(request.getParameter("productId"));
                         Product product = productDAO.getProductById(productId);
+
+                        if (product != null) {
+                            double averageStars = productDAO.getAverageStarsForProduct(productId);
+                            product.setAverageStars(averageStars);
+                        }
+
                         request.setAttribute("product", product);
                         request.getRequestDispatcher("/WEB-INF/home/product-details.jsp").forward(request, response);
                     } catch (NumberFormatException e) {
@@ -38,9 +44,22 @@ public class HomeServlet extends HttpServlet {
                 }
                 default: {
                     List<Product> accessoryList = productDAO.getAccessoryProducts();
+
+                    for (Product product : accessoryList) {
+                        double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                        product.setAverageStars(stars);
+                    }
+
                     List<Product> gameList = productDAO.getGameProducts();
+
+                    for (Product product : gameList) {
+                        double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                        product.setAverageStars(stars);
+                    }
+  
                     request.setAttribute("gameList", gameList);
                     request.setAttribute("accessoryList", accessoryList);
+
                     request.getRequestDispatcher("/WEB-INF/home/home.jsp")
                             .forward(request, response);
                     break;

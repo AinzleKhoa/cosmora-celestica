@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import shop.dao.CartDAO;
 import shop.dao.CustomerDAO;
 import shop.util.PasswordUtils;
 import shop.model.Customer;
@@ -67,34 +68,39 @@ public class LoginServlet extends HttpServlet {
                         HttpSession session = request.getSession(true);
                         session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
 
+                        CartDAO cartDAO = new CartDAO();
+                        int customerId = customer.getCustomerId();
+                        int cartCount = cartDAO.countCartItems(customerId);
+                        session.setAttribute("cartCount", cartCount);
+
                         // Redirect to the home page upon successful login
                         response.sendRedirect(request.getContextPath() + "/home");
                     } else {
                         // If password doesn't match, set error message and forward to login page
                         request.setAttribute("email", email);
                         request.setAttribute("password", password);
-                        request.setAttribute("errorMessage", "We're unable to update your login time at the moment. Please try again later.");
+                        request.setAttribute("message", "We're unable to update your login time at the moment. Please try again later.");
                         request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                     }
                 } else {
                     // If password doesn't match, set error message and forward to login page
                     request.setAttribute("email", email);
                     request.setAttribute("password", password);
-                    request.setAttribute("errorMessage", "Email or password is incorrect. Try again.");
+                    request.setAttribute("message", "Email or password is incorrect. Try again.");
                     request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 }
             } else {
                 // If account is deactivated, set error message and forward to login page
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
-                request.setAttribute("errorMessage", "Your account is locked. Please contact us for more information.");
+                request.setAttribute("message", "Your account is locked. Please contact us for more information.");
                 request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             }
         } else {
             // If email doesn't exist, set error message and forward to login page
             request.setAttribute("email", email);
             request.setAttribute("password", password);
-            request.setAttribute("errorMessage", "Email doesn't exist.");
+            request.setAttribute("message", "Email doesn't exist.");
             request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
         }
     }

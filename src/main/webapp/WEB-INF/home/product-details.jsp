@@ -1,17 +1,18 @@
 <%--
     Document   : product-details
-    Created on : Jun 23, 2025, 08:30:00 AM
+    Created on : Jun 23, 2025, 09:35:00 PM
     Author     : HoangSang
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="shop.model.Product, shop.model.GameDetails, shop.model.ProductAttribute, java.util.List, java.text.NumberFormat, java.util.Locale, java.math.BigDecimal, java.text.SimpleDateFormat" %>
+<%@page import="shop.model.Product, shop.model.GameDetails, shop.model.ProductAttribute, shop.model.Customer, java.util.List, java.text.NumberFormat, java.util.Locale, java.math.BigDecimal, java.text.SimpleDateFormat" %>
 
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 
-<%
+<%    
     Product product = (Product) request.getAttribute("product");
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
+    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
 %>
 
 <!DOCTYPE html>
@@ -21,8 +22,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><%= (product != null ? product.getName() : "Product Details")%></title>
 
-        <style>
 
+        <style>
             body{
                 margin-top: 5%;
             }
@@ -122,6 +123,22 @@
                 padding: 2%;
                 border-radius: 8px;
             }
+             /* === CSS CHO SAO === */
+            .product-rating {
+                display: flex;
+                gap: 3px;
+                margin: 0.75rem 0;
+                font-size: 1.5rem;
+            }
+            .star-icon.full {
+                color: #ffc107;
+            }
+            .star-icon.empty {
+                color: #4b5563;
+            }
+            /* === KẾT THÚC CSS CHO SAO === */
+
+           
         </style>
     </head>
 
@@ -130,9 +147,11 @@
             <div class="container-fluid px-4">
                 <% if (product != null) { %>
 
-                <div class="row g-4"> 
+                <div class="row g-4">
+
                     <div class="col-lg-7">
                         <div class="product-card h-100">
+                            <%-- Thư viện ảnh --%>
                             <%
                                 List<String> imageUrls = product.getImageUrls();
                                 if (imageUrls != null && !imageUrls.isEmpty()) {
@@ -169,9 +188,11 @@
 
                     <div class="col-lg-5">
                         <div class="purchase-info-sticky">
+                            <%-- Thông tin mua hàng --%>
                             <div class="product-card">
                                 <div class="product-brand"><%= (product.getBrandName() != null ? product.getBrandName() : "N/A")%></div>
                                 <h1 class="product-title"><%= product.getName()%></h1>
+                                 
                                 <div class="product-price my-3">
                                     <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
                                     <%= currencyFormatter.format(product.getSalePrice())%> <span class="old-price"><s><%= currencyFormatter.format(product.getPrice())%></s></span>
@@ -179,23 +200,45 @@
                                             <%= currencyFormatter.format(product.getPrice())%>
                                             <% }%>
                                 </div>
+                                <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
+                                <div class="product-rating">
+                                    <%
+                                        long roundedStars = Math.round(product.getAverageStars());
+                                        for (int i = 1; i <= 5; i++) {
+                                            if (i <= roundedStars) {
+                                    %>
+                                            <span class="star-icon full">&#9733;</span>
+                                    <%
+                                            } else {
+                                    %>
+                                            <span class="star-icon empty">&#9733;</span>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </div>
+                                <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
 
-                                <form action="cart" method="POST" class="mt-4 product-buttons d-grid gap-2">
+                                <%-- FORM MỚI VỚI LOGIC CỦA BẠN --%>
+                                <form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons d-grid gap-2">
                                     <input type="hidden" name="action" value="add">
+                                    <input type="hidden" name="page" value="cart">
+                                    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
                                     <input type="hidden" name="productId" value="<%= product.getProductId()%>">
                                     <input type="hidden" name="quantity" value="1">
                                     <button type="submit" class="btn_1 btn btn-danger btn-lg">Add to Cart</button>
-                                    <button type="button" class="btn_1 btn btn-primary btn-lg">Buy Now</button>
+                                    <button type="button" class="btn_1 btn btn-primary btn-lg" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=1'">Buy Now</button>
                                 </form>
                             </div>
 
+                            <%-- Thông số kỹ thuật --%>
                             <div class="product-card mt-4">
                                 <h3 class="info-section-title">Specifications</h3>
-                                <dl class="row info-accessory">
+                                <dl class="info-accessory row">
                                     <dt class="col-sm-4">Category</dt><dd class="col-sm-8"><%= product.getCategoryName()%></dd>
                                     <dt class="col-sm-4">In Stock</dt><dd class="col-sm-8"><%= product.getQuantity()%></dd>
                                     <% if (product.getGameDetails() != null) {
-                                            GameDetails details = product.getGameDetails();%>
+                                        GameDetails details = product.getGameDetails();%>
                                     <dt class="col-sm-4">Developer</dt><dd class="col-sm-8"><%= details.getDeveloper()%></dd>
                                     <dt class="col-sm-4">Genre</dt><dd class="col-sm-8"><%= details.getGenre()%></dd>
                                     <dt class="col-sm-4">Release Date</dt><dd class="col-sm-8"><%= new SimpleDateFormat("dd MMM, yyyy").format(details.getReleaseDate())%></dd>
@@ -207,7 +250,7 @@
                                     <% for (ProductAttribute attr : product.getAttributes()) {%>
                                     <dt class="col-sm-4"><%= attr.getAttributeName()%></dt><dd class="col-sm-8"><%= attr.getValue()%></dd>
                                         <% }
-                                            }%>
+                                        }%>
                                 </dl>
                             </div>
                         </div>
@@ -239,7 +282,6 @@
             }
         </script>
 
-
+        <%@include file="/WEB-INF/include/home-footer.jsp" %>
     </body>
 </html>
-<%@include file="/WEB-INF/include/home-footer.jsp" %>

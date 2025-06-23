@@ -27,11 +27,12 @@ public class Product {
     private GameDetails gameDetails;
     private List<ProductAttribute> attributes;
     private List<String> imageUrls; 
+    private double averageStars;
 
     public Product() {
     }
 
-    public Product(int productId, String name, String description, BigDecimal price, int quantity, BigDecimal salePrice, Integer categoryId, Integer brandId, Integer gameDetailsId, Timestamp createdAt, Timestamp updatedAt, String categoryName, String brandName, GameDetails gameDetails, List<ProductAttribute> attributes, List<String> imageUrls) {
+    public Product(int productId, String name, String description, BigDecimal price, int quantity, BigDecimal salePrice, Integer categoryId, Integer brandId, Integer gameDetailsId, Timestamp createdAt, Timestamp updatedAt, String categoryName, String brandName, GameDetails gameDetails, List<ProductAttribute> attributes, List<String> imageUrls, double averageStars) {
         this.productId = productId;
         this.name = name;
         this.description = description;
@@ -48,8 +49,18 @@ public class Product {
         this.gameDetails = gameDetails;
         this.attributes = attributes;
         this.imageUrls = imageUrls;
+        this.averageStars = averageStars;
     }
 
+    public double getAverageStars() {
+        return averageStars;
+    }
+
+    public void setAverageStars(double averageStars) {
+        this.averageStars = averageStars;
+    }
+
+    
     public int getProductId() {
         return productId;
     }
