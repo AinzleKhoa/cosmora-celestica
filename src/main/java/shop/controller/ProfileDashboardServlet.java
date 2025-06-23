@@ -36,7 +36,7 @@ public class ProfileDashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
+        request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp")
                 .forward(request, response);
     }
 
@@ -54,7 +54,6 @@ public class ProfileDashboardServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action.equals("updateProfile")) {
             int id = Integer.parseInt(request.getParameter("id"));
-            String username = request.getParameter("username");
             String email = request.getParameter("email");
             String fullName = request.getParameter("fullName");
             String phone = request.getParameter("phone");
@@ -68,35 +67,33 @@ public class ProfileDashboardServlet extends HttpServlet {
             }
 
             HttpSession session = request.getSession(false);
-            Staff staff = (session != null) ? (Staff) session.getAttribute("currentEmployee") : null;
+            Staff currentEmployee = (session != null) ? (Staff) session.getAttribute("currentEmployee") : null;
 
             StaffDAO sDAO = new StaffDAO();
 
-            if (staff != null) {
-                if (!sDAO.isEmailTakenByOthers(id, username, email)) {
+            if (currentEmployee != null) {
+                if (!sDAO.isEmailTakenByOthers(email, id)) {
                     if (sDAO.updateProfileAdmin(new Staff(id, fullName, email, gender, phone, dateOfBirth, avatarUrl)) > 0) {
-                        Staff newCustomer = sDAO.getAccountById(id);
-                        session.setAttribute("currentCustomer", newCustomer); // Session updated
+                        Staff newEmployee = sDAO.getOneById(id);
+                        session.setAttribute("currentEmployee", newEmployee); // Session updated
                         request.setAttribute("updateFailed", false);
                         request.setAttribute("message", "Update profile successfully!");
-                        request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                     } else {
-                        request.setAttribute("thisCustomer", customer);
-                        request.setAttribute("activeTab", "tab-1");
+                        request.setAttribute("currentEmployee", currentEmployee);
                         request.setAttribute("updateFailed", true);
                         request.setAttribute("message", "Update profile unsucessfully");
-                        request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("thisCustomer", customer);
-                    request.setAttribute("activeTab", "tab-1");
+                    request.setAttribute("currentEmployee", currentEmployee);
                     request.setAttribute("updateFailed", true);
                     request.setAttribute("message", "Username or Email already exists.");
-                    request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("message", "Your session has expired. Please login again.");
-                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/home/login-dashboard.jsp").forward(request, response);
             }
         } else if (action.equals("updatePassword")) {
             int id = Integer.parseInt(request.getParameter("id"));
@@ -104,45 +101,39 @@ public class ProfileDashboardServlet extends HttpServlet {
             String newpass = request.getParameter("newpass");
 
             HttpSession session = request.getSession(false);
-            Customer customer = (session != null) ? (Customer) session.getAttribute("currentCustomer") : null;
+            Staff currentEmployee = (session != null) ? (Staff) session.getAttribute("currentEmployee") : null;
 
-            CustomerDAO sDAO = new CustomerDAO();
+            StaffDAO sDAO = new StaffDAO();
 
-            if (customer != null) {
+            if (currentEmployee != null) {
                 // Check old pass
-                boolean isOldPasswordMatched = PasswordUtils.checkPassword(oldpass, customer.getPasswordHash());
+                boolean isOldPasswordMatched = PasswordUtils.checkPassword(oldpass, currentEmployee.getPasswordHash());
 
                 if (isOldPasswordMatched) {
                     // Check new pass already exist or not
-                    boolean isNewPasswordSame = PasswordUtils.checkPassword(newpass, customer.getPasswordHash());
+                    boolean isNewPasswordSame = PasswordUtils.checkPassword(newpass, currentEmployee.getPasswordHash());
 
                     if (!isNewPasswordSame) {
                         String hashedPassword = PasswordUtils.hashPassword(newpass);
                         // Update customer password
-                        if (sDAO.updateCustomerPassword(new Customer(customer.getEmail(), hashedPassword)) > 0) {
+                        if (sDAO.updateAdminPassword(new Staff(currentEmployee.getEmail(), hashedPassword)) > 0) {
                             request.setAttribute("message", "Password update successfully!");
-                            request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                            request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                         } else {
-                            request.setAttribute("activeTab", "tab-2");
-                            request.setAttribute("updateFailed", true);
                             request.setAttribute("message", "Something went wrong. Please try again.");
-                            request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                            request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                         }
                     } else {
-                        request.setAttribute("activeTab", "tab-2");
-                        request.setAttribute("updateFailed", true);
                         request.setAttribute("message", "Your new password must be different from your current password.");
-                        request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("activeTab", "tab-2");
-                    request.setAttribute("updateFailed", true);
                     request.setAttribute("message", "Your old password does not match.");
-                    request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("message", "Your session has expired. Please login again.");
-                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/home/login-dashboard.jsp").forward(request, response);
             }
 
         }

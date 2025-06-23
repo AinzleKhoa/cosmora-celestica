@@ -9,6 +9,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 <style>
+    .section--admin--profile {
+        margin-left: 220px;
+    }
+
     .avatar-display-container {
         margin-bottom: 15px;
         text-align: center;
@@ -198,38 +202,15 @@
 </style>
 <c:choose>
     <c:when test="${not empty requestScope.updateFailed and not empty requestScope.thisCustomer}">
-        <c:set var="user" value="${requestScope.thisCustomer}" />
+        <c:set var="user" value="${requestScope.thisEmployee}" />
     </c:when>
     <c:otherwise>
-        <c:set var="user" value="${sessionScope.currentCustomer}" />
+        <c:set var="user" value="${sessionScope.currentEmployee}" />
     </c:otherwise>
 </c:choose>
 
-<!-- page title -->
-<section class="section section--first section--last section--head" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="section__wrap">
-                    <!-- section title -->
-                    <h2 class="section__title">Profile</h2>
-                    <!-- end section title -->
-
-                    <!-- breadcrumb -->
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
-                        <li class="breadcrumb__item breadcrumb__item--active">Profile</li>
-                    </ul>
-                    <!-- end breadcrumb -->
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- end page title -->
-
 <!-- section -->
-<section class="section section--last">
+<section class="section section--last section--admin--profile">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -239,8 +220,8 @@
                             <img src="${user.avatarUrl}" alt="">
                         </div>
                         <div class="profile__meta">
-                            <h3>${user.username}</h3>
-                            <span>Id: ${user.customerId}</span>
+                            <h3>${user.fullName}</h3>
+                            <span>Id: ${user.id}</span>
                         </div>
                     </div>
 
@@ -254,19 +235,13 @@
                             <a class="nav-link" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab-2"
                                aria-selected="false">Security Settings</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#tab-3" role="tab"
-                               aria-controls="tab-3" aria-selected="true">Order History</a>
-                        </li>
-
                     </ul>
 
                     <a href="${pageContext.servletContext.contextPath}/logout" class="profile__logout" type="button">
                         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
-                        <path
-                            d='M304 336v40a40 40 0 01-40 40H104a40 40 0 01-40-40V136a40 40 0 0140-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256'
-                            fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='32' />
+                            <path
+                                d='M304 336v40a40 40 0 01-40 40H104a40 40 0 01-40-40V136a40 40 0 0140-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256'
+                                fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='32' />
                         </svg>
                         <span>Logout</span>
                     </a>
@@ -294,9 +269,9 @@
                 <div class="row">
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
-                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="profileCommonUpdate" class="form">
+                        <form action="${pageContext.servletContext.contextPath}/profile-dashboard" method="POST" id="profileCommonUpdate" class="form">
                             <input type="hidden" name="action" value="updateProfile"/>
-                            <input type="hidden" name="id" value="${user.customerId}"/>
+                            <input type="hidden" name="id" value="${user.id}"/>
                             <div class="row">
                                 <div class="col-12">
                                     <h4 class="form__title">Profile details</h4>
@@ -307,28 +282,12 @@
                                     <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                         <label class="form__label" for="avatarUrl">Avatar</label>
                                         <input type="hidden" id="avatarUrl" name="avatarUrl" class="form__input avatar-input" value="${user.avatarUrl}" readonly>
-                                        <div class="avatar-display-container">
-                                            <img id="avatarDisplayImg" src="${user.avatarUrl}" 
-                                                 class="avatar-display" alt="Avatar Display">
-                                        </div>
-                                        <button type="button" class="btn btn-primary change-avatar-btn" id="openAvatarModalBtn">Change Avatar</button>
+                                            <div class="avatar-display-container">
+                                                <img id="avatarDisplayImg" src="${user.avatarUrl}" 
+                                                     class="avatar-display" alt="Avatar Display">
+                                            </div>
+                                            <button type="button" class="btn btn-primary change-avatar-btn" id="openAvatarModalBtn">Change Avatar</button>
                                     </div>
-                                </div>
-
-                                <!-- Username -->
-                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                    <label class="form__label" for="username">Username</label>
-                                    <input id="username" type="text" name="username" class="form__input"
-                                           value="${user.username}" placeholder="${user.username}" required>
-                                </div>
-
-                                <!-- Email -->
-                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                    <label class="form__label" for="email">Email</label>
-                                    <input id="email" type="email" name="email" class="form__input"
-                                           value="${user.email}" placeholder="${user.email}" disabled>
-                                    <input id="email" type="hidden" name="email" class="form__input"
-                                           value="${user.email}" placeholder="${user.email}">
                                 </div>
 
                                 <!-- Full Name -->
@@ -336,6 +295,13 @@
                                     <label class="form__label" for="fullName">Full Name</label>
                                     <input id="fullName" type="text" name="fullName" class="form__input"
                                            value="${user.fullName}" placeholder="${user.fullName}" required>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                    <label class="form__label" for="email">Email</label>
+                                    <input id="email" type="email" name="email" class="form__input"
+                                           value="${user.email}" placeholder="${user.email}" >
                                 </div>
 
                                 <!-- Phone -->
@@ -356,33 +322,11 @@
                                     </select>
                                 </div>
 
-                                <!-- Address -->
-                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                    <label class="form__label" for="address">Address</label>
-                                    <input id="address" type="text" name="address" class="form__input"
-                                           value="${user.address}" placeholder="${user.address}">
-                                </div>
-
                                 <!-- Date of Birth -->
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="dateOfBirth">Date of Birth</label>
                                     <input id="dateOfBirth" type="date" name="dateOfBirth" class="form__input"
                                            value="${user.dateOfBirth}">
-                                </div>
-
-                                <div class="col-12 mt-5">
-                                    <p class="profile__info"><strong>Account Created At:</strong> 
-                                        <fmt:formatDate value="${user.createdAt}" pattern="dd MMM yyyy HH:mm" />
-                                    </p>
-                                    <p class="profile__info"><strong>Last Updated At:</strong> 
-                                        <fmt:formatDate value="${user.updatedAt}" pattern="dd MMM yyyy HH:mm" />
-                                    </p>
-                                    <p class="profile__info"><strong>Email Verified:</strong> 
-                                        <c:choose>
-                                            <c:when test="${user.emailVerified}">Yes</c:when>
-                                            <c:otherwise>No</c:otherwise>
-                                        </c:choose>
-                                    </p>
                                 </div>
 
                                 <!-- Save Button -->
@@ -460,9 +404,9 @@
                 <div class="row">
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
-                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="resetPasswordForm" class="form">
+                        <form action="${pageContext.servletContext.contextPath}/profile-dashboard" method="POST" id="resetPasswordForm" class="form">
                             <input type="hidden" name="action" value="updatePassword"/>
-                            <input type="hidden" name="id" value="${user.customerId}"/>
+                            <input type="hidden" name="id" value="${user.id}"/>
                             <div class="row">
                                 <div class="col-12">
                                     <h4 class="form__title">Change password</h4>
@@ -564,122 +508,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="tab-pane fade" id="tab-3" role="tabpanel">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive table-responsive--border">
-                            <table class="profile__table">
-                                <thead>
-                                    <tr>
-                                        <th>№</th>
-                                        <th>Product</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Date</th>
-                                        <th>Total Price</th>
-                                        <th>Status</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8451</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="${pageContext.servletContext.contextPath}/game/game1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Desperados III Digital Deluxe Edition</td>
-                                        <td>Game</td>
-                                        <td>Aug 22, 2021</td>
-                                        <td><span class="profile__price">$49.00</span></td>
-                                        <td><span class="profile__status">Not confirmed</span></td>
-                                        <td><button class="profile__delete" type="button"><svg
-                                                    xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                                    viewBox='0 0 512 512'>
-                                                <line x1='368' y1='368' x2='144' y2='144'
-                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                                <line x1='368' y1='144' x2='144' y2='368'
-                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                                </svg></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8452</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="img/accessories/headset1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Tai nghe Razer Kraken V4 X - Minecraft Edition</td>
-                                        <td>Headset</td>
-                                        <td>Aug 22, 2022</td>
-                                        <td><span class="profile__price">$29.00</span></td>
-                                        <td><span
-                                                class="profile__status profile__status--confirmed">Confirmed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8452</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="img/keyboard/keyboard1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Bàn Phím Có Dây Gaming Rapoo V50S</td>
-                                        <td>Keyboard</td>
-                                        <td>Aug 22, 2022</td>
-                                        <td><span class="profile__price">$19.00</span></td>
-                                        <td><span class="profile__status profile__status--cenceled">Canceled</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- paginator -->
-                    <div class="col-12">
-                        <div class="paginator">
-                            <div class="paginator__counter">
-                                3 from 9
-                            </div>
-
-                            <ul class="paginator__wrap">
-                                <li class="paginator__item paginator__item--prev">
-                                    <a href="#">
-                                        <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                             viewBox='0 0 512 512'>
-                                        <polyline points='244 400 100 256 244 112'
-                                                  style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        <line x1='120' y1='256' x2='412' y2='256'
-                                              style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        </svg>
-                                    </a>
-                                </li>
-                                <li class="paginator__item paginator__item--active"><a href="#">1</a></li>
-                                <li class="paginator__item"><a href="#">2</a></li>
-                                <li class="paginator__item"><a href="#">3</a></li>
-                                <li class="paginator__item paginator__item--next">
-                                    <a href="#">
-                                        <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                             viewBox='0 0 512 512'>
-                                        <polyline points='268 112 412 256 268 400'
-                                                  style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        <line x1='392' y1='256' x2='100' y2='256'
-                                              style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        </svg>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- end paginator -->
-                </div>
-            </div>
-
-
         </div>
         <!-- end content tabs -->
     </div>
@@ -717,22 +545,9 @@
     });
 
     document.getElementById('profileCommonUpdate').addEventListener('submit', function (e) {
-        const username = this.querySelector('[name="username"]').value.trim();
         const email = this.querySelector('[name="email"]').value.trim();
         const fullName = this.querySelector('[name="fullName"]').value.trim();
         const phone = this.querySelector('[name="phone"]').value.trim();
-
-        // Username - required
-        if (username === '') {
-            alert('Username is required.');
-            e.preventDefault();
-            return;
-        }
-        if (/\s/.test(username)) { // Check for any whitespace character
-            alert('Username must not contain spaces.');
-            e.preventDefault();
-            return;
-        }
 
         // Email - required + valid format
         const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
@@ -770,7 +585,6 @@
             return;
         }
 
-        // No validation for address
     });
 
     // ============================

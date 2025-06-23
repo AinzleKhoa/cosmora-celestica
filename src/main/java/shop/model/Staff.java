@@ -56,6 +56,11 @@ public class Staff {
         this.avatarUrl = avatarUrl;
     }
 
+    public Staff(String email, String passwordHash) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
     public int getId() {
         return Id;
     }

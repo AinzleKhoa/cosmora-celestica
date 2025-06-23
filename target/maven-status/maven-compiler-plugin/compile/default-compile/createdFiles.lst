@@ -25,6 +25,7 @@ shop\model\Brand.class
 shop\filter\CustomerAuthFilter.class
 shop\model\Category.class
 shop\controller\LoginServlet.class
+shop\controller\ProfileDashboardServlet.class
 shop\dao\ProductDAO.class
 shop\util\SessionUtil.class
 shop\model\Cart.class
@@ -37,7 +38,6 @@ shop\model\Game.class
 shop\dao\VouchersDAO.class
 shop\model\Product.class
 shop\db\DBContext.class
-shop\model\Discount.class
 shop\dao\OperatingSystemDAO.class
 shop\dao\CategoryDAO.class
 shop\filter\EmployeeAuthFilter.class
