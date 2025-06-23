@@ -11,12 +11,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import shop.dao.CartDAO;
 import shop.dao.CheckoutDAO;
 import shop.dao.ProductDAO;
+import shop.dao.VouchersDAO;
 import shop.model.Checkout;
 import shop.model.Product;
 
@@ -65,6 +68,7 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("single")) {
             String idtemp = request.getParameter("id");
@@ -74,7 +78,13 @@ public class CheckoutServlet extends HttpServlet {
             try {
                 Checkout temp = CD.getInfoToCheckout(id);
                 temp.setQuantity(quantity);
-                request.setAttribute("checkout", temp);
+                double price = (temp.getSale_price() == 0.0) ? temp.getPrice() : temp.getSale_price();
+                double total = price * temp.getQuantity();
+                ArrayList<Checkout> pro = new ArrayList<>();
+                pro.add(temp);
+                session.setAttribute("checkout", pro);
+                session.setAttribute("totalAmount", total);
+                session.setAttribute("status", "single");
                 request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
             } catch (SQLException ex) {
                 Logger.getLogger(CheckoutServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -94,7 +104,69 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        String action = request.getParameter("action");
+        if (action.equals("fromcart")) {
+            String[] productId = request.getParameterValues("productIds");
+            String[] quantity = request.getParameterValues("quantities");
+            double total = Double.parseDouble(request.getParameter("totalAmount"));
+            ArrayList<Checkout> temp = new ArrayList<>();
+            CheckoutDAO CD = new CheckoutDAO();
+            try {
+                for (int i = 0; i < productId.length; i++) {
+                    int id = Integer.parseInt(productId[i]);
+                    int qty = Integer.parseInt(quantity[i]);
+
+                    Checkout c = CD.getInfoToCheckout(id);
+                    if (c != null) {
+                        c.setQuantity(qty);
+                        temp.add(c);
+                    }
+                }
+
+                session.setAttribute("checkout", temp);
+                session.setAttribute("status", "list");
+                session.setAttribute("totalAmount", total);
+                request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(CheckoutServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (action.equals("order")) {
+            String[] ids = request.getParameterValues("productId");
+            String[] quantities = request.getParameterValues("quantity");
+            String[] prices = request.getParameterValues("price");
+            String payment = request.getParameter("paymentMethod");
+            String totalStr = request.getParameter("total");
+            int customerId = Integer.parseInt(request.getParameter("customerId"));
+            String customerAddress = request.getParameter("customerAddress");
+            String voucherCode = request.getParameter("vouchercode");
+            double total = Double.parseDouble(totalStr);
+            VouchersDAO VD = new VouchersDAO();
+            CheckoutDAO CD = new CheckoutDAO();
+            Integer voucherID = null;
+            try {
+                //get voucherID
+                if (voucherCode != null && !voucherCode.trim().isEmpty() && !"null".equalsIgnoreCase(voucherCode.trim())) {
+                    voucherID = VD.getVoucherIdByCode(voucherCode);
+                } else {
+                    voucherID = null;
+                }
+                if (CD.writeOrderDetails(CD.writeOrderIntoDb(customerId, voucherID, total, payment, customerAddress),
+                        ids, quantities, prices) != 0) {
+                    CartDAO cartDAO = new CartDAO();
+                    cartDAO.deleteCartAfterBuy(customerId, ids);
+                    int cartCount = cartDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
+                    session.setAttribute("buysucces", "You have successfully placed your order.");
+                    response.sendRedirect(request.getContextPath() + "/home");
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(CheckoutServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
     }
 
     /**

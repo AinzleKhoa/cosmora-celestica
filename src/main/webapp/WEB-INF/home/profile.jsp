@@ -4,6 +4,10 @@
     Author     : CE190449 - Le Anh Khoa
 --%>
 
+<%@page import="shop.dao.ProductDAO"%>
+<%@page import="shop.model.Customer"%>
+<%@page import="shop.model.Order"%>
+<%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -272,14 +276,14 @@
 
             <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
                 <div class="row">
-                    
+
                     <!-- Message Container -->
                     <div id="message" style="color: yellow; margin-bottom: 15px;">
                         <c:if test="${not empty message}">
                             <p>${message}</p>
                         </c:if>
                     </div>
-                    
+
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
                         <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="profileCommonUpdate" class="form">
@@ -556,68 +560,92 @@
                                 <thead>
                                     <tr>
                                         <th>№</th>
-                                        <th>Product</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Date</th>
                                         <th>Total Price</th>
+                                        <th>Date</th>
                                         <th>Status</th>
+                                        <th>Review</th>
                                         <th></th>
                                     </tr>
                                 </thead>
+                                <% ArrayList<Order> order = (ArrayList<Order>) request.getAttribute("order");
+                                    for (Order od : order) {
 
+
+                                %>
                                 <tbody>
+
                                     <tr>
-                                        <td><a href="#modal-info" class="open-modal">8451</a></td>
+                                        <td><a href="#modal-info" class="open-modal"><%= od.getOrderId()%></a></td>
+                                        <td><span class="profile__price"><%= od.getTotalAmount()%></span></td>
+                                        <td><%= od.getOrderDate()%></td>
+                                        <td><span class="profile__status"><%= od.getStatus()%></span></td>
                                         <td>
-                                            <div class="profile__img">
-                                                <img src="${pageContext.servletContext.contextPath}/game/game1.png" alt="">
-                                            </div>
+                                            <%
+                                                Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
+                                                boolean isReviewed = false;
+
+                                                try {
+                                                    ProductDAO pd = new ProductDAO();
+                                                    isReviewed = pd.isOrderReviewed(od.getOrderId(), currentCustomer.getCustomerId());
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                                if (isReviewed) {
+                                            %>
+                                            <p style="color: lightgreen;">Reviewed applied successfully!</p>
+                                            <%
+                                            } else {
+                                            %>
+                                            <form action="profile" method="post">
+                                                <input type="hidden" name="action" value="review">
+                                                <input type="hidden" name="orderId" value="<%= od.getOrderId()%>">
+                                                <style>
+                                                    .star-rating input[type="radio"] {
+                                                        display: none;
+                                                    }
+
+                                                    .star-rating label {
+                                                        font-size: 20px;
+                                                        color: #ccc;
+                                                        cursor: pointer;
+                                                    }
+
+                                                    .star-rating input[type="radio"]:checked ~ label {
+                                                        color: gold;
+                                                    }
+
+                                                    .star-rating label:hover,
+                                                    .star-rating label:hover ~ label {
+                                                        color: gold;
+                                                    }
+                                                </style>
+
+                                                <div class="star-rating" style="direction: rtl;">
+                                                    <% for (int i = 5; i >= 1; i--) {%>
+                                                    <input type="radio" id="star<%= od.getOrderId()%>_<%= i%>" name="rating" value="<%= i%>">
+                                                    <label for="star<%= od.getOrderId()%>_<%= i%>">&#9733;</label>
+                                                    <% } %>
+                                                </div>
+                                                
+                                                <button style="color: white" type="submit">Submit</button>
+                                            </form>
+                                            <%
+                                                }
+                                            %>
+
                                         </td>
-                                        <td>Desperados III Digital Deluxe Edition</td>
-                                        <td>Game</td>
-                                        <td>Aug 22, 2021</td>
-                                        <td><span class="profile__price">$49.00</span></td>
-                                        <td><span class="profile__status">Not confirmed</span></td>
-                                        <td><button class="profile__delete" type="button"><svg
-                                                    xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                                    viewBox='0 0 512 512'>
-                                                <line x1='368' y1='368' x2='144' y2='144'
-                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                                <line x1='368' y1='144' x2='144' y2='368'
-                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                                </svg></button></td>
+                                        <td><form action="<%= request.getContextPath()%>/profile" method="post" class="table-actions-center" style="display:inline;">
+                                                <input type="hidden" name="action" value="details">
+                                                <input type="hidden" name="order_id" value="<%= od.getOrderId()%>">
+                                                <button type="submit" class="btn-action btn-details">Details</button>
+                                            </form>
+                                        </td>
+
                                     </tr>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8452</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="img/accessories/headset1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Tai nghe Razer Kraken V4 X - Minecraft Edition</td>
-                                        <td>Headset</td>
-                                        <td>Aug 22, 2022</td>
-                                        <td><span class="profile__price">$29.00</span></td>
-                                        <td><span
-                                                class="profile__status profile__status--confirmed">Confirmed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8452</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="img/keyboard/keyboard1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Bàn Phím Có Dây Gaming Rapoo V50S</td>
-                                        <td>Keyboard</td>
-                                        <td>Aug 22, 2022</td>
-                                        <td><span class="profile__price">$19.00</span></td>
-                                        <td><span class="profile__status profile__status--cenceled">Canceled</span>
-                                        </td>
-                                    </tr>
+
                                 </tbody>
+                                <%}%>
                             </table>
                         </div>
                     </div>

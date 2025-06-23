@@ -31,7 +31,6 @@ public class DBContext {
     private final String DB_USER = "sa";
     private final String DB_PWD = "123456";
 
-
     /**
      * Constructor that initializes the database connection. This constructor
      * loads the SQL Server JDBC driver and establishes a connection to the
@@ -85,7 +84,12 @@ public class DBContext {
         PreparedStatement pStatement = conn.prepareStatement(query);
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
-                pStatement.setObject(i + 1, params[i]);
+                if (params[i] == null) {
+                    pStatement.setNull(i + 1, java.sql.Types.INTEGER); // <-- chỉnh lại tùy kiểu dữ liệu
+                } else {
+                    pStatement.setObject(i + 1, params[i]);
+                }
+
             }
         }
         return pStatement.executeQuery();

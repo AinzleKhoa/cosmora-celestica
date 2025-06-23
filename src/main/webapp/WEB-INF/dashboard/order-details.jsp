@@ -77,9 +77,9 @@
             </table>
         </div>
     </section>
-    <a href="<%= request.getContextPath()%>/manage-orders" class="admin-manage-back">
-        <i class="fas fa-arrow-left mr-1"></i> Back
-    </a>
+   <a href="javascript:history.back()" class="admin-manage-back">
+    <i class="fas fa-arrow-left mr-1"></i> Back
+</a>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

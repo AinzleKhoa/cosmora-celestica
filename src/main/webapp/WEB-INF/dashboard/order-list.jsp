@@ -58,17 +58,41 @@
                         <td><%= order.getCustomerName()%></td>
                         <td><%= order.getOrderDate()%></td>
                         <td><%= order.getTotalAmount()%></td>
-                        <td>
+                        <td><%
+                            String status = order.getStatus();
+                            int statusLevel = 0;
+                            if (status.equals("Pending"))
+                                statusLevel = 1;
+                            else if (status.equals("Confirmed"))
+                                statusLevel = 2;
+                            else if (status.equals("Shipped"))
+                                statusLevel = 3;
+                            else if (status.equals("Delivered"))
+                                statusLevel = 4;
+                            %>
+
                             <form action="manage-orders" method="post">
                                 <input type="hidden" name="action" value="update" />
                                 <input type="hidden" name="orderId" value="<%= order.getOrderId()%>" />
                                 <select name="status" class="admin-filter-select" onchange="this.form.submit()">
-                                    <option value="Pending" <%= order.getStatus().equals("Pending") ? "selected" : ""%>>Pending</option>
-                                    <option value="Confirmed" <%= order.getStatus().equals("Confirmed") ? "selected" : ""%>>Confirmed</option>
-                                    <option value="Shipped" <%= order.getStatus().equals("Shipped") ? "selected" : ""%>>Shipped</option>
-                                    <option value="Delivered" <%= order.getStatus().equals("Delivered") ? "selected" : ""%>>Delivered</option>
+                                    <option value="Pending"
+                                            <%= status.equals("Pending") ? "selected" : ""%>
+                                            <%= statusLevel > 1 ? "disabled" : ""%>>Pending</option>
+
+                                    <option value="Confirmed"
+                                            <%= status.equals("Confirmed") ? "selected" : ""%>
+                                            <%= statusLevel > 2 ? "disabled" : ""%>>Confirmed</option>
+
+                                    <option value="Shipped"
+                                            <%= status.equals("Shipped") ? "selected" : ""%>
+                                            <%= statusLevel > 3 ? "disabled" : ""%>>Shipped</option>
+
+                                    <option value="Delivered"
+                                            <%= status.equals("Delivered") ? "selected" : ""%>
+                                            <%= statusLevel > 4 ? "disabled" : ""%>>Delivered</option>
                                 </select>
                             </form>
+
 
 
 

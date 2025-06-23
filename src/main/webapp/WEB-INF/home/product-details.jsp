@@ -64,18 +64,25 @@
                             <% }%>
                 </div>
 
-<%
-    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
-%>
+                <%
+                    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
+                %>
 
-<form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons">
-    <input type="hidden" name="action" value="add">
-    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : "" %>">
-    <input type="hidden" name="productId" value="<%= product.getProductId() %>">
-    <input type="hidden" name="quantity" value="1">
-    <button type="submit" class="btn btn-cart">Add to Cart</button>
-    <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId() %>&quantity=<%= 1%>'" >Buy Now</button>
-</form>
+              
+
+
+
+
+
+                <form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="page" value="cart">
+                    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
+                    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-cart">Add to Cart</button>
+                    <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
+                </form>
 
             </div>
         </div>

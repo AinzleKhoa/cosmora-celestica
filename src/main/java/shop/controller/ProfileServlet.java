@@ -11,9 +11,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shop.dao.CustomerDAO;
+import shop.dao.OrderDAO;
+import shop.dao.ProductDAO;
 import shop.model.Customer;
+import shop.model.Order;
+import shop.model.OrderDetails;
 
 /**
  *
@@ -34,8 +43,19 @@ public class ProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
-                .forward(request, response);
+        HttpSession session = request.getSession();
+        Customer temp = (Customer) session.getAttribute("currentCustomer");
+        OrderDAO OD = new OrderDAO();
+        try {
+            ArrayList<Order> order = OD.getOrderById(temp.getCustomerId());
+            request.setAttribute("order", order);
+            request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
+                    .forward(request, response);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**
@@ -72,7 +92,45 @@ public class ProfileServlet extends HttpServlet {
             Customer customer = cDAO.getAccountById(id);
 
             if (customer != null) {
-                
+
+            }
+        } else if (action.equals("details")) {
+            OrderDAO OD = new OrderDAO();
+            int orderid = Integer.parseInt(request.getParameter("order_id"));
+
+            try {
+                ArrayList<OrderDetails> orderDetails = OD.getOrderDetailForCus(orderid);
+                Order order = OD.getOneOrder(orderid);
+                request.setAttribute("order", order);
+                request.setAttribute("orderdetails", orderDetails);
+                request.getRequestDispatcher("/WEB-INF/home/profile-order-details.jsp").forward(request, response);
+
+            } catch (SQLException ex) {
+                Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else if (action.equals("review")) {
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            int value = 0;
+            String ratingStr = request.getParameter("rating");
+            if (ratingStr == null || ratingStr.isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/profile");
+                return;
+            }
+            value=Integer.parseInt(ratingStr);
+
+            HttpSession session = request.getSession();
+            Customer temp = (Customer) session.getAttribute("currentCustomer");
+            OrderDAO OD = new OrderDAO();
+            ProductDAO PD = new ProductDAO();
+            try {
+                int[] productId = OD.getProIdByOrderId(orderId);
+                if (PD.writeReviewIntoDb(productId, temp.getCustomerId(), value) != 0) {
+                    response.sendRedirect(request.getContextPath() + "/profile");
+
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

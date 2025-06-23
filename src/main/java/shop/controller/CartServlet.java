@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import shop.dao.CartDAO;
-import shop.dao.CustomerDAO;
 import shop.model.Cart;
 import shop.model.Customer;
 import shop.model.cartItem;
@@ -76,9 +75,8 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            // Ép kiểu đúng
             Customer customer = (Customer) session.getAttribute("currentCustomer");
-            int customerId = customer.getCustomerId(); // ✅ Lấy ID trực tiếp từ object
+            int customerId = customer.getCustomerId();
 
             try {
                 CartDAO cartDAO = new CartDAO();
@@ -90,78 +88,7 @@ public class CartServlet extends HttpServlet {
             } catch (SQLException e) {
                 throw new ServletException("Lỗi khi lấy danh sách giỏ hàng", e);
             }
-        } else if (view.equals("create")) {
-            request.getRequestDispatcher("/WEB-INF/dashboard/staff-create.jsp").forward(request, response);
-
-        } else if (view.equals("edit")) {
-//            try {
-//                String idParam = request.getParameter("id");
-//
-//                int id = Integer.parseInt(idParam);
-//                StaffDAO sDAO = new StaffDAO();
-//                Staff oneStaff = sDAO.getOneById(id);
-//
-//                if (oneStaff == null) {
-//                    response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//                    return;
-//                }
-//
-//                request.setAttribute("s", oneStaff);
-//                request.getRequestDispatcher("/WEB-INF/dashboard/staff-edit.jsp").forward(request, response);
-//
-//            } catch (NumberFormatException e) {
-//                System.err.println("Lỗi định dạng ID: " + e.getMessage());
-//                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//            } catch (Exception e) {
-//                System.err.println("Lỗi không mong muốn: " + e.getMessage());
-//                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//            }
-        } else if (view.equals("delete")) {
-//            String idParam = request.getParameter("id");
-//
-//            if (idParam == null || idParam.trim().isEmpty() || !idParam.matches("\\d+")) {
-//                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//                return;
-//            }
-//
-//            int id = Integer.parseInt(idParam);
-//            StaffDAO sDAO = new StaffDAO();
-//            Staff oneStaff = sDAO.getOneById(id);
-//
-//            if (oneStaff == null) {
-//                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//                return;
-//            }
-//
-//            request.setAttribute("s", oneStaff);
-//
-//            request.getRequestDispatcher("/WEB-INF/dashboard/staff-delete.jsp").forward(request, response);
-
-        } else if (view.equals("details")) {
-//            try {
-//                String idParam = request.getParameter("id");
-//
-//                int id = Integer.parseInt(idParam);
-//                StaffDAO sDAO = new StaffDAO();
-//                Staff oneStaff = sDAO.getOneById(id);
-//
-//                if (oneStaff == null) {
-//                    response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//                    return;
-//                }
-//
-//                request.setAttribute("s", oneStaff);
-//                request.getRequestDispatcher("/WEB-INF/dashboard/details-staff.jsp").forward(request, response);
-//
-//            } catch (NumberFormatException e) {
-//                System.err.println("Lỗi định dạng ID: " + e.getMessage());
-//                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//            } catch (Exception e) {
-//                System.err.println("Lỗi không mong muốn: " + e.getMessage());
-//                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
-//            }
         }
-
     }
 
     /**
@@ -186,8 +113,10 @@ public class CartServlet extends HttpServlet {
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     int quantity = Integer.parseInt(request.getParameter("quantity"));
 
-                    CustomerDAO cDAO = new CustomerDAO();
-                    int customerId = cDAO.GetIdByName(username);
+                    HttpSession session = request.getSession(false);
+
+                    Customer customer = (Customer) session.getAttribute("currentCustomer");
+                    int customerId = customer.getCustomerId();
 
                     // 2. Kiểm tra sản phẩm đã tồn tại trong giỏ chưa
                     CartDAO cartDAO = new CartDAO();
@@ -206,97 +135,69 @@ public class CartServlet extends HttpServlet {
                         cartDAO.insertCart(newCart);
                     }
 
+                    int cartCount = cartDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
+
                     // 3. Chuyển hướng về trang sản phẩm hoặc giỏ hàng
-                    response.sendRedirect(request.getContextPath() + "/cart");
+                    String page = request.getParameter("page");
+
+                    response.sendRedirect(request.getContextPath() + "/" + page);
+
                 }
 
                 break;
 
-//                case "edit":
-//     try ( PrintWriter out = response.getWriter()) {
-//
-//                    String idParam = request.getParameter("id");
-//                    int id = Integer.parseInt(idParam);
-//
-//                    String username = request.getParameter("username");
-//                    String email = request.getParameter("email");
-//                    String password = request.getParameter("password");
-//                    String phone = request.getParameter("phone");
-//                    String role = request.getParameter("role");
-//                    String dobStr = request.getParameter("date_of_birth");
-//
-//                    Date dateOfBirth = null;
-//                    if (dobStr != null && !dobStr.isEmpty()) {
-//                        dateOfBirth = Date.valueOf(dobStr);
-//                    }
-//
-//                    // Lấy staff hiện tại để giữ avatar cũ nếu cần
-//                    Staff oldStaff = sDAO.getOneById(id);
-//
-//                    Part img = request.getPart("avatar_url");
-//                    String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
-//                    String avatarUrl;
-//
-//                    String realPath = request.getServletContext().getRealPath("/assets/img/avatar");
-//                    File uploadDir = new File(realPath);
-//                    if (!uploadDir.exists()) {
-//                        uploadDir.mkdirs();
-//                    }
-//
-//                    // Nếu có file mới, ghi đè và dùng tên mới
-//                    if (filename != null && !filename.isEmpty()) {
-//                        File fileToSave = new File(uploadDir, filename);
-//                        img.write(fileToSave.getAbsolutePath());
-//
-//                        avatarUrl = "/CosmoraCelestica/assets/img/avatar/" + filename;
-//                    } else {
-//                        // Nếu không chọn ảnh mới, dùng lại avatar cũ
-//                        avatarUrl = oldStaff.getAvatarUrl();
-//                    }
-//
-//                    String hashedPassword = PasswordUtils.hashPassword(password);
-//
-//                    // Tạo object Staff
-//                    Staff updatedStaff = new Staff(id, username, email, hashedPassword, phone, role, dateOfBirth, avatarUrl);
-//
-//                    int isUpdate = sDAO.update(updatedStaff);
-//                    if (isUpdate == 1) {
-//                        response.sendRedirect(request.getContextPath() + "/manage-staffs");
-//                    } else {
-//                        out.println("<h2>Error: Can't update staff in database.</h2>");
-//                    }
-//
-//                } catch (Exception e) {
-//                    response.getWriter().println("<h2>Upload failed!</h2>");
-//                    e.printStackTrace(response.getWriter());
-//                }
-//                break;
-//
-//                case "delete":
-//                    String idParam = request.getParameter("id");
-//                    int id = Integer.parseInt(idParam);
-//
-//                    if (sDAO.delete(id) == 1) {
-//                        response.sendRedirect(request.getContextPath() + "/manage-staffs");
-//                    }
-//                    break;
-//
-//                case "search":
-//
-//                    String keyWord = request.getParameter("keyWord");
-//
-//                    ArrayList<Staff> sList;
-//                    try {
-//                        sList = sDAO.searchByName(keyWord);
-//                        request.setAttribute("s", sList);
-//
-//                        request.getRequestDispatcher("/WEB-INF/dashboard/staff-list.jsp").forward(request, response);
-//                    } catch (SQLException ex) {
-//                        Logger.getLogger(StaffServlet.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//
-//                    break;
-//
+                case "decrease":
+                try ( PrintWriter out = response.getWriter()) {
+                    String username = request.getParameter("username");
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
+
+                    HttpSession session = request.getSession(false);
+                    Customer customer = (Customer) session.getAttribute("currentCustomer");
+                    int customerId = customer.getCustomerId();
+
+                    CartDAO cartDAO = new CartDAO();
+                    Cart existingCart = cartDAO.findCartItem(customerId, productId);
+
+                    if (existingCart != null) {
+                        int currentQuantity = existingCart.getQuantity();
+
+                        if (currentQuantity <= quantityToDecrease || currentQuantity == 1) {
+                            // Nếu quantity hiện tại <= quantity cần giảm, hoặc = 1 -> Xóa luôn
+                            cartDAO.delete(productId, customerId);
+                        } else {
+                            // Nếu quantity > 1 -> giảm số lượng
+                            existingCart.setQuantity(currentQuantity - quantityToDecrease);
+                            cartDAO.updateCart(existingCart);
+                        }
+                    }
+                    int cartCount = cartDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                }
+                break;
+
+                case "delete":
+    try ( PrintWriter out = response.getWriter()) {
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+
+                    HttpSession session = request.getSession(false);
+                    Customer customer = (Customer) session.getAttribute("currentCustomer");
+                    int customerId = customer.getCustomerId();
+
+                    CartDAO cDAO = new CartDAO();
+
+                    int rowsDeleted = cDAO.delete(productId, customerId);
+
+                    if (rowsDeleted == 1) {
+                        int cartCount = cDAO.countCartItems(customerId);
+                        session.setAttribute("cartCount", cartCount);
+                        response.sendRedirect(request.getContextPath() + "/cart");
+                    }
+                }
+                break;
+
             }
         }
     }
