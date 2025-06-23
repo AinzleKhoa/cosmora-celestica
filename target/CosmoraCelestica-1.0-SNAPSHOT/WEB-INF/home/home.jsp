@@ -77,7 +77,8 @@
                                 </span>
                             </div>
                             <div class="card__actions">
-                                <button class="card__buy" type="button">Buy</button>
+                                <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
+
                                 <form action="<%= request.getContextPath()%>/cart" method="POST">
                                     <input type="hidden" name="action" value="add">
                                     <input type="hidden" name="page" value="home">
