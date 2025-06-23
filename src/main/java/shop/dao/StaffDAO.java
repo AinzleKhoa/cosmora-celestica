@@ -189,4 +189,45 @@ public class StaffDAO extends DBContext {
         }
         return 0;
     }
+
+    public boolean isEmailTakenByOthers(String email) {
+        try {
+            String query = "SELECT COUNT(*) FROM staff \n"
+                    + "WHERE email = ?";
+            Object[] params = {email};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+        public int updateProfileAdmin(Staff staff) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET full_name = ?,\n"
+                    + "	email = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	gender = ?,\n"
+                    + "	avatar_url = ?,\n"
+                    + "	date_of_birth = ?,\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                staff.getFullName(),
+                staff.getEmail(),
+                staff.getPhone(),
+                staff.getGender(),
+                staff.getAvatarUrl(),
+                staff.getDateOfBirth(),
+                staff.getId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
 }
