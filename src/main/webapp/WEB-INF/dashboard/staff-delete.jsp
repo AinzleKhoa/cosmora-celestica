@@ -14,11 +14,7 @@
 		</div>
 
 		<div class="admin-manage-wrapper container py-4">
-			<div class="mb-4">
-				<a href="${pageContext.servletContext.contextPath}/manage-staffs?view=list" class="admin-manage-back mb-5">
-					<i class="fas fa-arrow-left mr-1"></i> Back
-				</a>
-			</div>
+		
 
 			<!-- Summary -->
                        <%
@@ -26,7 +22,7 @@
                        
                        %>
 			<div class="admin-manage-fieldset mb-4">
-				<p class="mb-2"><strong>Full Name:</strong><%=s.getUsername()  %></p>
+				<p class="mb-2"><strong>Full Name:</strong><%=s.getFullName()%></p>
 				
 				<p class="mb-2"><strong>Email:</strong> <%=s.getEmail()  %></p>
 				<p class="mb-2"><strong>Role:</strong> <%=s.getRole()  %></p>

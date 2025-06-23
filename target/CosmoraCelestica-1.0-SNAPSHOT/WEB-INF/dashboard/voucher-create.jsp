@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Value</label>
-                        <input type="number" class="form-control admin-manage-input" name="value" max="100" min="0" required>
+                        <input type="number" class="form-control admin-manage-input" name="value" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>

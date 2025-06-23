@@ -55,20 +55,13 @@
 
                                         <input type="hidden" name="email" value="${sessionScope.currentForgotCustomer.email}">
 
-                                        <div id="loadingMessage">Processing...</div>
-
-                                        <!-- Success Message Container -->
-                                        <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                                            <c:if test="${not empty successMessage}">
-                                                <p>${successMessage}</p>
-                                            </c:if>
-                                        </div>
-
-                                        <!-- Error Message Container -->
-                                        <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-                                            <c:if test="${not empty requestScope.errorMessage}">
-                                                <p>${requestScope.errorMessage}</p>
-                                            </c:if>
+                                        <!-- Message Container -->
+                                        <div id="message" style="color: yellow; margin-bottom: 15px;">
+                                            <p id="messageText">
+                                                <c:if test="${not empty message}">
+                                                    ${message}
+                                                </c:if>
+                                            </p>
                                         </div>
 
                                         <span class="sign__currentEmail">
@@ -105,6 +98,44 @@
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
+        <script>
+            const resetPasswordForm = document.getElementById("resetPasswordForm");
+
+            if (resetPasswordForm) {
+                resetPasswordForm.addEventListener("submit", function (event) {
+
+                    const password = document.getElementById('password').value.trim();
+                    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+                    showMessage("Processing...");
+
+                    const errorMessage = isValidResetForm(password, confirmPassword);
+                    if (errorMessage) {
+                        event.preventDefault(); // Block form submission
+                        showMessage(errorMessage);
+                        return;
+                    }
+
+                    // Allow traditional POST to go through
+                });
+            }
+
+            function isValidResetForm(password, confirmPassword) {
+                const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+                if (password.length < 8) {
+                    return "Password must be at least 8 characters long.";
+                } else if (!passwordRegex.test(password)) {
+                    return "Password must contain at least 1 letter and 1 number.";
+                }
+
+                if (password !== confirmPassword) {
+                    return "Passwords do not match.";
+                }
+
+                return null;
+            }
+        </script>
     </body>
 
 </html>

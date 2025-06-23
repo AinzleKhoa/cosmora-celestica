@@ -4,12 +4,16 @@
     Author     : HoangSang
 --%>
 
+<%@page import="shop.model.Customer"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="shop.model.Product, shop.model.GameDetails, shop.model.ProductAttribute, java.util.List, java.text.NumberFormat, java.util.Locale, java.math.BigDecimal, java.text.SimpleDateFormat" %>
 
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-list.css">
+<%
+    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
+%>
 <%
     Product product = (Product) request.getAttribute("product");
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
@@ -63,13 +67,16 @@
                             <% }%>
                 </div>
 
- <form action="cart" method="POST" class="mt-4 product-buttons">
-    <input type="hidden" name="action" value="add">
-    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
-    <input type="hidden" name="quantity" value="1">
-    <button type="submit" class="btn btn-cart">Add to Cart</button>
-    <button type="button" class="btn btn-buy">Buy Now</button>
-</form>
+                <form action="${pageContext.servletContext.contextPath}/cart" method="POST" >
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="page" value="cart">
+                    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
+                    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-cart">Add to Cart</button>
+
+                </form>
+                <button type="button" class="btn btn-buy">Buy Now</button>
             </div>
         </div>
 

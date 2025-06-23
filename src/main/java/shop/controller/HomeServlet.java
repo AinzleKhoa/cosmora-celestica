@@ -6,9 +6,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shop.dao.ProductDAO;
 import shop.model.Product;
+import shop.model.Voucher;
 
 @WebServlet(name = "HomeServlet", urlPatterns = {"/home"})
 public class HomeServlet extends HttpServlet {
@@ -18,39 +22,75 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) {
-            showHomePage(request, response);
-        } else if (action.equals("details")) {
-            showProductDetails(request, response);
-        } else {
-            showHomePage(request, response);
+            action = "list";
         }
-    }
-    
-    private void showHomePage(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        ProductDAO productDAO = new ProductDAO();       
-        List<Product> accessoryList = productDAO.getAccessoryProducts();
-        List<Product> gameList = productDAO.getGameProducts();
-        request.setAttribute("gameList", gameList);
-        request.setAttribute("accessoryList", accessoryList);
-        request.getRequestDispatcher("/WEB-INF/home/home.jsp")
-               .forward(request, response);
-    }
-    
-    private void showProductDetails(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+
+        ProductDAO productDAO = new ProductDAO();
+
         try {
-            int productId = Integer.parseInt(request.getParameter("productId"));        
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);         
-            request.setAttribute("product", product);           
-            request.getRequestDispatcher("/WEB-INF/home/product-details.jsp").forward(request, response);     
-        } catch (NumberFormatException e) {
-            response.sendRedirect("home");
+            switch (action) {
+                case "details": {
+                    try {
+                        int productId = Integer.parseInt(request.getParameter("productId"));
+                        Product product = productDAO.getProductById(productId);
+                        request.setAttribute("product", product);
+                        request.getRequestDispatcher("/WEB-INF/home/product-details.jsp").forward(request, response);
+                    } catch (NumberFormatException e) {
+                        response.sendRedirect("home");
+                    }
+                    break;
+                }
+                case "search": {
+                    try {
+                        ArrayList<Product> productlist;
+                        String keyword = request.getParameter("keyword");
+                        if (keyword != null && !keyword.trim().isEmpty()) {
+                            productlist = productDAO.searchProductByName(keyword);
+                            request.setAttribute("productList", productlist);
+                            System.out.print(productlist);
+                        } else {
+                            productlist = (ArrayList<Product>) productDAO.getAllProducts();
+                            request.setAttribute("productList", productlist);
+                        }
+
+                        request.setAttribute("keyword", keyword);
+                        request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                }
+                case "filter": {
+                    try {
+                        ArrayList<Product> productlist;
+                        String keyword = request.getParameter("keyword");
+                        if (keyword != null && !keyword.trim().isEmpty()) {
+                            productlist = productDAO.getProductsByCategory(keyword);
+                            request.setAttribute("productList", productlist);
+                            System.out.print(productlist);
+                        } 
+                        request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                }
+                default: {
+                    List<Product> accessoryList = productDAO.getAccessoryProducts();
+                    List<Product> gameList = productDAO.getGameProducts();
+                    request.setAttribute("gameList", gameList);
+                    request.setAttribute("accessoryList", accessoryList);
+                    request.getRequestDispatcher("/WEB-INF/home/home.jsp")
+                            .forward(request, response);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new ServletException("Error in HomeServlet: " + e.getMessage(), e);
         }
     }
-    
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

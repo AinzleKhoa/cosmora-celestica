@@ -54,9 +54,9 @@
                                name="code" placeholder="<%= voucher.getCode()%>" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label admin-manage-label">Value(%)</label>
+                        <label class="form-label admin-manage-label">Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="value" placeholder="<%= voucher.getValue()%>"  max="100" min="0" required>
+                               name="value" placeholder="<%= voucher.getValue()%>" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>

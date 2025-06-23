@@ -195,7 +195,15 @@
         background-color: #0056b3;
     }
 </style>
-<c:set var="user" value="${sessionScope.currentCustomer}"/> 
+<c:choose>
+    <c:when test="${not empty requestScope.updateFailed and not empty requestScope.thisCustomer}">
+        <c:set var="user" value="${requestScope.thisCustomer}" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="user" value="${sessionScope.currentCustomer}" />
+    </c:otherwise>
+</c:choose>
+
 <!-- page title -->
 <section class="section section--first section--last section--head" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
     <div class="container">
@@ -253,38 +261,41 @@
 
                     </ul>
 
-                    <button class="profile__logout" type="button">
+                    <a href="${pageContext.servletContext.contextPath}/logout" class="profile__logout" type="button">
                         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
                         <path
                             d='M304 336v40a40 40 0 01-40 40H104a40 40 0 01-40-40V136a40 40 0 0140-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256'
                             fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='32' />
                         </svg>
                         <span>Logout</span>
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="container">
+
+        <!-- Message Container -->
+        <div id="message" style="color: yellow; margin-bottom: 15px;">
+            <p id="messageText">
+                <c:if test="${not empty message}">
+                    ${message}
+                </c:if>
+            </p>
+        </div>
+
+
         <!-- content tabs -->
         <div class="tab-content">
 
             <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
                 <div class="row">
-                    
-                    <!-- Message Container -->
-                    <div id="message" style="color: yellow; margin-bottom: 15px;">
-                        <c:if test="${not empty message}">
-                            <p>${message}</p>
-                        </c:if>
-                    </div>
-                    
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
                         <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="profileCommonUpdate" class="form">
                             <input type="hidden" name="action" value="updateProfile"/>
-                            <input type="hidden" name="id" value="${sessionScope.customerId}"/>
+                            <input type="hidden" name="id" value="${user.customerId}"/>
                             <div class="row">
                                 <div class="col-12">
                                     <h4 class="form__title">Profile details</h4>
@@ -296,7 +307,7 @@
                                         <label class="form__label" for="avatarUrl">Avatar</label>
                                         <input type="hidden" id="avatarUrl" name="avatarUrl" class="form__input avatar-input" value="${user.avatarUrl}" readonly>
                                         <div class="avatar-display-container">
-                                            <img id="avatarDisplayImg" src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" 
+                                            <img id="avatarDisplayImg" src="${user.avatarUrl}" 
                                                  class="avatar-display" alt="Avatar Display">
                                         </div>
                                         <button type="button" class="btn btn-primary change-avatar-btn" id="openAvatarModalBtn">Change Avatar</button>
@@ -314,7 +325,9 @@
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="email">Email</label>
                                     <input id="email" type="email" name="email" class="form__input"
-                                           value="${user.email}" placeholder="${user.email}" required>
+                                           value="${user.email}" placeholder="${user.email}" disabled>
+                                    <input id="email" type="hidden" name="email" class="form__input"
+                                           value="${user.email}" placeholder="${user.email}">
                                 </div>
 
                                 <!-- Full Name -->
@@ -335,9 +348,10 @@
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="gender">Gender</label>
                                     <select id="gender" name="gender" class="form__input">
-                                        <option value="O" ${user.gender == '0' ? 'selected' : ''}>Other</option>
-                                        <option value="1" ${user.gender == '1' ? 'selected' : ''}>Male</option>
-                                        <option value="2" ${user.gender == '2' ? 'selected' : ''}>Female</option>
+                                        <option value="" ${user.gender == null ? 'selected' : ''}>None Specify</option>
+                                        <option value="other" ${user.gender == 'other' ? 'selected' : ''}>Other</option>
+                                        <option value="male" ${user.gender == 'male' ? 'selected' : ''}>Male</option>
+                                        <option value="female" ${user.gender == 'female' ? 'selected' : ''}>Female</option>
                                     </select>
                                 </div>
 
@@ -445,9 +459,9 @@
                 <div class="row">
                     <!-- details form -->
                     <div class="col-12 col-lg-7">
-                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" class="form">
+                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="resetPasswordForm" class="form">
                             <input type="hidden" name="action" value="updatePassword"/>
-                            <input type="hidden" name="id" value="${sessionScope.customerId}"/>
+                            <input type="hidden" name="id" value="${user.customerId}"/>
                             <div class="row">
                                 <div class="col-12">
                                     <h4 class="form__title">Change password</h4>
@@ -456,13 +470,13 @@
                                 <!-- New Password -->
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="newpass">New Password</label>
-                                    <input id="newpass" type="password" name="newpass" class="form__input">
+                                    <input id="newpass" type="password" name="newpass" class="form__input" required>
                                 </div>
 
                                 <!-- Confirm New Password -->
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="confirmpass">Confirm New Password</label>
-                                    <input id="confirmpass" type="password" name="confirmnewpass" class="form__input">
+                                    <input id="confirmpass" type="password" name="confirmnewpass" class="form__input" required>
                                 </div>
 
                                 <div class="col-12">
@@ -478,6 +492,10 @@
                                 <!-- Save Button -->
                                 <div class="col-12">
                                     <button class="form__btn" type="submit">Save</button>
+                                </div>
+
+                                <div class="col-12 mt-5">
+                                    <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
                                 </div>
                             </div>
                         </form>
@@ -545,8 +563,6 @@
                     </div>
                 </div>
             </div>
-
-
 
             <div class="tab-pane fade" id="tab-3" role="tabpanel">
                 <div class="row">
@@ -711,6 +727,11 @@
             e.preventDefault();
             return;
         }
+        if (/\s/.test(username)) { // Check for any whitespace character
+            alert('Username must not contain spaces.');
+            e.preventDefault();
+            return;
+        }
 
         // Email - required + valid format
         const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
@@ -724,11 +745,20 @@
             return;
         }
 
-        // Full Name - optional but must be 2–50 chars if provided
-        if (fullName !== '' && (fullName.length < 2 || fullName.length > 50)) {
-            alert('Full name must be between 2 and 50 characters.');
-            e.preventDefault();
-            return;
+        // Full Name - optional but must be 2–50 chars, no multiple spaces
+        if (fullName !== '') {
+            // Check for length
+            if (fullName.length < 2 || fullName.length > 50) {
+                alert('Full name must be between 2 and 50 characters.');
+                e.preventDefault();
+                return;
+            }
+            // Check for multiple consecutive spaces
+            if (/ {2,}/.test(fullName)) {
+                alert('Full name must not contain multiple consecutive spaces.');
+                e.preventDefault();
+                return;
+            }
         }
 
         // Phone - optional but must be digits and 9–15 chars if provided
@@ -741,5 +771,47 @@
 
         // No validation for address
     });
+
+    // ============================
+    // SECURITY PASSWORD RESET
+    // ============================
+
+    document.getElementById('resetPasswordForm').addEventListener('submit', function (e) {
+
+        const password = this.querySelector('[name="newpass"]').value.trim();
+        const confirmPassword = this.querySelector('[name="confirmnewpass"]').value.trim();
+        const oldPassword = this.querySelector('[name="oldpass"]').value.trim();
+
+        // Old Password - required
+        if (oldPassword === '') {
+            alert('Current password is required.');
+            e.preventDefault();
+            return;
+        }
+
+        // New Password - required + must be at least 8 chars and contain letter + number
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+        if (password.length < 8) {
+            alert('New password must be at least 8 characters long.');
+            e.preventDefault();
+            return;
+        } else if (!passwordRegex.test(password)) {
+            alert('New password must contain at least 1 letter and 1 number.');
+            e.preventDefault();
+            return;
+        }
+
+        // Confirm New Password - must match new password
+        if (password !== confirmPassword) {
+            alert('New passwords do not match.');
+            e.preventDefault();
+            return;
+        }
+
+        // Optional: show message while submitting
+        // showMessage('Processing...');
+    });
+
 </script>
 <%@include file="/WEB-INF/include/home-footer.jsp" %>

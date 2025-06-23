@@ -63,9 +63,9 @@ public class ResetPasswordServlet extends HttpServlet {
             CustomerDAO cDAO = new CustomerDAO();
             Customer customer = cDAO.getAccountByEmail(email);
 
-            boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+            boolean isNewPasswordExists = PasswordUtils.checkPassword(password, customer.getPasswordHash());
             // Password is different from customer current password
-            if (!isPasswordMatched) {
+            if (!isNewPasswordExists) {
                 String hashedPassword = PasswordUtils.hashPassword(password);
                 // Update customer password
                 if (cDAO.updateCustomerPassword(new Customer(email, hashedPassword)) > 0) {
@@ -73,7 +73,6 @@ public class ResetPasswordServlet extends HttpServlet {
                     if (session != null) {
                         session.removeAttribute("currentForgotCustomer");
                     }
-
                     request.setAttribute("message", "Password reset successfully! Please log in.");
                     request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 } else {

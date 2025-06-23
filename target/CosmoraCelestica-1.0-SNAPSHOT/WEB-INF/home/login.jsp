@@ -4,6 +4,7 @@
     Author     : CE190449 - Le Anh Khoa
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,29 +43,22 @@
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
 
-                                <div id="loadingMessage">Processing...</div>
-
-                                <!-- Success Message Container -->
-                                <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                                    <c:if test="${not empty successMessage}">
-                                        <p>${successMessage}</p>
-                                    </c:if>
-                                </div>
-
-                                <!-- Error Message Container -->
-                                <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-                                    <c:if test="${not empty requestScope.errorMessage}">
-                                        <p>${requestScope.errorMessage}</p>
-                                    </c:if>
+                                <!-- Message Container -->
+                                <div id="message" style="color: yellow; margin-bottom: 15px;">
+                                    <p id="messageText">
+                                        <c:if test="${not empty message}">
+                                            ${message}
+                                        </c:if>
+                                    </p>
                                 </div>
 
                                 <div class="sign__group">
-                                    <input type="email" class="sign__input" placeholder="Email" name="email" id="email" value="${requestScope.email}" autocomplete="username">
+                                    <input type="email" class="sign__input" placeholder="Email" name="email" id="email" value="${requestScope.email}" autocomplete="username" required>
                                 </div>
 
                                 <div class="sign__group">
                                     <input type="password" class="sign__input" name="password" id="password" value="${requestScope.password}" placeholder="Password"
-                                           autocomplete="new-password">
+                                           autocomplete="new-password" required>
                                 </div>
 
                                 <div class="sign__group sign__group--checkbox">
@@ -106,6 +100,48 @@
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
+        <script>
+            const loginForm = document.getElementById("loginForm");
+
+            if (loginForm) {
+                loginForm.addEventListener("submit", function (event) {
+
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value.trim();
+
+                    showMessage("Processing...");
+
+                    const errorMessage = isValidLogin(email, password);
+                    if (errorMessage) {
+                        event.preventDefault(); // Prevent submission
+                        showMessage(errorMessage);
+                        return;
+                    }
+                    // Form submits normally after this
+                });
+            }
+
+            function isValidLogin(email, password) {
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
+                if (!emailRegex.test(email)) {
+                    return "Please enter a valid Google email address (gmail.com or googlemail.com).";
+                }
+
+                const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+                if (password.length < 8) {
+                    return "Password must be at least 8 characters long.";
+                } else if (!passwordRegex.test(password)) {
+                    return "Password must contain at least 1 letter and 1 number.";
+                }
+
+                return null;
+            }
+
+            function showMessage(msg) {
+                document.getElementById('messageText').textContent = "";
+                document.getElementById('messageText').textContent = msg;
+            }
+        </script>
     </body>
 
 </html>
