@@ -173,11 +173,11 @@ public class ProductServlet extends HttpServlet {
                 case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
-                    productDAO.deleteProduct(id);
-                    response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
+                    request.setAttribute("delete", productDAO.getProductById(id));
+                    request.getRequestDispatcher("/WEB-INF/dashboard/product-delete.jsp").forward(request, response);
                     break;
                 }
-                default: { 
+                default: {
                     ProductDAO productDAO = new ProductDAO();
                     List<Product> fullProductList;
                     String searchQuery = request.getParameter("query");
@@ -415,6 +415,12 @@ public class ProductServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
                 }
+                case "delete":
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    ProductDAO productDAO = new ProductDAO();
+                    productDAO.deleteProduct(id);
+                    response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
+                    break;
                 default:
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;

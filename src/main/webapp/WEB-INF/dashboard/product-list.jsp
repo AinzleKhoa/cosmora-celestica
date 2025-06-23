@@ -129,7 +129,7 @@
                             <div class="table-actions-center">
                                 <a class="btn-action btn-details" href="manage-products?action=details&id=<%= p.getProductId()%>">Details</a>
                                 <a class="btn-action btn-edit" href="manage-products?action=update&id=<%= p.getProductId()%>">Edit</a>
-                                <a class="btn-action btn-delete" href="manage-products?action=delete&id=<%= p.getProductId()%>" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+                                <a class="btn-action btn-delete" href="manage-products?action=delete&id=<%= p.getProductId()%>">Delete</a>
                             </div>
                         </td>
                     </tr>
