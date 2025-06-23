@@ -163,12 +163,12 @@ public class StaffServlet extends HttpServlet {
             switch (act) {
                 case "create":
     try ( PrintWriter out = response.getWriter()) {
-                    String fullName = request.getParameter("username"); // "username" field ở form = full name
+                    String fullName = request.getParameter("username"); 
                     String email = request.getParameter("email");
                     String password = request.getParameter("password");
                     String phone = request.getParameter("phone");
                     String role = request.getParameter("role");
-                    String gender = request.getParameter("gender"); // Thêm dòng này
+                    String gender = request.getParameter("gender"); 
                     String dobStr = request.getParameter("date_of_birth");
 
                     Date dateOfBirth = null;
@@ -219,12 +219,12 @@ public class StaffServlet extends HttpServlet {
                     String idParam = request.getParameter("id");
                     int id = Integer.parseInt(idParam);
 
-                    String fullName = request.getParameter("username"); // Tên trường trong form vẫn là "username"
+                    String fullName = request.getParameter("username");
                     String email = request.getParameter("email");
                     String password = request.getParameter("password");
                     String phone = request.getParameter("phone");
                     String role = request.getParameter("role");
-                    String gender = request.getParameter("gender"); // ✅ Thêm gender
+                    String gender = request.getParameter("gender"); 
                     String dobStr = request.getParameter("date_of_birth");
 
                     Date dateOfBirth = null;
@@ -257,7 +257,7 @@ public class StaffServlet extends HttpServlet {
 
                     String hashedPassword = PasswordUtils.hashPassword(password);
 
-                    // ✅ Tạo Staff object với đầy đủ thông tin
+                   
                     Staff updatedStaff = new Staff(id, fullName, email, hashedPassword, gender, phone, role, dateOfBirth, avatarUrl);
 
                     int isUpdate = sDAO.update(updatedStaff);
