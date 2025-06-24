@@ -84,7 +84,7 @@
                                                    <c:param name="id" value="${customer.customerId}"/>
                                                </c:url>
                                                ">Delete</a>
-                                            <a class="btn-action btn-history" href="./admin-customer-orderhistory.html">Order
+                                            <a class="btn-action btn-history" onclick="location.href = '<%= request.getContextPath()%>/manage-customers?view=history&id=${customer.customerId}'">Order
                                                 History</a>
                                         </div>
                                     </td>

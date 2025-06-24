@@ -73,7 +73,7 @@
                                 <%
                                 } else if (voucher.getActive() == 0) {
                                 %>
-                                Expired
+                                Inactive
                                 <%
                                 } else if (voucher.getActive() == 2) {
                                 %>
@@ -91,10 +91,9 @@
                                             onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
                                         Edit
                                     </button>
-                                    <button class="btn-action btn-delete"
-                                            onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=delete&id=<%= voucher.getVoucherId()%>'">Delete</button>
+                 
                                 </div> </td> <% }
-                                        } else {%>
+                                } else {%>
                             <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>
                             <%}%>
 

@@ -76,18 +76,15 @@ public class ProfileDashboardServlet extends HttpServlet {
                     if (sDAO.updateProfileAdmin(new Staff(id, fullName, email, gender, phone, dateOfBirth, avatarUrl)) > 0) {
                         Staff newEmployee = sDAO.getOneById(id);
                         session.setAttribute("currentEmployee", newEmployee); // Session updated
-                        request.setAttribute("updateFailed", false);
                         request.setAttribute("message", "Update profile successfully!");
                         request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                     } else {
                         request.setAttribute("currentEmployee", currentEmployee);
-                        request.setAttribute("updateFailed", true);
                         request.setAttribute("message", "Update profile unsucessfully");
                         request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("currentEmployee", currentEmployee);
-                    request.setAttribute("updateFailed", true);
                     request.setAttribute("message", "Username or Email already exists.");
                     request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                 }

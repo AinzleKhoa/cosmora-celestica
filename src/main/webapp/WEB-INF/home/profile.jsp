@@ -255,7 +255,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#tab-3" role="tab"
+                            <a class="nav-link" data-toggle="tab" href="${pageContext.servletContext.contextPath}/profile-order-history" role="tab"
                                aria-controls="tab-3" aria-selected="true">Order History</a>
                         </li>
 
@@ -563,121 +563,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="tab-pane fade" id="tab-3" role="tabpanel">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive table-responsive--border">
-                            <table class="profile__table">
-                                <thead>
-                                    <tr>
-                                        <th>№</th>
-                                        <th>Product</th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Date</th>
-                                        <th>Total Price</th>
-                                        <th>Status</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8451</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="${pageContext.servletContext.contextPath}/game/game1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Desperados III Digital Deluxe Edition</td>
-                                        <td>Game</td>
-                                        <td>Aug 22, 2021</td>
-                                        <td><span class="profile__price">$49.00</span></td>
-                                        <td><span class="profile__status">Not confirmed</span></td>
-                                        <td><button class="profile__delete" type="button"><svg
-                                                    xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                                    viewBox='0 0 512 512'>
-                                                <line x1='368' y1='368' x2='144' y2='144'
-                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                                <line x1='368' y1='144' x2='144' y2='368'
-                                                      style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px' />
-                                                </svg></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8452</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="img/accessories/headset1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Tai nghe Razer Kraken V4 X - Minecraft Edition</td>
-                                        <td>Headset</td>
-                                        <td>Aug 22, 2022</td>
-                                        <td><span class="profile__price">$29.00</span></td>
-                                        <td><span
-                                                class="profile__status profile__status--confirmed">Confirmed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><a href="#modal-info" class="open-modal">8452</a></td>
-                                        <td>
-                                            <div class="profile__img">
-                                                <img src="img/keyboard/keyboard1.png" alt="">
-                                            </div>
-                                        </td>
-                                        <td>Bàn Phím Có Dây Gaming Rapoo V50S</td>
-                                        <td>Keyboard</td>
-                                        <td>Aug 22, 2022</td>
-                                        <td><span class="profile__price">$19.00</span></td>
-                                        <td><span class="profile__status profile__status--cenceled">Canceled</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- paginator -->
-                    <div class="col-12">
-                        <div class="paginator">
-                            <div class="paginator__counter">
-                                3 from 9
-                            </div>
-
-                            <ul class="paginator__wrap">
-                                <li class="paginator__item paginator__item--prev">
-                                    <a href="#">
-                                        <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                             viewBox='0 0 512 512'>
-                                        <polyline points='244 400 100 256 244 112'
-                                                  style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        <line x1='120' y1='256' x2='412' y2='256'
-                                              style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        </svg>
-                                    </a>
-                                </li>
-                                <li class="paginator__item paginator__item--active"><a href="#">1</a></li>
-                                <li class="paginator__item"><a href="#">2</a></li>
-                                <li class="paginator__item"><a href="#">3</a></li>
-                                <li class="paginator__item paginator__item--next">
-                                    <a href="#">
-                                        <svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'
-                                             viewBox='0 0 512 512'>
-                                        <polyline points='268 112 412 256 268 400'
-                                                  style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        <line x1='392' y1='256' x2='100' y2='256'
-                                              style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px' />
-                                        </svg>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- end paginator -->
-                </div>
-            </div>
-
 
         </div>
         <!-- end content tabs -->

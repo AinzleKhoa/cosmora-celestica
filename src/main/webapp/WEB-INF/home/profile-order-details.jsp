@@ -1,19 +1,16 @@
-<%@page import="shop.model.Product"%>
 <%@page import="shop.model.OrderDetails"%>
-<%@page import="shop.dao.OrderDAO"%>
-<%@page import="shop.model.Customer"%>
 <%@page import="shop.model.Order"%>
 <%@page import="java.util.ArrayList"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-
-<main class="admin-main">
+<%@include file="../include/home-header.jsp" %>
+<main class="orderdetailforcus">
+    <div class="table-header">
+        <h2 class="table-title">Order Detail</h2>
+    </div>
     <div class="table-header">
         <h2 class="table-title">Order Detail</h2>
     </div>
 
-    <%
-        Order order = (Order) request.getAttribute("order");
+    <%        Order order = (Order) request.getAttribute("order");
     %>
 
     <section class="admin-table-wrapper">
@@ -33,8 +30,8 @@
                 <tbody>
                     <tr>
                         <td><%= request.getParameter("order_id")%></td>
-                        <td><%= order.getCustomerName() %></td>
-                        <td><%= order.getCustomerEmail() %></td>
+                        <td><%= order.getCustomerName()%></td>
+                        <td><%= order.getCustomerEmail()%></td>
                         <td><%= order.getOrderDate()%></td>
                         <td><%= order.getTotalAmount()%></td>
                         <td><span class="badge-status"><%= order.getStatus()%></span></td>
@@ -54,8 +51,9 @@
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">
                     <tr>
-                        <th>Product ID</th>
+                        <th>Product Image</th>
                         <th>Product Name</th>
+                        <th>Category</th>
                         <th>Quantity</th>
                         <th>Price</th>
                     </tr>
@@ -67,8 +65,11 @@
 
                     %>
                     <tr>
-                        <td><%= orderdetails.getOrderId()%></td>
+                        <td><div class="cart__img">
+                                <img src="<%= request.getContextPath()%>/assets/img/<%= orderdetails.getImageURL()%>" alt="">
+                            </div></td>
                         <td><%= orderdetails.getProductName()%></td>
+                        <td><%= orderdetails.getCategoryName()%></td>
                         <td><%= orderdetails.getQuantity()%></td>
                         <td><%= orderdetails.getPrice()%></td>
                     </tr>
@@ -77,9 +78,8 @@
             </table>
         </div>
     </section>
-   <a href="javascript:history.back()" class="admin-manage-back">
-    <i class="fas fa-arrow-left mr-1"></i> Back
-</a>
+    <a href="javascript:history.back()" class="admin-manage-back">
+        <i class="fas fa-arrow-left mr-1"></i> Back
+    </a>
 </main>
-
-<%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
+<%@include file="../include/home-footer.jsp" %>
