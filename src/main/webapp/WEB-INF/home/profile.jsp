@@ -255,8 +255,8 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="${pageContext.servletContext.contextPath}/profile-order-history" role="tab"
-                               aria-controls="tab-3" aria-selected="true">Order History</a>
+                            <a class="nav-link" href="${pageContext.servletContext.contextPath}/profile-order-history"
+                               >Order History</a>
                         </li>
 
                     </ul>

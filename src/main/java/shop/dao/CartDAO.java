@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import shop.db.DBContext;
 import shop.model.Cart;
-import shop.model.cartItem;
+import shop.model.CartItem;
 
 /**
  *
@@ -38,8 +38,8 @@ public class CartDAO extends DBContext {
         return null;
     }
 
-    public List<cartItem> getCartItemsByCustomerId(int customerId) throws SQLException {
-        List<cartItem> cartItems = new ArrayList<>();
+    public List<CartItem> getCartItemsByCustomerId(int customerId) throws SQLException {
+        List<CartItem> CartItems = new ArrayList<>();
 
         String sql = "SELECT c.cart_id, c.customer_id, c.product_id, c.quantity, "
                 + "p.name AS product_name, p.price, p.sale_price, "
@@ -57,7 +57,7 @@ public class CartDAO extends DBContext {
         ResultSet rs = execSelectQuery(sql, params);
 
         while (rs.next()) {
-            cartItem item = new cartItem();
+            CartItem item = new CartItem();
             item.setCartId(rs.getInt("cart_id"));
             item.setCustomerId(rs.getInt("customer_id"));
             item.setProductId(rs.getInt("product_id"));
@@ -67,10 +67,10 @@ public class CartDAO extends DBContext {
             item.setSalePrice(rs.getObject("sale_price") != null ? rs.getDouble("sale_price") : null);
             item.setImageUrl(rs.getString("image_url"));
             item.setCategoryName(rs.getString("category_name"));
-            cartItems.add(item);
+            CartItems.add(item);
         }
 
-        return cartItems;
+        return CartItems;
     }
 
     // Thêm sản phẩm mới vào giỏ
@@ -122,24 +122,24 @@ public class CartDAO extends DBContext {
         }
         return count;
     }
-    
-    public int deleteCartAfterBuy(int customerId, String [] productId) throws SQLException{
-       StringBuilder sql = new StringBuilder("DELETE FROM cart WHERE customer_id = ? AND product_id IN (");
-       Object [] params = new Object[productId.length+1];
-       int index =1;
-       params [0]=customerId;
+
+    public int deleteCartAfterBuy(int customerId, String[] productId) throws SQLException {
+        StringBuilder sql = new StringBuilder("DELETE FROM cart WHERE customer_id = ? AND product_id IN (");
+        Object[] params = new Object[productId.length + 1];
+        int index = 1;
+        params[0] = customerId;
         for (int i = 0; i < productId.length; i++) {
-        sql.append("?");
-        if (i < productId.length - 1) {
-            sql.append(", ");
+            sql.append("?");
+            if (i < productId.length - 1) {
+                sql.append(", ");
+            }
+            int proId = Integer.parseInt(productId[i]);
+            params[index++] = proId;
+
         }
-        int proId=Integer.parseInt(productId[i]);
-        params [index++]=proId;
-        
-    }
-    sql.append(")");
-    
-    return execQuery(sql.toString(), params);
+        sql.append(")");
+
+        return execQuery(sql.toString(), params);
     }
 
 }

@@ -59,7 +59,7 @@
                 grid-template-columns: repeat(6, 1fr);
                 gap: 0.75rem;
                 padding-top: 1rem;
-                width: 100%; 
+                width: 100%;
             }
             .thumbnail-container .thumb {
                 width: 100%;
@@ -92,7 +92,7 @@
                 font-weight: bold;
                 color: #10b981;
             }
-.old-price {
+            .old-price {
                 font-size: 1.1rem;
                 color: #dc3545;
                 font-weight: normal;
@@ -173,7 +173,7 @@
                             <% } %>
                             <% } else {%>
                             <div class="main-image-container mb-3">
-<img src="<%= request.getContextPath()%>/assets/img/default-product.png" alt="No Image" id="mainProductImage">
+                                <img src="<%= request.getContextPath()%>/assets/img/default-product.png" alt="No Image" id="mainProductImage">
                             </div>
                             <% }%>
 
@@ -220,7 +220,7 @@
                                 <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
 
                                 <%-- FORM MỚI VỚI LOGIC CỦA BẠN --%>
-<form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons d-grid gap-2">
+                                <form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons d-grid gap-2">
                                     <input type="hidden" name="action" value="add">
                                     <input type="hidden" name="page" value="cart">
                                     <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
@@ -252,7 +252,7 @@
                                         <% }
                                             }%>
                                 </dl>
-</div>
+                            </div>
                         </div>
                     </div>
                 </div>
