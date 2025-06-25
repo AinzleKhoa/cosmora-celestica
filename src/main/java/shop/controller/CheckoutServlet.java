@@ -21,6 +21,7 @@ import shop.dao.CheckoutDAO;
 import shop.dao.ProductDAO;
 import shop.dao.VouchersDAO;
 import shop.model.Checkout;
+import shop.model.Customer;
 import shop.model.Product;
 
 /**
@@ -69,8 +70,14 @@ public class CheckoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        Customer customer = (Customer) session.getAttribute("currentCustomer");
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("single")) {
+            if (customer.getAddress() == null || customer.getAddress().isEmpty() || customer.getEmail() == null || customer.getEmail().isEmpty() || customer.getPhone() == null || customer.getPhone().isEmpty()) {
+                request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
+                        .forward(request, response);
+            }
+
             String idtemp = request.getParameter("id");
             int id = Integer.parseInt(idtemp);
             int quantity = Integer.parseInt(request.getParameter("quantity"));
@@ -105,8 +112,13 @@ public class CheckoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        Customer customer = (Customer) session.getAttribute("currentCustomer");
         String action = request.getParameter("action");
         if (action.equals("fromcart")) {
+            if (customer.getAddress() == null || customer.getAddress().isEmpty() || customer.getEmail() == null || customer.getEmail().isEmpty() || customer.getPhone() == null || customer.getPhone().isEmpty()) {
+                request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
+                        .forward(request, response);
+            }
             String[] productId = request.getParameterValues("productIds");
             String[] quantity = request.getParameterValues("quantities");
             double total = Double.parseDouble(request.getParameter("totalAmount"));

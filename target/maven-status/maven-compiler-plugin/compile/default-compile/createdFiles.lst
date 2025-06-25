@@ -31,6 +31,7 @@ shop\filter\CustomerAuthFilter.class
 shop\model\Category.class
 shop\controller\LoginServlet.class
 shop\controller\ProfileDashboardServlet.class
+shop\controller\ProfileOrderHistoryServlet.class
 shop\dao\ProductDAO.class
 shop\controller\CheckoutServlet.class
 shop\util\SessionUtil.class

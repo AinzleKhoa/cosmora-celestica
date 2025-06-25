@@ -19,9 +19,9 @@ import shop.util.SessionUtil;
  *
  * @author Le Anh Khoa - CE190449
  */
-@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {
-    "/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers",
-    "/manage-discounts", "/profile-dashboard", "/dashboard"})
+//@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {
+//    "/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers",
+//    "/manage-discounts", "/profile-dashboard", "/dashboard"})
 public class EmployeeAuthFilter implements Filter {
 
     @Override

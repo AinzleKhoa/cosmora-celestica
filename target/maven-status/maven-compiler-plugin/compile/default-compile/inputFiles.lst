@@ -17,6 +17,7 @@ E:\D\.github\cosmora-celestica\src\main\java\shop\dao\CheckoutDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\controller\ResetPasswordServlet.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\CustomerDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\OrderDetails.java
+E:\D\.github\cosmora-celestica\src\main\java\shop\controller\ProfileOrderHistoryServlet.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\ProductDAO.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\model\Customer.java
 E:\D\.github\cosmora-celestica\src\main\java\shop\dao\AttributeDAO.java
