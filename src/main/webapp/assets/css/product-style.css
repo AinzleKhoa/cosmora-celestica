@@ -45,8 +45,6 @@ body {
     max-width: 100%;
 }
 
-
-
 .game-key-list {
     list-style: none;
     padding: 0;
@@ -83,27 +81,7 @@ body {
 
 .key-list-scroller ul {
     margin-bottom: 0;
-    
-}
 
-/* =============================================================================
-   HEADER STYLES
-   ============================================================================= */
-.page-header,
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 2rem;
-}
-
-.table-title {
-    color: var(--text-primary);
-    font-size: 1.75rem;
-    font-weight: 600;
-    margin: 0;
 }
 
 /* =============================================================================

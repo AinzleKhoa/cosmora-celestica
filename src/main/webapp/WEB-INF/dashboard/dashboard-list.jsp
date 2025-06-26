@@ -8,7 +8,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List, shop.model.Product, java.text.NumberFormat, java.util.Locale" %>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-<link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/dashboard.css">
 
 
 <%
@@ -33,7 +32,94 @@
     String stockDataJson = (String) request.getAttribute("stockDataJson");
 %>
 
+<style>
+    body {
+        width: 84%;
+        margin-left: 15%;
+        background-color: #161922;
+        margin-top: 6%;
 
+    }
+    .dashboard-card {
+        background: #1f2334;
+        border: 1px solid #2b3149;
+        border-radius: 12px;
+        padding: 25px;
+        color: #fff;
+        height: 100%;
+    }
+    .dashboard-card-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #828ac4;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+    .dashboard-card-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .dashboard-card-icon {
+        font-size: 1.8rem;
+        color: #434c7a;
+    }
+    .dashboard-card-footer {
+        font-size: 0.9rem;
+        margin-top: 15px;
+    }
+    .text-success {
+        color: #28a745 !important;
+    }
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .chart-wrapper {
+        background: #1f2334;
+        border: 1px solid #2b3149;
+        border-radius: 12px;
+        padding: 25px;
+    }
+    .chart-title {
+        color: #fff;
+        font-weight: 600;
+    }
+    .filter-btn-group .btn {
+        background-color: #2b3149;
+        border: 1px solid #434c7a;
+        color: #abb9e8;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .filter-btn-group .btn.active {
+        background-color: #6a5af9;
+        color: #fff;
+        border-color: #6a5af9;
+    }
+
+    .table-dark-custom {
+        background-color: transparent;
+        color: #abb9e8;
+    }
+    .table-dark-custom th {
+        background-color: #2b3149;
+        border-color: #3e4565;
+        font-weight: 600;
+    }
+    .table-dark-custom td, .table-dark-custom th {
+        border-color: #2b3149;
+        vertical-align: middle;
+    }
+    .table-dark-custom img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 15px;
+    }
+
+</style>
 <div class="container-fluid mt-4">
     <div class="row g-4">
         <div class="col-lg-3 col-md-6">

@@ -173,7 +173,12 @@ public class ProductServlet extends HttpServlet {
                 case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
-                    request.setAttribute("delete", productDAO.getProductById(id));
+                    Product productToDelete = productDAO.getProductById(id);
+                    request.setAttribute("delete", productToDelete);
+                    if (productToDelete != null) {
+                        boolean isSold = productDAO.isProductSold(id);
+                        request.setAttribute("isSold", isSold);
+                    }
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-delete.jsp").forward(request, response);
                     break;
                 }
