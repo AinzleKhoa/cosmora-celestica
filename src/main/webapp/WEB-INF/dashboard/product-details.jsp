@@ -53,7 +53,7 @@
                 <i class="fas fa-arrow-left me-2"></i> Back</a>
             <a href="<%= request.getContextPath()%>/manage-products?action=update&id=<%= product.getProductId()%>" class="btn btn-warning">
                 <i class="fas fa-edit me-1"></i> Edit</a>
-            <a href="<%= request.getContextPath()%>/manage-products?action=delete&id=<%= product.getProductId()%>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');">
+            <a href="<%= request.getContextPath()%>/manage-products?action=delete&id=<%= product.getProductId()%>" class="btn btn-danger">
                 <i class="fas fa-trash me-1"></i> Delete</a>
         </div>
     </div>

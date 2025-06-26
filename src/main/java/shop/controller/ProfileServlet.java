@@ -83,14 +83,12 @@ public class ProfileServlet extends HttpServlet {
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                     } else {
                         request.setAttribute("thisCustomer", customer);
-                        request.setAttribute("activeTab", "tab-1");
                         request.setAttribute("updateFailed", true);
                         request.setAttribute("message", "Update profile unsucessfully");
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("thisCustomer", customer);
-                    request.setAttribute("activeTab", "tab-1");
                     request.setAttribute("updateFailed", true);
                     request.setAttribute("message", "Username or Email already exists.");
                     request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
@@ -124,19 +122,16 @@ public class ProfileServlet extends HttpServlet {
                             request.setAttribute("message", "Password update successfully!");
                             request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                         } else {
-                            request.setAttribute("activeTab", "tab-2");
                             request.setAttribute("updateFailed", true);
                             request.setAttribute("message", "Something went wrong. Please try again.");
                             request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                         }
                     } else {
-                        request.setAttribute("activeTab", "tab-2");
                         request.setAttribute("updateFailed", true);
                         request.setAttribute("message", "Your new password must be different from your current password.");
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("activeTab", "tab-2");
                     request.setAttribute("updateFailed", true);
                     request.setAttribute("message", "Your old password does not match.");
                     request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);

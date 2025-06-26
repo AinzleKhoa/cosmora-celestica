@@ -189,4 +189,61 @@ public class StaffDAO extends DBContext {
         }
         return 0;
     }
+
+    public boolean isEmailTakenByOthers(String email, int id) {
+        try {
+            String query = "SELECT COUNT(*) FROM staff \n"
+                    + "WHERE (email = ?) AND staff_id != ?";
+            Object[] params = {email, id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public int updateProfileAdmin(Staff staff) {
+        try {
+            String query = "UPDATE staff\n"
+                    + "SET full_name = ?,\n"
+                    + "	email = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	gender = ?,\n"
+                    + "	avatar_url = ?,\n"
+                    + "	date_of_birth = ?\n"
+                    + "WHERE staff_id = ?";
+            Object[] params = {
+                staff.getFullName(),
+                staff.getEmail(),
+                staff.getPhone(),
+                staff.getGender(),
+                staff.getAvatarUrl(),
+                staff.getDateOfBirth(),
+                staff.getId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateAdminPassword(Staff staff) {
+        try {
+            String query = "UPDATE staff\n"
+                    + "SET password_hash = ?\n"
+                    + "WHERE email = ?";
+            Object[] params = {
+                staff.getPasswordHash(),
+                staff.getEmail()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
 }

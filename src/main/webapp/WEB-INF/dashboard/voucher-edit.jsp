@@ -51,37 +51,37 @@
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Code</label>
                         <input type="text" class="form-control admin-manage-input"
-                               name="code" placeholder="<%= voucher.getCode()%>" required>
+                               name="code" value="<%= voucher.getCode()%>" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label admin-manage-label">Value(%)</label>
+                        <label class="form-label admin-manage-label">Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="value" placeholder="<%= voucher.getValue()%>"  max="100" min="0" required>
+                               name="value" value="<%= voucher.getValue()%>" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="usage_limit" placeholder="<%= voucher.getUsageLimit()%>" min="0" required>
+                               name="usage_limit" value="<%= voucher.getUsageLimit()%>" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Minimum Order Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="min_order_value" placeholder="<%= voucher.getMinOrderValue()%>"  min="0" required>
+                               name="min_order_value" value="<%= voucher.getMinOrderValue()%>"  min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Start Date</label>
                         <input type="date" class="form-control admin-manage-input"
-                               name="start_date" id="start_date" placeholder="<%= voucher.getStartDate()%>" required>
+                               name="start_date" id="start_date" value="<%= voucher.getStartDate()%>" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">End Date</label>
                         <input type="date" class="form-control admin-manage-input"
-                               name="end_date" id="end_date" placeholder="<%= voucher.getEndDate()%> " required>
+                               name="end_date" id="end_date" value="<%= voucher.getEndDate()%>" required>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
                         <textarea class="form-control admin-manage-input"
-                                  required      name="description" placeholder="<%= voucher.getDescription()%>"> </textarea>
+                                  required      name="description" value="<%= voucher.getDescription()%>"> </textarea>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Active</label>

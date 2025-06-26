@@ -52,24 +52,24 @@
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Name</label>
                         <input type="text" class="form-control admin-manage-input"
-                               name="name" value="<%= product.getName()%>">
+                               name="name" value="<%= product.getName()%>"  readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Price</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="price" value="<%=product.getPrice()%>" >
+                               id="price"   name="price"  value="<%=product.getPrice()%>" readonly >
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Sale Price</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="saleprice" value="<%= product.getSalePrice()%>" min="0" >
+                               step="0.01"  id="saleprice" name="saleprice" value="<%= product.getSalePrice()%>" required>
                     </div>
 
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Active</label>
                         <select class="form-control admin-manage-input" name="active" >
                             <option value="1" <%= product.getActive() == 1 ? "selected" : ""%>>Active</option>
-                            <option value="0" <%= product.getActive() == 0 ? "selected" : ""%>>Inactive</option>
+                            <option value="0" <%= product.getActive() == 0 ? "selected" : ""%>>Expired</option>
                         </select>
                     </div>
                 </div>
@@ -87,10 +87,39 @@
                 </button>
             </div>
         </div>
+
     </form>
+    <script>
+        window.onload = function () {
+            document.querySelector("form").onsubmit = function () {
+                const price = parseFloat(document.getElementById("price").value);
+                const salePriceInput = document.getElementById("saleprice");
+                const salePrice = parseFloat(salePriceInput.value);
+
+                if (isNaN(salePrice) || salePrice < 0) {
+                    alert("Please enter a sale price of 0 or higher.");
+                    salePriceInput.focus();
+                    return false;
+                }
+
+                if (salePrice > price) {
+                    alert("Sale Price must be less than or equal to Price.");
+                    salePriceInput.focus();
+                    return false;
+                }
+
+                return true;
+            };
+        };
+    </script>
+
     <%
         } // end else
-%>
+    %>
+
+
+
+
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

@@ -6,7 +6,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shop.dao.ProductDAO;
 import shop.model.Product;
 
@@ -29,6 +32,12 @@ public class HomeServlet extends HttpServlet {
                     try {
                         int productId = Integer.parseInt(request.getParameter("productId"));
                         Product product = productDAO.getProductById(productId);
+
+                        if (product != null) {
+                            double averageStars = productDAO.getAverageStarsForProduct(productId);
+                            product.setAverageStars(averageStars);
+                        }
+
                         request.setAttribute("product", product);
                         request.getRequestDispatcher("/WEB-INF/home/product-details.jsp").forward(request, response);
                     } catch (NumberFormatException e) {
@@ -36,11 +45,61 @@ public class HomeServlet extends HttpServlet {
                     }
                     break;
                 }
+                case "search": {
+                    try {
+                        ArrayList<Product> productlist;
+                        String keyword = request.getParameter("keyword");
+                        if (keyword != null && !keyword.trim().isEmpty()) {
+                            productlist = productDAO.searchProductByName(keyword);
+                            request.setAttribute("productList", productlist);
+                            System.out.print(productlist);
+                        } else {
+                            productlist = (ArrayList<Product>) productDAO.getAllProducts();
+                            request.setAttribute("productList", productlist);
+                        }
+
+                        request.setAttribute("keyword", keyword);
+                        request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                }
+                case "filter": {
+                    try {
+                        ArrayList<Product> productlist;
+                        String keyword = request.getParameter("keyword");
+                        if (keyword != null && !keyword.trim().isEmpty()) {
+                            productlist = productDAO.getProductsByCategory(keyword);
+                            request.setAttribute("productList", productlist);
+                            System.out.print(productlist);
+                        }
+                        request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                }
                 default: {
                     List<Product> accessoryList = productDAO.getAccessoryProducts();
+
+                    for (Product product : accessoryList) {
+                        double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                        product.setAverageStars(stars);
+                    }
+
                     List<Product> gameList = productDAO.getGameProducts();
+
+                    for (Product product : gameList) {
+                        double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                        product.setAverageStars(stars);
+                    }
+
                     request.setAttribute("gameList", gameList);
                     request.setAttribute("accessoryList", accessoryList);
+
                     request.getRequestDispatcher("/WEB-INF/home/home.jsp")
                             .forward(request, response);
                     break;

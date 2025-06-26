@@ -4,7 +4,8 @@
  */
 package shop.util;
 
-import org.mindrot.jbcrypt.BCrypt;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Utility class for hashing passwords and checking password validity. This
@@ -16,18 +17,32 @@ import org.mindrot.jbcrypt.BCrypt;
 public class PasswordUtils {
 
     /**
-     * Hashes the given password using BCrypt with a salt factor of 12.
+     * Hashes the given password using MD5.
      *
      * @param password the password to be hashed
      * @return the hashed password
      */
     public static String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt(12));
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(password.getBytes("UTF-8"));  // Ensure UTF-8 encoding
+            byte[] digest = md.digest();
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : digest) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString().toUpperCase(); 
+        } catch (Exception e) {
+            throw new RuntimeException("MD5 hashing error", e);
+        }
     }
 
     /**
-     * Checks if the given plain password matches the hashed password using
-     * BCrypt.
+     * Checks if the given plain password matches the hashed password using MD5.
      *
      * @param plainPassword the plain password to check
      * @param hashedPassword the hashed password to compare against
@@ -35,6 +50,8 @@ public class PasswordUtils {
      * otherwise
      */
     public static boolean checkPassword(String plainPassword, String hashedPassword) {
-        return BCrypt.checkpw(plainPassword, hashedPassword);
+        // Hash the plain password and compare it with the stored hashed password
+        String hashedPlainPassword = hashPassword(plainPassword);
+        return hashedPlainPassword.equals(hashedPassword);
     }
 }

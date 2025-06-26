@@ -123,4 +123,23 @@ public class CartDAO extends DBContext {
         return count;
     }
 
+    public int deleteCartAfterBuy(int customerId, String[] productId) throws SQLException {
+        StringBuilder sql = new StringBuilder("DELETE FROM cart WHERE customer_id = ? AND product_id IN (");
+        Object[] params = new Object[productId.length + 1];
+        int index = 1;
+        params[0] = customerId;
+        for (int i = 0; i < productId.length; i++) {
+            sql.append("?");
+            if (i < productId.length - 1) {
+                sql.append(", ");
+            }
+            int proId = Integer.parseInt(productId[i]);
+            params[index++] = proId;
+
+        }
+        sql.append(")");
+
+        return execQuery(sql.toString(), params);
+    }
+
 }

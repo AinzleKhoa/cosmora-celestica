@@ -200,7 +200,7 @@
                 }
 
                 function sendOtpForVerification(email, otp) {
-                    fetch('/' + contextPath + '/reset-password', {
+                    fetch('/' + contextPath + '/forgot-password', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                         body: 'email=' + encodeURIComponent(email) +
