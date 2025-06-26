@@ -20,50 +20,19 @@
     String previousPageUrl = (String) request.getAttribute("previousPageUrl");
     String nextPageUrl = (String) request.getAttribute("nextPageUrl");
 %>
-<link rel="stylesheet" href="<%= contextPath%>/assets/css/product-style.css">
+
 <style>
-    .pagination-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 1.5rem;
+    .table-product-img {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
     }
-    .pagination {
-        padding-left: 0;
-        list-style: none;
-        border-radius: .25rem;
-        display: flex;
-    }
-    .page-item .page-link {
-        position: relative;
-        display: block;
-        padding: .5rem .75rem;
-        margin-left: -1px;
-        line-height: 1.25;
-        color: #007bff;
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-    }
-    .page-item.active .page-link {
-        z-index: 1;
+    .clear-search-btn{
+        background-color: #ef4444;
         color: #fff;
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-    .page-item.disabled .page-link {
-        color: #6c757d;
-        pointer-events: none;
-        cursor: auto;
-        background-color: #fff;
-        border-color: #dee2e6;
-    }
-    .page-item:first-child .page-link {
-        margin-left: 0;
-        border-top-left-radius: .25rem;
-        border-bottom-left-radius: .25rem;
-    }
-    .page-item:last-child .page-link {
-        border-top-right-radius: .25rem;
-        border-bottom-right-radius: .25rem;
+        padding: 8px;
+        border-radius: 13px;
     }
 </style>
 
@@ -82,7 +51,7 @@
                     <button type="submit" class="search-btn">Search</button>
                 </form>
                 <a href="manage-products?action=list" class="clear-search-btn">
-                    <i class="fas fa-times"></i> Clear
+                    <i class="fas fa-times "></i> Clear
                 </a>
             </div>
         </div>              
@@ -144,32 +113,31 @@
             </table>
         </div>
 
-        <% if (totalPages > 1) {%>
-        <div class="pagination-container">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item <%= (currentPage <= 1) ? "disabled" : ""%>">
-                        <a class="page-link" href="<%= previousPageUrl%>" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
 
-                    <% for (int i = 1; i <= totalPages; i++) {%>
-                    <li class="page-item <%= (i == currentPage) ? "active" : ""%>">
-                        <a class="page-link" href="<%= pageUrl + i%>"><%= i%></a>
-                    </li>
-                    <% }%>
-
-                    <li class="page-item <%= (currentPage >= totalPages) ? "disabled" : ""%>">
-                        <a class="page-link" href="<%= nextPageUrl%>" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <% }%>
     </section>
+    <% if (totalPages > 1) {%>
+    <nav class="admin-pagination">
+        <ul class="pagination">
+            <li class="page-item <%= (currentPage <= 1) ? "disabled" : ""%>">
+                <a class="page-link" href="<%= previousPageUrl%>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <% for (int i = 1; i <= totalPages; i++) {%>
+            <li class="page-item <%= (i == currentPage) ? "active" : ""%>">
+                <a class="page-link" href="<%= pageUrl + i%>"><%= i%></a>
+            </li>
+            <% }%>
+
+            <li class="page-item <%= (currentPage >= totalPages) ? "disabled" : ""%>">
+                <a class="page-link" href="<%= nextPageUrl%>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <% }%>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

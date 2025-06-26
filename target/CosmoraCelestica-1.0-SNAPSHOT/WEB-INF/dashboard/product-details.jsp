@@ -19,12 +19,10 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
 <style>
-    .container-fluid{
-        width: 85%;
+    body {
+        width: 86%;
         margin-left: 13%;
-
-    }
-    body{
+        background-color: #161922;
         margin-top: 3%;
     }
 

@@ -293,6 +293,22 @@ public class ProductDAO extends DBContext {
         }
     }
 
+    public boolean isProductSold(int productId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM order_detail WHERE product_id = ?";
+        // Sử dụng try-with-resources để đảm bảo kết nối được đóng đúng cách
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, productId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        // Mặc định trả về false nếu không tìm thấy hoặc có lỗi
+        return false;
+    }
+
     public void deleteProduct(int productId) throws SQLException {
         Integer gameDetailsIdToDelete = null;
 
@@ -383,7 +399,7 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.product_id, p.name, p.price, p.quantity, c.name AS category_name, b.brand_name, "
+        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, c.name AS category_name, b.brand_name, "
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
@@ -399,6 +415,7 @@ public class ProductDAO extends DBContext {
                 product.setQuantity(rs.getInt("quantity"));
                 product.setCategoryName(rs.getString("category_name"));
                 product.setBrandName(rs.getString("brand_name"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
 
                 String singleImageUrl = rs.getString("image_url");
                 List<String> imageUrls = new ArrayList<>();
