@@ -157,7 +157,9 @@
 
                                         <input type="hidden" name="totalAmount" id="hiddenTotalAmount" value="">
                                         <div class="checkout_btn">
-                                            <button type="button" class="form__btn" onclick="prepareAndSubmitForm()">Proceed to checkout</button>
+                                            <button type="button" class="form__btn" id="checkoutBtn" onclick="prepareAndSubmitForm()" disabled>
+                                                Proceed to checkout
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -200,6 +202,14 @@
                 }
 
 
+            </script>
+            <script>
+                document.querySelectorAll('.product-check').forEach(cb => {
+                    cb.addEventListener("change", function () {
+                        const anyChecked = document.querySelectorAll('.product-check:checked').length > 0;
+                        document.getElementById("checkoutBtn").disabled = !anyChecked;
+                    });
+                });
             </script>
             <script>
                 function prepareAndSubmitForm() {

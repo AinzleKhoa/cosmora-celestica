@@ -12,6 +12,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shop.db.DBContext;
 import shop.model.GameDetails;
 import shop.model.Product;
@@ -22,6 +24,159 @@ import shop.model.ProductAttribute;
  * @author HoangSang
  */
 public class ProductDAO extends DBContext {
+
+    public ArrayList<Product> searchDiscountByCode(String keyword) {
+        ArrayList<Product> products = new ArrayList<>();
+        String query = "SELECT product_id, name, price, sale_price, active FROM product WHERE LOWER(name) LIKE LOWER(?)";
+
+        try ( PreparedStatement stmt = this.getConnection().prepareStatement(query)) {
+            stmt.setString(1, "%" + keyword + "%");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getString("name"),
+                        rs.getBigDecimal("price"),
+                        rs.getBigDecimal("sale_price"),
+                        rs.getInt("active")
+                );
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return products;
+    }
+
+    public ArrayList<Product> getProductsByCategory(String categoryName) {
+        ArrayList<Product> products = new ArrayList<>();
+        String query = "SELECT p.product_id, "
+                + "p.name, "
+                + "p.price, "
+                + "p.quantity, "
+                + "b.brand_name, "
+                + "(SELECT TOP 1 i.image_url FROM image i WHERE i.product_id = p.product_id) AS image_url "
+                + "FROM product p "
+                + "JOIN category c ON p.category_id = c.category_id "
+                + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
+                + "WHERE LOWER(c.name) = LOWER(?)";
+
+        try ( PreparedStatement stmt = this.getConnection().prepareStatement(query)) {
+            stmt.setString(1, categoryName.toLowerCase());
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setName(rs.getString("name"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setBrandName(rs.getString("brand_name"));
+
+                String singleImageUrl = rs.getString("image_url");
+                List<String> imageUrls = new ArrayList<>();
+                if (singleImageUrl != null && !singleImageUrl.isEmpty()) {
+                    imageUrls.add(singleImageUrl);
+                }
+                product.setImageUrls(imageUrls);
+
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return products;
+    }
+
+    public ArrayList<Product> searchProductByName(String keyword) {
+        ArrayList<Product> products = new ArrayList<>();
+        String query = "SELECT p.product_id, "
+                + "p.name, "
+                + "p.price, "
+                + "p.quantity, "
+                + "b.brand_name, "
+                + "(SELECT TOP 1 i.image_url FROM image i WHERE i.product_id = p.product_id) AS image_url "
+                + "FROM product p "
+                + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
+                + "WHERE LOWER(p.name) LIKE LOWER(?)";
+
+        try ( PreparedStatement stmt = this.getConnection().prepareStatement(query)) {
+            stmt.setString(1, "%" + keyword.toLowerCase() + "%");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setName(rs.getString("name"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setBrandName(rs.getString("brand_name"));
+
+                String singleImageUrl = rs.getString("image_url");
+                List<String> imageUrls = new ArrayList<>();
+                if (singleImageUrl != null && !singleImageUrl.isEmpty()) {
+                    imageUrls.add(singleImageUrl);
+                }
+                product.setImageUrls(imageUrls);
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return products;
+    }
+
+    public int editSalePriceAndActive(Product product) {
+        try {
+            String query = "UPDATE product SET sale_price = ?, active = ?, updated_at = GETDATE() WHERE product_id = ?;";
+            Object[] params = {
+                product.getSalePrice(),
+                product.getActive(),
+                product.getProductId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public Product getOneDiscount(int id) {
+        try {
+            String query = "select * from product where product_id =?;";
+            Object[] params = {id};
+            ResultSet rs = execSelectQuery(query, params);
+
+            if (rs.next()) {
+                return new Product(rs.getString("name"), rs.getBigDecimal("price"), rs.getBigDecimal("sale_price"), rs.getInt("active"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public ArrayList<Product> getListDicounts() {
+        ArrayList<Product> products = new ArrayList<>();
+        try {
+            String query = "SELECT product_id, name, price, sale_price, active FROM product;";
+            ResultSet rs = execSelectQuery(query);
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getString("name"),
+                        rs.getBigDecimal("price"),
+                        rs.getBigDecimal("sale_price"),
+                        rs.getInt("active")
+                );
+                products.add(product);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return products;
+    }
 
     public void addFullGameProduct(Product product, GameDetails gameDetails, List<String> imageUrls, String[] platformIds, String[] osIds, String[] newKeys) throws SQLException {
         try {
@@ -138,6 +293,24 @@ public class ProductDAO extends DBContext {
         }
     }
 
+    public boolean isProductSold(int productId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM order_detail WHERE product_id = ?";
+        // Sử dụng try-with-resources để đảm bảo kết nối được đóng đúng cách
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, productId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        // Mặc định trả về false nếu không tìm thấy hoặc có lỗi
+        return false;
+    }
+
+    
+
     public void deleteProduct(int productId) throws SQLException {
         Integer gameDetailsIdToDelete = null;
 
@@ -228,7 +401,7 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.product_id, p.name, p.price, p.quantity, c.name AS category_name, b.brand_name, "
+        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, c.name AS category_name, b.brand_name, "
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
@@ -244,6 +417,7 @@ public class ProductDAO extends DBContext {
                 product.setQuantity(rs.getInt("quantity"));
                 product.setCategoryName(rs.getString("category_name"));
                 product.setBrandName(rs.getString("brand_name"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
 
                 String singleImageUrl = rs.getString("image_url");
                 List<String> imageUrls = new ArrayList<>();
@@ -780,4 +954,5 @@ public class ProductDAO extends DBContext {
         }
         return averageStars;
     }
+
 }

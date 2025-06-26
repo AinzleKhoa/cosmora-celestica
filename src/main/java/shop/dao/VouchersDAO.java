@@ -24,13 +24,8 @@ public class VouchersDAO extends DBContext {
     public ArrayList<Voucher> getList() {
         ArrayList<Voucher> codes = new ArrayList<>();
         try {
-            String query = "SELECT voucher_id, code, value, usage_limit, start_date, end_date, description, min_order_value, "
-                    + "       CASE "
-                    + "           WHEN GETDATE() < start_date THEN 2 "
-                    + "           WHEN GETDATE() > end_date THEN 0 "
-                    + "           ELSE 1 "
-                    + "       END AS is_active "
-                    + "FROM voucher;";
+            String query = "SELECT * from voucher  ";
+
             ResultSet rs = execSelectQuery(query);
             while (rs.next()) {
                 Voucher voucher = new Voucher(
@@ -40,7 +35,7 @@ public class VouchersDAO extends DBContext {
                         rs.getInt("usage_limit"),
                         rs.getDate("start_date").toLocalDate(),
                         rs.getDate("end_date").toLocalDate(),
-                        rs.getInt("is_active"), // đã alias ở truy vấn SQL
+                        rs.getInt("active"),
                         rs.getString("description"),
                         rs.getBigDecimal("min_order_value")
                 );
@@ -239,7 +234,7 @@ public class VouchersDAO extends DBContext {
         String query = "UPDATE voucher\n"
                 + "SET usage_limit = usage_limit - 1\n"
                 + "WHERE voucher_id = ? AND usage_limit > 0;";
-        Object [] params = {voucherId};
+        Object[] params = {voucherId};
         return execQuery(query, params);
 
     }

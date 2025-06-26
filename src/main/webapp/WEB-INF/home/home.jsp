@@ -65,7 +65,11 @@
     <section class="custom-section">
         <div class="container">
             <div class="row">
-                <div class="col-12"><div class="input-group custom-input-group"><input type="text" class="form-control custom-search-input" placeholder="I'm searching for..."><button class="btn custom-search-btn" type="button">Search</button></div></div>
+                <div class="col-12"> <form action="<%= request.getContextPath()%>/home" method="get">
+                        <input type="hidden" name="action" value="search">
+                        <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
+                        <button class="search-btn">Search</button>                    
+                    </form></div>
                 <div class="col-12 mt-3 text-center">
                     <h2>Category:</h2>
                     <button class="btn custom-category-btn active">All Category</button>
@@ -132,22 +136,22 @@
                                         <button class="card__addtocart" type="submit">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
                                             <circle cx="176" cy="416" r="16" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
-                                                <circle cx="400" cy="416" r="16" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
-                                                <polyline points="48 80 112 80 160 352 416 352" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
-                                                <path d="M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
-                                                </svg>
+                                                    stroke-linecap:round;
+                                                    stroke-linejoin:round;
+                                                    stroke-width:32px"/>
+                                                    <circle cx="400" cy="416" r="16" style="fill:none;
+                                                    stroke-linecap:round;
+                                                    stroke-linejoin:round;
+                                                    stroke-width:32px"/>
+                                                    <polyline points="48 80 112 80 160 352 416 352" style="fill:none;
+                                                    stroke-linecap:round;
+                                                    stroke-linejoin:round;
+                                                    stroke-width:32px"/>
+                                                    <path d="M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128" style="fill:none;
+                                                    stroke-linecap:round;
+                                                    stroke-linejoin:round;
+                                                    stroke-width:32px"/>
+                                                    </svg>
                                             </button>
                                         </form>
 
@@ -155,7 +159,7 @@
                                 </div>
                             </div>
                             <% }
-                        } %>
+                                } %>
                         </div>
                     </div>
                     <button id="prevAccessory" class="slider-nav prev-nav">&#x2039;</button>
@@ -201,7 +205,7 @@
                                         <span><%= currencyFormatter.format(game.getPrice())%></span>
                                     </div>
                                     <div class="card__actions">
-                                        <button class="card__buy" type="button">Buy</button>
+                                        <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= game.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
                                         <form action="<%= request.getContextPath()%>/cart" method="POST">
                                             <input type="hidden" name="action" value="add">
                                             <input type="hidden" name="page" value="home">
@@ -212,21 +216,21 @@
                                             <button class="card__addtocart" type="submit">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
                                                 <circle cx="176" cy="416" r="16" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
+                                                stroke-linecap:round;
+                                                stroke-linejoin:round;
+                                                stroke-width:32px"/>
                                                 <circle cx="400" cy="416" r="16" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
+                                                stroke-linecap:round;
+                                                stroke-linejoin:round;
+                                                stroke-width:32px"/>
                                                 <polyline points="48 80 112 80 160 352 416 352" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
+                                                stroke-linecap:round;
+                                                stroke-linejoin:round;
+                                                stroke-width:32px"/>
                                                 <path d="M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128" style="fill:none;
-                                            stroke-linecap:round;
-                                            stroke-linejoin:round;
-                                            stroke-width:32px"/>
+                                                stroke-linecap:round;
+                                                stroke-linejoin:round;
+                                                stroke-width:32px"/>
                                                 </svg>
                                             </button>
                                         </form>
@@ -236,7 +240,7 @@
                                 </div>
                             </div>
                             <% }
-                        }%>
+                                }%>
                         </div>
                     </div>
                     <button id="prevGame" class="slider-nav prev-nav">&#x2039;</button>

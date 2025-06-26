@@ -11,12 +11,10 @@
 
     <section class="admin-header">
         <div class="admin-header-top">
-            <button class="btn-admin-add"
-                    onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=create'">+ Add New Voucher</button>
             <div class="search-filter-wrapper">
-                <form action="<%= request.getContextPath()%>/manage-vouchers" method="get">
+                <form action="<%= request.getContextPath()%>/manage-discounts" method="get">
                     <input type="hidden" name="view" value="search" />
-                    <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
+                    <input type="text" name="keyword" class="search-input" placeholder="Enter discount name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
                     <button class="search-btn">Search</button>                    
                 </form>
 
@@ -79,8 +77,7 @@
                                             onclick="location.href = '<%= request.getContextPath()%>/manage-discounts?view=edit&id=<%= product.getProductId()%>'">
                                         Edit
                                     </button>
-                                    <button class="btn-action btn-delete"
-                                            onclick="location.href = '<%= request.getContextPath()%>/manage-discounts?view=delete&id=<%= product.getProductId()%>'">Delete</button>
+
                                 </div> </td> <% }
                                 } else {%>
                             <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>

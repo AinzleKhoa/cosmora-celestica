@@ -112,6 +112,7 @@ public class CustomerServlet extends HttpServlet {
             OrderDAO OD = new OrderDAO();
             String pageParam = request.getParameter("page");
             int currentPage = 1;
+
             if (pageParam != null) {
                 try {
                     currentPage = Integer.parseInt(pageParam);
@@ -124,9 +125,9 @@ public class CustomerServlet extends HttpServlet {
             try {
                 ArrayList<Order> orders = OD.getOrderById(id);
                 int totalOrders = orders.size();
-                int totalPages = (int) Math.ceil((double) totalOrders / itemsPerPage);
 
-                // Tính chỉ số bắt đầu và kết thúc của danh sách con
+                int totalPages = (totalOrders == 0) ? 1 : (int) Math.ceil((double) totalOrders / itemsPerPage);
+
                 // Đảm bảo currentPage nằm trong phạm vi hợp lệ
                 if (currentPage < 1) {
                     currentPage = 1;
@@ -134,7 +135,7 @@ public class CustomerServlet extends HttpServlet {
                 if (currentPage > totalPages) {
                     currentPage = totalPages;
                 }
-                // Tính chỉ số bắt đầu và kết thúc của danh sách con
+
                 int startIndex = (currentPage - 1) * itemsPerPage;
                 int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
 
@@ -145,12 +146,14 @@ public class CustomerServlet extends HttpServlet {
                 request.setAttribute("orderlist", paginatedOrders);
                 request.setAttribute("currentPage", currentPage);
                 request.setAttribute("totalPages", totalPages);
+                request.setAttribute("id", id); // giữ lại id để phân trang tiếp
                 request.getRequestDispatcher("/WEB-INF/dashboard/customer-order-history.jsp").forward(request, response);
             } catch (SQLException ex) {
                 Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi truy xuất đơn hàng.");
             }
-
         }
+
     }
 
     /**
