@@ -152,5 +152,13 @@
                         </a>
                     </li>
                 </c:if>
+                <!-- Check if the user role is admin -->
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                    <li class="admin-sidebar__item">
+                        <a href="${pageContext.servletContext.contextPath}/manage-discounts" class="admin-sidebar__link">
+                            <i class="fas fa-percentage"></i> Manage Discounts
+                        </a>
+                    </li>
+                </c:if>
             </ul>
         </aside>

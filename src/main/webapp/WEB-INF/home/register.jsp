@@ -149,9 +149,9 @@
                     return "Passwords do not match.";
                 }
 
-                const nameRegex = /^[a-zA-Z\s]+$/;
+                const nameRegex = /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/;
                 if (!nameRegex.test(fullName)) {
-                    return "Full Name can only contain letters and spaces.";
+                    return "Full Name can only contain letters and single spaces (no multiple spaces).";
                 }
 
                 return null;
