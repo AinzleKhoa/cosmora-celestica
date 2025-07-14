@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package shop.model;
+
 import java.math.BigDecimal;
 
 /**
@@ -10,12 +11,16 @@ import java.math.BigDecimal;
  * @author ADMIN
  */
 public class OrderDetails {
+
     private int orderDetailId;
     private int orderId;
     private int productId;
     private int quantity;
-    private BigDecimal price ;
-    private String productName ;
+    private BigDecimal price;
+    private String productName;
+    private String imageURL;
+    private String categoryName;
+    private String gameKey ;
 
     public OrderDetails(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price, String productName) {
         this.orderDetailId = orderDetailId;
@@ -26,9 +31,50 @@ public class OrderDetails {
         this.productName = productName;
     }
 
-   
+    public OrderDetails(int productId, int quantity, BigDecimal price, String productName, String imageURL, String categoryName) {
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.productName = productName;
+        this.imageURL = imageURL;
+        this.categoryName = categoryName;
+    }
+    public OrderDetails(int productId, int quantity, BigDecimal price, String productName, String imageURL, String categoryName, String gameKey) {
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.productName = productName;
+        this.imageURL = imageURL;
+        this.categoryName = categoryName;
+        this.gameKey = gameKey;
+    }
 
     public OrderDetails() {
+    }
+
+    public String getGameKey() {
+        return gameKey;
+    }
+
+    public void setGameKey(String gameKey) {
+        this.gameKey = gameKey;
+    }
+    
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getProductName() {
@@ -38,7 +84,7 @@ public class OrderDetails {
     public void setProductName(String productName) {
         this.productName = productName;
     }
-    
+
     public int getProductId() {
         return productId;
     }
@@ -46,7 +92,7 @@ public class OrderDetails {
     public void setProductId(int productId) {
         this.productId = productId;
     }
- 
+
     public int getOrderDetailId() {
         return orderDetailId;
     }
@@ -78,5 +124,5 @@ public class OrderDetails {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-    
+
 }

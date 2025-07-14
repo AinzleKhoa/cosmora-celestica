@@ -48,6 +48,7 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String fullName = request.getParameter("fullName");
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -58,43 +59,35 @@ public class RegisterServlet extends HttpServlet {
         String hashedPassword = PasswordUtils.hashPassword(password);
 
         // If email already exists
-        if (!cDAO.isEmailExists(email)) {
-            // If username already exists
-            if (!cDAO.isUsernameExists(username)) {
-                // Register the customer
-                if (cDAO.createCustomer(new Customer(username, email, hashedPassword, avatarUrl)) > 0) {
-                    // Success: redirect to login with success message in session (flash-style)
-                    request.setAttribute("username", username);
-                    request.setAttribute("email", email);
-                    request.setAttribute("password", password);
-                    request.setAttribute("confirmPassword", confirmPassword);
-                    request.getSession().setAttribute("successMessage", "Registration successful! Please log in.");
-                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                } else {
-                    // DB insert failed
-                    request.setAttribute("username", username);
-                    request.setAttribute("email", email);
-                    request.setAttribute("password", password);
-                    request.setAttribute("confirmPassword", confirmPassword);
-                    request.setAttribute("errorMessage", "We couldn't complete your registration at the moment. Please try again later.");
-                    request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
-                }
-            } else {
-                // Username exists
+        if (!cDAO.isUsernameOrEmailTaken(username, email)) {
+            // Register the customer
+            if (cDAO.createCustomer(new Customer(fullName, username, email, hashedPassword, avatarUrl)) > 0) {
+                // Success: redirect to login with success message in session (flash-style)
+                request.setAttribute("fullName", fullName);
                 request.setAttribute("username", username);
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);
-                request.setAttribute("errorMessage", "The username already exists. Please try again.");
+                request.setAttribute("message", "Registration successful! Please log in.");
+                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+            } else {
+                // DB insert failed
+                request.setAttribute("fullName", fullName);
+                request.setAttribute("username", username);
+                request.setAttribute("email", email);
+                request.setAttribute("password", password);
+                request.setAttribute("confirmPassword", confirmPassword);
+                request.setAttribute("message", "We couldn't complete your registration at the moment. Please try again later.");
                 request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
             }
         } else {
-            // Email exists
+            // Email Or Username exists
+            request.setAttribute("fullName", fullName);
             request.setAttribute("username", username);
             request.setAttribute("email", email);
             request.setAttribute("password", password);
             request.setAttribute("confirmPassword", confirmPassword);
-            request.setAttribute("errorMessage", "The email already exists. Please try again.");
+            request.setAttribute("message", "The email or username already exists. Please try again.");
             request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
         }
     }

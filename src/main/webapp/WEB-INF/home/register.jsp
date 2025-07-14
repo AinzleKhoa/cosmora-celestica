@@ -43,22 +43,18 @@
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
 
-                                <div id="loadingMessage">Processing...</div>
-
-                                <!-- Success Message Container -->
-                                <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                                    <c:if test="${not empty successMessage}">
-                                        <p>${successMessage}</p>
-                                    </c:if>
+                                <!-- Message Container -->
+                                <div id="message" style="color: yellow; margin-bottom: 15px;">
+                                    <p id="messageText">
+                                        <c:if test="${not empty message}">
+                                            ${message}
+                                        </c:if>
+                                    </p>
                                 </div>
 
-                                <!-- Error Message Container -->
-                                <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-                                    <c:if test="${not empty requestScope.errorMessage}">
-                                        <p>${requestScope.errorMessage}</p>
-                                    </c:if>
+                                <div class="sign__group">
+                                    <input type="text" class="sign__input" placeholder="Full Name" id="fullName" name="fullName" value="${requestScope.fullName}" required>
                                 </div>
-
 
                                 <div class="sign__group">
                                     <input type="text" class="sign__input" placeholder="Username" id="username" name="username" value="${requestScope.username}" required>
@@ -97,6 +93,91 @@
                 </div>
             </div>
         </div>
+
+        <!-- Facebook Button -->
+        <a href="https://www.facebook.com/YourPage" 
+           style="position: fixed;
+           bottom: 20px;
+           right: 20px;
+           background-color: #4267B2;
+           color: white;
+           padding: 15px 20px;
+           border-radius: 50%;
+           font-size: 24px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+           transition: background-color 0.3s, transform 0.3s;
+           text-decoration: none;
+           cursor: pointer;
+           z-index: 100;">
+            <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+        </a>
+
+        <!-- Phone Button -->
+        <a href="tel:+1234567890" 
+           id="phoneButton"
+           style="position: fixed;
+           bottom: 80px;
+           right: 20px;
+           background-color: #34b7f1;
+           color: white;
+           padding: 15px;
+           border-radius: 50%;
+           font-size: 24px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+           transition: background-color 0.3s, transform 0.3s;
+           text-decoration: none;
+           cursor: pointer;
+           z-index: 100;">
+            <i class="fas fa-phone-alt"></i>
+            <span id="phoneText" style="display: none;
+                  position: absolute;
+                  top: -30px;
+                  left: 0%;
+                  transform: translateX(-50%);
+                  background-color: #34b7f1;
+                  color: white;
+                  padding: 5px 10px;
+                  border-radius: 5px;
+                  font-size: 14px;">+1234567890</span>
+        </a>
+
+        <script>
+            // Hover effect to show phone number
+            document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+                document.getElementById('phoneText').style.display = 'block';
+            });
+
+            document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+                document.getElementById('phoneText').style.display = 'none';
+            });
+
+            // Click-to-copy phone number functionality
+            document.getElementById('phoneButton').addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the default action (making a call)
+
+                // Create a temporary input element to copy the phone number
+                const tempInput = document.createElement('input');
+                tempInput.value = "+1234567890"; // Phone number to copy
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+                // Copy the text to the clipboard
+                document.execCommand('copy');
+
+                // Remove the temporary input element
+                document.body.removeChild(tempInput);
+
+                // Display a message or change button style to indicate success
+                alert('Phone number copied to clipboard!');
+            });
+        </script>
         <!-- end sign in -->
         <!-- JS -->
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>
@@ -108,6 +189,64 @@
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
         <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
+        <script>
+            const registerForm = document.getElementById("registerForm");
+
+            if (registerForm) {
+                registerForm.addEventListener("submit", function (event) {
+
+                    const username = document.getElementById('username').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value.trim();
+                    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+                    const fullName = document.getElementById('fullName').value.trim();
+
+                    showMessage("Processing...");
+
+                    const errorMessage = isValidRegister(username, email, password, confirmPassword, fullName);
+                    if (errorMessage) {
+                        event.preventDefault(); // prevent form from submitting if invalid
+                        showMessage(errorMessage);
+                        return;
+                    }
+                });
+            }
+
+            function isValidRegister(username, email, password, confirmPassword, fullName) {
+                const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+                if (!username || !usernameRegex.test(username)) {
+                    return "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
+                }
+
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
+                if (!emailRegex.test(email)) {
+                    return "Please enter a valid Google email address (gmail.com or googlemail.com).";
+                }
+
+                const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+                if (password.length < 8) {
+                    return "Password must be at least 8 characters long.";
+                } else if (!passwordRegex.test(password)) {
+                    return "Password must contain at least 1 letter and 1 number.";
+                }
+
+                if (password !== confirmPassword) {
+                    return "Passwords do not match.";
+                }
+
+                const nameRegex = /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/;
+                if (!nameRegex.test(fullName)) {
+                    return "Full Name can only contain letters and single spaces (no multiple spaces).";
+                }
+
+                return null;
+            }
+
+            function showMessage(msg) {
+                document.getElementById('messageText').textContent = "";
+                document.getElementById('messageText').textContent = msg;
+            }
+        </script>
     </body>
 
 </html>

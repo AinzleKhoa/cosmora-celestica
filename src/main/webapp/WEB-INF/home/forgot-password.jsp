@@ -4,6 +4,7 @@
     Author     : CE190449 - Le Anh Khoa
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,20 +43,13 @@
                                     <img src="${pageContext.servletContext.contextPath}/assets/img/logo.png" alt="">
                                 </a>
 
-                                <div id="loadingMessage">Processing...</div>
-
-                                <!-- Success Message Container -->
-                                <div id="successMessage" style="color: green; margin-bottom: 15px;">
-                                    <c:if test="${not empty successMessage}">
-                                        <p>${successMessage}</p>
-                                    </c:if>
-                                </div>
-
-                                <!-- Error Message Container -->
-                                <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-                                    <c:if test="${not empty requestScope.errorMessage}">
-                                        <p>${requestScope.errorMessage}</p>
-                                    </c:if>
+                                <!-- Message Container -->
+                                <div id="message" style="color: yellow; margin-bottom: 15px;">
+                                    <p id="messageText">
+                                        <c:if test="${not empty message}">
+                                            ${message}
+                                        </c:if>
+                                    </p>
                                 </div>
 
                                 <!-- Send OTP Form -->
@@ -80,6 +74,91 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Facebook Button -->
+            <a href="https://www.facebook.com/YourPage" 
+               style="position: fixed;
+               bottom: 20px;
+               right: 20px;
+               background-color: #4267B2;
+               color: white;
+               padding: 15px 20px;
+               border-radius: 50%;
+               font-size: 24px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s, transform 0.3s;
+               text-decoration: none;
+               cursor: pointer;
+               z-index: 100;">
+                <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+            </a>
+
+            <!-- Phone Button -->
+            <a href="tel:+1234567890" 
+               id="phoneButton"
+               style="position: fixed;
+               bottom: 80px;
+               right: 20px;
+               background-color: #34b7f1;
+               color: white;
+               padding: 15px;
+               border-radius: 50%;
+               font-size: 24px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s, transform 0.3s;
+               text-decoration: none;
+               cursor: pointer;
+               z-index: 100;">
+                <i class="fas fa-phone-alt"></i>
+                <span id="phoneText" style="display: none;
+                      position: absolute;
+                      top: -30px;
+                      left: 0%;
+                      transform: translateX(-50%);
+                      background-color: #34b7f1;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 5px;
+                      font-size: 14px;">+1234567890</span>
+            </a>
+
+            <script>
+                // Hover effect to show phone number
+                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+                    document.getElementById('phoneText').style.display = 'block';
+                });
+
+                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+                    document.getElementById('phoneText').style.display = 'none';
+                });
+
+                // Click-to-copy phone number functionality
+                document.getElementById('phoneButton').addEventListener('click', function (e) {
+                    e.preventDefault(); // Prevent the default action (making a call)
+
+                    // Create a temporary input element to copy the phone number
+                    const tempInput = document.createElement('input');
+                    tempInput.value = "+1234567890"; // Phone number to copy
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+                    // Copy the text to the clipboard
+                    document.execCommand('copy');
+
+                    // Remove the temporary input element
+                    document.body.removeChild(tempInput);
+
+                    // Display a message or change button style to indicate success
+                    alert('Phone number copied to clipboard!');
+                });
+            </script>
             <!-- end sign in -->
             <!-- JS -->
             <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>
@@ -91,6 +170,165 @@
             <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mousewheel.min.js"></script>
             <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
             <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
+            <script>
+                const contextPath = window.location.pathname.split('/')[1]; // Get the context path dynamically
+
+                let countdown = 30;
+                let countdownInterval;
+
+                const sendOtpForgotBtn = document.getElementById('sendOtpForgotBtn');
+                const verifyOtpForgotBtn = document.getElementById('verifyOtpForgotBtn');
+                const emailForgotInput = document.getElementById('emailForgotInput');
+                const otpForgotInput = document.getElementById('otpForgotInput');
+                const cooldownText = document.getElementById('cooldownText');
+
+                if (sendOtpForgotBtn) {
+                    sendOtpForgotBtn.addEventListener('click', function () {
+                        const email = emailForgotInput.value.trim();
+
+                        showMessage("Processing...");
+
+                        const errorMessage = isValidEmail(email);
+                        if (errorMessage) {
+                            showMessage(errorMessage);
+                            return;
+                        }
+
+                        this.disabled = true;
+
+                        sendOtpToBackend(email);
+
+                        startCountdown();
+                    });
+                }
+
+                if (verifyOtpForgotBtn) {
+                    verifyOtpForgotBtn.addEventListener('click', function () {
+                        const email = emailForgotInput.value.trim();
+                        const otp = otpForgotInput.value.trim();
+
+                        showMessage("Processing...");
+
+                        const errorMessage = validateFormForgotPassword(email, otp);
+                        if (errorMessage) {
+                            showMessage(errorMessage);
+                            return;
+                        }
+
+                        sendOtpForVerification(email, otp);
+                    });
+                }
+
+                function validateFormForgotPassword(email, otp) {
+                    const emailError = isValidEmail(email);
+                    if (emailError)
+                        return emailError;
+
+                    const otpError = isValidOtp(otp);
+                    if (otpError)
+                        return otpError;
+
+                    return null;
+                }
+
+                function isValidEmail(email) {
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                    if (!email) {
+                        emailForgotInput.focus();
+                        return "Please enter your email.";
+                    }
+
+                    if (!emailRegex.test(email)) {
+                        emailForgotInput.focus();
+                        return "Please enter a valid email address (example@gmail.com).";
+                    }
+                    return null;
+                }
+
+                function isValidOtp(otp) {
+                    const otpRegex = /^[0-9]+$/;
+                    if (!otp) {
+                        otpForgotInput.focus();
+                        return "Please enter your otp.";
+                    }
+                    if (!otpRegex.test(otp) || otp.length !== 6) {
+                        otpForgotInput.focus();
+                        return "Please enter a valid otp (6-digit).";
+                    }
+                }
+
+                function sendOtpToBackend(email) {
+                    fetch('/' + contextPath + '/forgot-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'email=' + encodeURIComponent(email) + '&action=sendOtp'
+                    })
+                            .then(res => res.json())  // Parse response as JSON
+                            .then(data => {
+                                if (data.success) {
+                                    showMessage(data.message);
+                                } else {
+                                    showMessage(data.message);
+                                    sendOtpForgotBtn.disabled = false;
+                                    clearInterval(countdownInterval);
+                                    cooldownText.textContent = '';
+                                }
+                            })
+                            .catch(() => {
+                                showMessage("An error occurred. Please try again.");
+                                sendOtpForgotBtn.disabled = false;
+                                clearInterval(countdownInterval);
+                                cooldownText.textContent = '';
+                            });
+                }
+
+                function sendOtpForVerification(email, otp) {
+                    fetch('/' + contextPath + '/forgot-password', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: 'email=' + encodeURIComponent(email) +
+                                '&otp=' + encodeURIComponent(otp) +
+                                '&action=verifyOtp'
+                    })
+                            .then(res => res.json())  // Parse response as JSON
+                            .then(data => {
+                                if (data.success) {
+                                    showMessage(data.message);
+                                    window.location.href = data.redirectUrl;
+                                } else {
+                                    showMessage(data.message);
+                                }
+                            })
+                            .catch(() => {
+                                showMessage("An error occurred. Please try again.");
+                            });
+                }
+
+                function startCountdown() {
+                    countdown = 30;
+                    cooldownText.textContent = "You can resend OTP in " + countdown + "s";  // Initial message
+
+                    countdownInterval = setInterval(() => {
+                        countdown--;
+
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval);
+                            cooldownText.textContent = '';
+                            sendOtpForgotBtn.disabled = false;
+                            sendOtpForgotBtn.textContent = 'Resend OTP';
+                        } else {
+                            cooldownText.textContent = "You can resend OTP in " + countdown + "s";  // Update the countdown text
+                        }
+                    }, 1000);
+                }
+
+                function showMessage(msg) {
+                    document.getElementById('messageText').textContent = "";
+                    document.getElementById('messageText').textContent = msg;
+                }
+            </script>
     </body>
 
 </html>

@@ -55,12 +55,13 @@ public class OrderServlet extends HttpServlet {
             }
 
             int itemsPerPage = 15;
+
             try {
                 ArrayList<Order> allOrders = OD.getallOrder();
                 int totalOrders = allOrders.size();
-                int totalPages = (int) Math.ceil((double) totalOrders / itemsPerPage);
 
-                // Tính chỉ số bắt đầu và kết thúc của danh sách con
+                int totalPages = (totalOrders == 0) ? 1 : (int) Math.ceil((double) totalOrders / itemsPerPage);
+
                 // Đảm bảo currentPage nằm trong phạm vi hợp lệ
                 if (currentPage < 1) {
                     currentPage = 1;
@@ -68,7 +69,7 @@ public class OrderServlet extends HttpServlet {
                 if (currentPage > totalPages) {
                     currentPage = totalPages;
                 }
-                // Tính chỉ số bắt đầu và kết thúc của danh sách con
+
                 int startIndex = (currentPage - 1) * itemsPerPage;
                 int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
 
@@ -83,7 +84,6 @@ public class OrderServlet extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         } else if (view.equals("details")) {
             OrderDAO OD = new OrderDAO();
             String o_id = request.getParameter("order_id");
@@ -130,48 +130,48 @@ public class OrderServlet extends HttpServlet {
 
             }
         } else if (action.equals("search")) {
-            String cusName = request.getParameter("customer_name");
-            OrderDAO OD = new OrderDAO();
-            String pageParam = request.getParameter("page");
-            int currentPage = 1;
-            if (pageParam != null) {
-                try {
-                    currentPage = Integer.parseInt(pageParam);
-                } catch (NumberFormatException e) {
-                    currentPage = 1;
-                }
-            }
+    String cusName = request.getParameter("customer_name");
+    OrderDAO OD = new OrderDAO();
 
-            int itemsPerPage = 15;
-            try {
-                ArrayList<Order> allOrders = OD.searchOrders(cusName);
-                int totalOrders = allOrders.size();
-                int totalPages = (int) Math.ceil((double) totalOrders / itemsPerPage);
-
-                // Đảm bảo currentPage nằm trong phạm vi hợp lệ
-                if (currentPage < 1) {
-                    currentPage = 1;
-                }
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                }
-                // Tính chỉ số bắt đầu và kết thúc của danh sách con
-                int startIndex = (currentPage - 1) * itemsPerPage;
-                int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
-
-                List<Order> paginatedOrders = (List<Order>) ((startIndex < endIndex)
-                        ? allOrders.subList(startIndex, endIndex)
-                        : new ArrayList<>());
-                request.setAttribute("orderlist", paginatedOrders);
-                request.setAttribute("currentPage", currentPage);
-                request.setAttribute("totalPages", totalPages);
-                request.getRequestDispatcher("/WEB-INF/dashboard/order-list.jsp").forward(request, response);
-
-            } catch (SQLException ex) {
-                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+    String pageParam = request.getParameter("page");
+    int currentPage = 1;
+    if (pageParam != null) {
+        try {
+            currentPage = Integer.parseInt(pageParam);
+        } catch (NumberFormatException e) {
+            currentPage = 1;
         }
+    }
+
+    int itemsPerPage = 15;
+    try {
+        ArrayList<Order> allOrders = OD.searchOrders(cusName);
+        int totalOrders = allOrders.size();
+
+        int totalPages = (totalOrders == 0) ? 1 : (int) Math.ceil((double) totalOrders / itemsPerPage);
+
+        // Đảm bảo currentPage nằm trong phạm vi hợp lệ
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
+
+        List<Order> paginatedOrders = (List<Order>) ((startIndex < endIndex)
+                ? allOrders.subList(startIndex, endIndex)
+                : new ArrayList<>());
+
+        request.setAttribute("orderlist", paginatedOrders);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("customer_name", cusName); // để giữ giá trị khi quay lại form
+        request.getRequestDispatcher("/WEB-INF/dashboard/order-list.jsp").forward(request, response);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
     }
 
     /**

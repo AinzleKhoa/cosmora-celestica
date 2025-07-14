@@ -22,9 +22,7 @@ public class StaffDAO extends DBContext {
 
     public ArrayList<Staff> getList(int currentPage) {
         ArrayList<Staff> staffs = new ArrayList<>();
-        String query = "SELECT * FROM staff "
-                + "ORDER BY staff_id "
-                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String query = "SELECT * FROM staff ORDER BY staff_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         Object[] params = {
             (currentPage - 1) * StaffServlet.PAGE_SIZE,
@@ -35,9 +33,10 @@ public class StaffDAO extends DBContext {
             while (rs.next()) {
                 staffs.add(new Staff(
                         rs.getInt("staff_id"),
-                        rs.getString("username"),
+                        rs.getString("full_name"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
+                        rs.getString("gender"),
                         rs.getString("phone"),
                         rs.getString("role"),
                         rs.getDate("date_of_birth"),
@@ -53,24 +52,17 @@ public class StaffDAO extends DBContext {
 
     public int create(Staff staff) {
         try {
-            String sql
-                    = "INSERT INTO staff (\n"
-                    + "    username,\n"
-                    + "    email,\n"
-                    + "    password_hash,\n"
-                    + "    phone,\n"
-                    + "    role,\n"
-                    + "    date_of_birth,\n"
-                    + "    avatar_url\n"
-                    + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO staff (full_name, email, password_hash, gender, phone, role, date_of_birth, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             Object[] params = {
-                staff.getUsername(),
+                staff.getFullName(),
                 staff.getEmail(),
                 staff.getPasswordHash(),
+                staff.getGender(),
                 staff.getPhone(),
                 staff.getRole(),
                 staff.getDateOfBirth(),
-                staff.getAvatarUrl()};
+                staff.getAvatarUrl()
+            };
             return execQuery(sql, params);
         } catch (SQLException ex) {
             Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,22 +72,21 @@ public class StaffDAO extends DBContext {
 
     public Staff getOneById(int id) {
         try {
-            String query = "SELECT * FROM staff \n"
-                    + "WHERE staff_id=  ?";
-            Object params[] = {id};
+            String query = "SELECT * FROM staff WHERE staff_id = ?";
+            Object[] params = {id};
             ResultSet rs = execSelectQuery(query, params);
 
             if (rs.next()) {
-
                 return new Staff(
-                        rs.getInt("staff_id"), // staff_id
-                        rs.getString("username"), // username
-                        rs.getString("email"), // email
-                        rs.getString("password_hash"), // password_hash
-                        rs.getString("phone"), // phone
-                        rs.getString("role"), // role
-                        rs.getDate("date_of_birth"), // date_of_birth
-                        rs.getString("avatar_url") // avatar_url
+                        rs.getInt("staff_id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("gender"),
+                        rs.getString("phone"),
+                        rs.getString("role"),
+                        rs.getDate("date_of_birth"),
+                        rs.getString("avatar_url")
                 );
             }
         } catch (SQLException ex) {
@@ -106,20 +97,21 @@ public class StaffDAO extends DBContext {
 
     public Staff getOneByEmail(String email) {
         try {
-            String query = "SELECT * FROM staff \n"
-                    + "WHERE email=  ?";
-            Object params[] = {email};
+            String query = "SELECT * FROM staff WHERE email = ?";
+            Object[] params = {email};
             ResultSet rs = execSelectQuery(query, params);
+
             if (rs.next()) {
                 return new Staff(
-                        rs.getInt("staff_id"), // staff_id
-                        rs.getString("username"), // username
-                        rs.getString("email"), // email
-                        rs.getString("password_hash"), // password_hash
-                        rs.getString("phone"), // phone
-                        rs.getString("role"), // role
-                        rs.getDate("date_of_birth"), // date_of_birth
-                        rs.getString("avatar_url") // avatar_url
+                        rs.getInt("staff_id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("gender"),
+                        rs.getString("phone"),
+                        rs.getString("role"),
+                        rs.getDate("date_of_birth"),
+                        rs.getString("avatar_url")
                 );
             }
         } catch (SQLException ex) {
@@ -128,18 +120,20 @@ public class StaffDAO extends DBContext {
         return null;
     }
 
-    // 3. Update
     public int update(Staff staff) {
-        String sql = "UPDATE Staff SET username=?, email=?, password_hash=?, phone=?, role=?, date_of_birth=?, avatar_url=? WHERE staff_id = ?";
+        String sql = "UPDATE staff SET full_name = ?, email = ?, password_hash = ?, gender = ?, phone = ?, role = ?, date_of_birth = ?, avatar_url = ? WHERE staff_id = ?";
         Object[] params = {
-            staff.getUsername(),
+            staff.getFullName(),
             staff.getEmail(),
             staff.getPasswordHash(),
+            staff.getGender(),
             staff.getPhone(),
             staff.getRole(),
             staff.getDateOfBirth(),
             staff.getAvatarUrl(),
-            staff.getId()};
+            staff.getId()
+        };
+
         try {
             return execQuery(sql, params);
         } catch (SQLException ex) {
@@ -148,10 +142,10 @@ public class StaffDAO extends DBContext {
         return 0;
     }
 
-    // 4. Delete
     public int delete(int id) {
-        String sql = "delete from staff where staff_id = ?";
+        String sql = "DELETE FROM staff WHERE staff_id = ?";
         Object[] params = {id};
+
         try {
             return execQuery(sql, params);
         } catch (SQLException ex) {
@@ -159,33 +153,32 @@ public class StaffDAO extends DBContext {
         }
     }
 
-    //
     public ArrayList<Staff> searchByName(String keyword) throws SQLException {
         ArrayList<Staff> staffs = new ArrayList<>();
-        String query = "SELECT * FROM staff WHERE username LIKE ?";
-
+        String query = "SELECT * FROM staff WHERE full_name LIKE ?";
         Object[] params = {"%" + keyword + "%"};
         ResultSet rs = execSelectQuery(query, params);
+
         while (rs.next()) {
             staffs.add(new Staff(
-                    rs.getInt("staff_id"), // staff_id
-                    rs.getString("username"), // username
-                    rs.getString("email"), // email
-                    rs.getString("password_hash"), // password_hash
-                    rs.getString("phone"), // phone
-                    rs.getString("role"), // role
-                    rs.getDate("date_of_birth"), // date_of_birth
-                    rs.getString("avatar_url") // avatar_url
+                    rs.getInt("staff_id"),
+                    rs.getString("full_name"),
+                    rs.getString("email"),
+                    rs.getString("password_hash"),
+                    rs.getString("gender"),
+                    rs.getString("phone"),
+                    rs.getString("role"),
+                    rs.getDate("date_of_birth"),
+                    rs.getString("avatar_url")
             ));
         }
 
         return staffs;
     }
 
-    //row count
     public int countStaffs() {
         try {
-            String query = "SELECT COUNT(*) FROM Staff";
+            String query = "SELECT COUNT(*) FROM staff";
             ResultSet rs = execSelectQuery(query);
             if (rs.next()) {
                 return rs.getInt(1);
@@ -195,7 +188,86 @@ public class StaffDAO extends DBContext {
             Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
-
     }
 
+    public boolean isEmailExist(String email) {
+        String sql = "SELECT 1 FROM Staff WHERE email = ?";
+        try {
+            ResultSet rs = this.execSelectQuery(sql, new Object[]{email});
+            return rs.next(); // Trả về true nếu tìm thấy ít nhất 1 kết quả
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEmailExistForOtherStaff(String email, int staffId) {
+        String sql = "SELECT 1 FROM Staff WHERE email = ? AND id != ?";
+        try {
+            ResultSet rs = this.execSelectQuery(sql, new Object[]{email, staffId});
+            boolean exists = rs.next();
+            rs.getStatement().getConnection().close(); // Đảm bảo đóng kết nối
+            return exists;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEmailTakenByOthers(String email, int id) {
+        try {
+            String query = "SELECT COUNT(*) FROM staff \n"
+                    + "WHERE (email = ?) AND staff_id != ?";
+            Object[] params = {email, id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public int updateProfileAdmin(Staff staff) {
+        try {
+            String query = "UPDATE staff\n"
+                    + "SET full_name = ?,\n"
+                    + "	email = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	gender = ?,\n"
+                    + "	avatar_url = ?,\n"
+                    + "	date_of_birth = ?\n"
+                    + "WHERE staff_id = ?";
+            Object[] params = {
+                staff.getFullName(),
+                staff.getEmail(),
+                staff.getPhone(),
+                staff.getGender(),
+                staff.getAvatarUrl(),
+                staff.getDateOfBirth(),
+                staff.getId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateAdminPassword(Staff staff) {
+        try {
+            String query = "UPDATE staff\n"
+                    + "SET password_hash = ?\n"
+                    + "WHERE email = ?";
+            Object[] params = {
+                staff.getPasswordHash(),
+                staff.getEmail()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
 }

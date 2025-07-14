@@ -33,10 +33,10 @@ public class CustomerDAO extends DBContext {
             while (rs.next()) {
                 list.add(new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -93,10 +93,10 @@ public class CustomerDAO extends DBContext {
             while (rs.next()) {
                 list.add(new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -149,10 +149,10 @@ public class CustomerDAO extends DBContext {
             if (rs.next()) {
                 return new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -187,10 +187,10 @@ public class CustomerDAO extends DBContext {
             if (rs.next()) {
                 return new Customer(
                         rs.getInt("customer_id"),
+                        rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("full_name"),
                         rs.getString("phone"),
                         rs.getString("gender"),
                         rs.getString("address"),
@@ -215,11 +215,11 @@ public class CustomerDAO extends DBContext {
         return null;
     }
 
-    public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
+    public boolean isUsernameOrEmailTaken(String username, String email) {
         try {
             String query = "SELECT COUNT(*) FROM customer \n"
-                    + "WHERE (username = ? OR email = ?) AND customer_id != ?";
-            Object[] params = {username, email, id};
+                    + "WHERE username = ? OR email = ?";
+            Object[] params = {username, email};
             ResultSet rs = execSelectQuery(query, params);
             if (rs.next()) {
                 return rs.getInt(1) > 0;
@@ -230,31 +230,14 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
-    public boolean isEmailExists(String email) {
+    public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
         try {
-            String query = "SELECT customer_id\n"
-                    + "FROM customer c\n"
-                    + "WHERE c.email = ?";
-            Object[] params = {email};
+            String query = "SELECT COUNT(*) FROM customer \n"
+                    + "WHERE (username = ? OR email = ?) AND customer_id != ?";
+            Object[] params = {username, email, id};
             ResultSet rs = execSelectQuery(query, params);
             if (rs.next()) {
-                return true;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    public boolean isUsernameExists(String username) {
-        try {
-            String query = "SELECT customer_id\n"
-                    + "FROM customer c\n"
-                    + "WHERE c.username = ?";
-            Object[] params = {username};
-            ResultSet rs = execSelectQuery(query, params);
-            if (rs.next()) {
-                return true;
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -293,14 +276,15 @@ public class CustomerDAO extends DBContext {
 
     public int createCustomer(Customer customer) {
         try {
-            String query = "INSERT INTO customer (username, email, password_hash, avatar_url, created_at)\n"
-                    + "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);";
+            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, created_at)\n"
+                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
             Object[] params = {
+                customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
                 customer.getPasswordHash(),
-                customer.getAvatarUrl()
-            };
+                customer.getAvatarUrl(),
+                customer.getGoogleId(),};
             return execQuery(query, params);
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -311,19 +295,53 @@ public class CustomerDAO extends DBContext {
     public int updateCustomer(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
-                    + "SET username = ?,\n"
+                    + "SET "
+                    + "full_name = ?,\n"
+                    + "	username = ?,\n"
                     + "	email = ?,\n"
-                    + "	full_name = ?,\n"
                     + "	phone = ?,\n"
                     + "	address = ?,\n"
+                    + "	google_id = ?,\n"
                     + " updated_at = CURRENT_TIMESTAMP\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
+                customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
-                customer.getFullName(),
                 customer.getPhone(),
                 customer.getAddress(),
+                customer.getGoogleId(),
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateProfileCustomer(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET full_name = ?,\n"
+                    + "	username = ?,\n"
+                    + "	email = ?,\n"
+                    + "	phone = ?,\n"
+                    + "	gender = ?,\n"
+                    + "	address = ?,\n"
+                    + "	avatar_url = ?,\n"
+                    + "	date_of_birth = ?,\n"
+                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                customer.getFullName(),
+                customer.getUsername(),
+                customer.getEmail(),
+                customer.getPhone(),
+                customer.getGender(),
+                customer.getAddress(),
+                customer.getAvatarUrl(),
+                customer.getDateOfBirth(),
                 customer.getCustomerId()
             };
             return execQuery(query, params);
@@ -370,6 +388,24 @@ public class CustomerDAO extends DBContext {
             Object[] params = {
                 customer.getPasswordHash(),
                 customer.getEmail()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateCustomerStatus(int id, boolean status) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET "
+                    + " is_deactivated = ?,\n"
+                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                status,
+                id
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

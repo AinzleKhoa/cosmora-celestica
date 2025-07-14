@@ -30,7 +30,6 @@ public class VoucherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String view = request.getParameter("view");
-
         VouchersDAO vD = new VouchersDAO();
         if (view == null || view.isEmpty() || view.equals("list")) {
 
@@ -40,6 +39,7 @@ public class VoucherServlet extends HttpServlet {
                 request.setAttribute("voucherslist", voucherslist);
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
             } catch (Exception ex) {
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -51,6 +51,7 @@ public class VoucherServlet extends HttpServlet {
                 request.setAttribute("voucher", voucher);
                 request.setAttribute("id", id);
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-edit.jsp").forward(request, response);
+
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -59,40 +60,34 @@ public class VoucherServlet extends HttpServlet {
             try {
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
             } catch (Exception ex) {
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (view.equals(
                 "search")) {
             try {
                 ArrayList<Voucher> voucherslist;
-                    String keyword = request.getParameter("keyword");
+                String keyword = request.getParameter("keyword");
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     voucherslist = vD.searchVoucherByCode(keyword);
-                    request.setAttribute("voucherslist", voucherslist);     
+                    request.setAttribute("voucherslist", voucherslist);
                 } else {
                     voucherslist = vD.getList();
-                    request.setAttribute("voucherslist", voucherslist); 
+                    request.setAttribute("voucherslist", voucherslist);
                 }
 
                 request.setAttribute("keyword", keyword);
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
 
             } catch (Exception ex) {
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (view.equals(
-                "delete")) {
-            VouchersDAO voucherDao = new VouchersDAO();
-            int id = Integer.parseInt(request.getParameter("id"));
-            try {
-                Voucher voucher = voucherDao.getOne(id);
-                request.setAttribute("voucher", voucher);
-                request.getRequestDispatcher("/WEB-INF/dashboard/voucher-delete.jsp").forward(request, response);
-            } catch (Exception ex) {
-                Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+        } else {
+            request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
+          
         }
+
     }
 
     @Override
@@ -172,25 +167,7 @@ public class VoucherServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
                 }
                 break;
-                case "delete":
-                     try {
-                    int id = Integer.parseInt(request.getParameter("id"));
-                    if (vD.deleteVoucher(id) != 0) {
 
-                        request.setAttribute("message", "Deleted successfully");
-                        response.sendRedirect(request.getContextPath() + "/manage-vouchers?view=list");
-                    } else {
-                        request.setAttribute("message", "Failed to update voucher!");
-                        request.getRequestDispatcher("/WEB-INF/dashboard/voucher-delete.jsp").forward(request, response);
-
-                    }
-
-                } catch (Exception ex) {
-                    Logger.getLogger(VoucherServlet.class
-                            .getName()).log(Level.SEVERE, null, ex);
-                    request.setAttribute("error", "Invalid data error!");
-                    request.getRequestDispatcher("/WEB-INF/dashboard/dashboard-voucher-delete.jsp").forward(request, response);
-                }
             }
         }
     }

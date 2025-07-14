@@ -6,6 +6,12 @@
     </div>
 
     <div class="admin-manage-wrapper container py-4">
+        <% String errorMessage = (String) request.getAttribute("errorMessage");
+            if (errorMessage != null) {%>
+        <div class="alert alert-danger" role="alert"  style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage%>
+        </div>
+        <% }%>
 
 
 
@@ -39,6 +45,15 @@
                         <input type="text" class="form-control admin-manage-input" name="phone" id="phone">
                     </div>
                     <div class="col-md-6">
+                        <label class="form-label admin-manage-label">Gender</label>
+                        <select class="form-select admin-manage-input" name="gender" required>
+                            <option value="">-- Select Gender --</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+
+                        </select>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label admin-manage-label">Role</label>
                         <input type="text" class="form-control admin-manage-input" name="role" value="staff" readonly required>
                     </div>
@@ -46,12 +61,12 @@
                         <label class="form-label admin-manage-label">Avatar Image</label>
                         <input type="file" class="form-control admin-manage-input" name="avatar_url" accept=".png" required>
                     </div>
-
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Date of Birth</label>
                         <input type="date" class="form-control admin-manage-input" name="date_of_birth" required>
                     </div>
                 </div>
+
             </fieldset>
 
             <div class="d-flex justify-content-between align-items-center mt-4">

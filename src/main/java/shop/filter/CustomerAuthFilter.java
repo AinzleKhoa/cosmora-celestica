@@ -20,7 +20,7 @@ import shop.util.SessionUtil;
  *
  * @author Le Anh Khoa - CE190449
  */
-@WebFilter(filterName = "CustomerAuthFilter", urlPatterns = {"/cart", "/checkout"})
+@WebFilter(filterName = "CustomerAuthFilter", urlPatterns = {"/cart", "/checkout", "/profile"})
 public class CustomerAuthFilter implements Filter {
 
     @Override

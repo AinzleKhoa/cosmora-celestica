@@ -13,38 +13,53 @@ import java.sql.Date;
 public class Staff {
 
     private int Id;
-    private String username;
+    private String fullName;
     private String email;
     private String passwordHash;
-
+    private String gender;
     private String phone;
     private String role;
     private Date dateOfBirth;
     private String avatarUrl;
 
-    public Staff(int Id, String username, String email, String passwordHash, String phone, String role, Date dateOfBirth, String avatarUrl) {
+    public Staff(int Id, String fullName, String email, String passwordHash, String gender, String phone, String role, Date dateOfBirth, String avatarUrl) {
         this.Id = Id;
-        this.username = username;
+        this.fullName = fullName;
         this.email = email;
         this.passwordHash = passwordHash;
-      
+        this.gender = gender;
         this.phone = phone;
         this.role = role;
         this.dateOfBirth = dateOfBirth;
         this.avatarUrl = avatarUrl;
     }
 
-    public Staff(String username, String email, String passwordHash, String phone, String role, Date dateOfBirth, String avatarUrl) {
-        this.username = username;
+    public Staff(String fullName, String email, String passwordHash, String gender, String phone, String role, Date dateOfBirth, String avatarUrl) {
+
+        this.fullName = fullName;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.gender = gender;
         this.phone = phone;
         this.role = role;
         this.dateOfBirth = dateOfBirth;
         this.avatarUrl = avatarUrl;
     }
 
+    public Staff(int Id, String fullName, String email, String gender, String phone, Date dateOfBirth, String avatarUrl) {
+        this.Id = Id;
+        this.fullName = fullName;
+        this.email = email;
+        this.gender = gender;
+        this.phone = phone;
+        this.dateOfBirth = dateOfBirth;
+        this.avatarUrl = avatarUrl;
+    }
 
+    public Staff(String email, String passwordHash) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
 
     public int getId() {
         return Id;
@@ -54,12 +69,12 @@ public class Staff {
         this.Id = Id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -77,8 +92,6 @@ public class Staff {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
-
-
 
     public String getPhone() {
         return phone;
@@ -112,9 +125,17 @@ public class Staff {
         this.avatarUrl = avatarUrl;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
-        return "Staff{" + "Id=" + Id + ", username=" + username + ", email=" + email + ", passwordHash=" + passwordHash + ", phone=" + phone + ", role=" + role + ", dateOfBirth=" + dateOfBirth + ", avatarUrl=" + avatarUrl + '}';
+        return "Staff{" + "Id=" + Id + ", fullName=" + fullName + ", email=" + email + ", passwordHash=" + passwordHash + ", phone=" + phone + ", role=" + role + ", dateOfBirth=" + dateOfBirth + ", avatarUrl=" + avatarUrl + '}';
     }
 
 }

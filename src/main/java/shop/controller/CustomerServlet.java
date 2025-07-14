@@ -11,9 +11,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import shop.dao.CustomerDAO;
+import shop.dao.OrderDAO;
 import shop.model.Customer;
+import shop.model.Order;
 
 /**
  *
@@ -36,6 +43,14 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("list")) {
+            // Get message
+            HttpSession session = request.getSession();
+            String msg = (String) session.getAttribute("message");
+            if (msg != null) {
+                request.setAttribute("message", msg);
+                session.removeAttribute("message");
+            }
+
             CustomerDAO cDAO = new CustomerDAO();
             int currentPage = 1;
             int pageSize = 6;
@@ -92,6 +107,54 @@ public class CustomerServlet extends HttpServlet {
 
             request.setAttribute("thisCustomer", thisCustomer);
             request.getRequestDispatcher("/WEB-INF/dashboard/customer-details.jsp").forward(request, response);
+        } else if (view.equals("history")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            OrderDAO OD = new OrderDAO();
+            String pageParam = request.getParameter("page");
+            int currentPage = 1;
+
+            if (pageParam != null) {
+                try {
+                    currentPage = Integer.parseInt(pageParam);
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+
+            int itemsPerPage = 15;
+            try {
+                ArrayList<Order> orders = OD.getOrderById(id);
+                int totalOrders = orders.size();
+
+                int totalPages = (totalOrders == 0) ? 1 : (int) Math.ceil((double) totalOrders / itemsPerPage);
+
+                // Đảm bảo currentPage nằm trong phạm vi hợp lệ
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+
+                int startIndex = (currentPage - 1) * itemsPerPage;
+                int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
+
+                List<Order> paginatedOrders = (List<Order>) ((startIndex < endIndex)
+                        ? orders.subList(startIndex, endIndex)
+                        : new ArrayList<>());
+
+                request.setAttribute("orderlist", paginatedOrders);
+                request.setAttribute("currentPage", currentPage);
+                request.setAttribute("totalPages", totalPages);
+                request.setAttribute("id", id); // giữ lại id để phân trang tiếp
+                request.getRequestDispatcher("/WEB-INF/dashboard/customer-order-history.jsp").forward(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi truy xuất đơn hàng.");
+            }
+            //
+        } else {
+            response.sendRedirect(request.getContextPath() + "/manage-customers");
         }
     }
 
@@ -140,6 +203,7 @@ public class CustomerServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
             }
         } else if (action.equals("delete")) {
+
             int id = Integer.parseInt(request.getParameter("id"));
 
             CustomerDAO cDAO = new CustomerDAO();
@@ -150,13 +214,33 @@ public class CustomerServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/manage-customers");
                 } else {
                     request.setAttribute("thisCustomer", thisCustomer);
-                    request.setAttribute("errorMessage", "Delete Customer from the database failed");
+                    request.setAttribute("errorMessage", "Failed to delete customer: This customer is linked to other records (e.g., orders, cart). A soft delete (by changing their status) is recommended.");
                     request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("errorMessage", "This Customer Id does not exist.");
                 request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
             }
+        } else if (action.equals("statusUpdate")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            boolean status = Boolean.parseBoolean(request.getParameter("status"));
+            int currentPage = 1;
+
+            CustomerDAO cDAO = new CustomerDAO();
+            cDAO.updateCustomerStatus(id, status);
+
+            if (request.getParameter("page") != null) {
+                try {
+                    currentPage = Integer.parseInt(request.getParameter("page"));
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+
+            response.sendRedirect(request.getContextPath() + "/manage-customers" + "?page=" + currentPage);
+            //
+        } else {
+            response.sendRedirect(request.getContextPath() + "/manage-customers");
         }
     }
 

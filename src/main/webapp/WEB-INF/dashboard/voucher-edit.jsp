@@ -11,7 +11,7 @@
 
 <%
     Voucher voucher = (Voucher) request.getAttribute("voucher");
-    int id = voucher.getVoucherId();
+
 %>
 
 <main class="admin-main">
@@ -24,9 +24,9 @@
         <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 15px; border-radius: 5px;">
             <strong>Error:</strong> Voucher not found.
         </div>
-        <a href="<%= request.getContextPath()%>/manage-vouchers" class="btn btn-secondary mt-3">
-            ? Back to Voucher List
-        </a>
+       <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
+    <i class="fas fa-arrow-left mr-2" style="font-size: 1.1rem; color: #333;"></i> Back
+</a>
         <%
         } else {
         %>
@@ -44,44 +44,44 @@
     %>
     <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
         <input type="hidden" name="action" value="edit" >
-        <input type="hidden" name="id" value="<%= id%>" >
+        <input type="hidden" name="id" value="<%= voucher.getVoucherId() %>" >
         <div class="admin-manage-type voucher-details">
             <fieldset class="mb-4 admin-manage-fieldset">                  
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Code</label>
                         <input type="text" class="form-control admin-manage-input"
-                               name="code" placeholder="<%= voucher.getCode()%>" required>
+                               name="code" value="<%= voucher.getCode()%>" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label admin-manage-label">Value(%)</label>
+                        <label class="form-label admin-manage-label">Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="value" placeholder="<%= voucher.getValue()%>"  max="100" min="0" required>
+                               name="value" value="<%= voucher.getValue()%>" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="usage_limit" placeholder="<%= voucher.getUsageLimit()%>" min="0" required>
+                               name="usage_limit" value="<%= voucher.getUsageLimit()%>" min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Minimum Order Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="min_order_value" placeholder="<%= voucher.getMinOrderValue()%>"  min="0" required>
+                               name="min_order_value" value="<%= voucher.getMinOrderValue()%>"  min="0" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Start Date</label>
                         <input type="date" class="form-control admin-manage-input"
-                               name="start_date" id="start_date" placeholder="<%= voucher.getStartDate()%>" required>
+                               name="start_date" id="start_date" value="<%= voucher.getStartDate()%>" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">End Date</label>
                         <input type="date" class="form-control admin-manage-input"
-                               name="end_date" id="end_date" placeholder="<%= voucher.getEndDate()%> " required>
+                               name="end_date" id="end_date" value="<%= voucher.getEndDate()%>" required>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
                         <textarea class="form-control admin-manage-input"
-                                  required      name="description" placeholder="<%= voucher.getDescription()%>"> </textarea>
+                                  required      name="description" value="<%= voucher.getDescription()%>"> </textarea>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Active</label>
