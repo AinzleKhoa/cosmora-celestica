@@ -74,6 +74,91 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Facebook Button -->
+            <a href="https://www.facebook.com/YourPage" 
+               style="position: fixed;
+               bottom: 20px;
+               right: 20px;
+               background-color: #4267B2;
+               color: white;
+               padding: 15px 20px;
+               border-radius: 50%;
+               font-size: 24px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s, transform 0.3s;
+               text-decoration: none;
+               cursor: pointer;
+               z-index: 100;">
+                <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+            </a>
+
+            <!-- Phone Button -->
+            <a href="tel:+1234567890" 
+               id="phoneButton"
+               style="position: fixed;
+               bottom: 80px;
+               right: 20px;
+               background-color: #34b7f1;
+               color: white;
+               padding: 15px;
+               border-radius: 50%;
+               font-size: 24px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s, transform 0.3s;
+               text-decoration: none;
+               cursor: pointer;
+               z-index: 100;">
+                <i class="fas fa-phone-alt"></i>
+                <span id="phoneText" style="display: none;
+                      position: absolute;
+                      top: -30px;
+                      left: 0%;
+                      transform: translateX(-50%);
+                      background-color: #34b7f1;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 5px;
+                      font-size: 14px;">+1234567890</span>
+            </a>
+
+            <script>
+                // Hover effect to show phone number
+                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+                    document.getElementById('phoneText').style.display = 'block';
+                });
+
+                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+                    document.getElementById('phoneText').style.display = 'none';
+                });
+
+                // Click-to-copy phone number functionality
+                document.getElementById('phoneButton').addEventListener('click', function (e) {
+                    e.preventDefault(); // Prevent the default action (making a call)
+
+                    // Create a temporary input element to copy the phone number
+                    const tempInput = document.createElement('input');
+                    tempInput.value = "+1234567890"; // Phone number to copy
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+                    // Copy the text to the clipboard
+                    document.execCommand('copy');
+
+                    // Remove the temporary input element
+                    document.body.removeChild(tempInput);
+
+                    // Display a message or change button style to indicate success
+                    alert('Phone number copied to clipboard!');
+                });
+            </script>
             <!-- end sign in -->
             <!-- JS -->
             <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>

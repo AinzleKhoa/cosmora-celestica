@@ -6,8 +6,7 @@
 <%@page import="java.math.BigDecimal"%>
 
 <%@include file="/WEB-INF/include/home-header.jsp" %>
-<%
-    shop.model.Customer currentCustomer = (shop.model.Customer) session.getAttribute("currentCustomer");
+<%    shop.model.Customer currentCustomer = (shop.model.Customer) session.getAttribute("currentCustomer");
 %>
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-list.css">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-list.css">
@@ -60,26 +59,45 @@
     </style>
     <section class="custom-section">
         <div class="container">
+            <!-- Search Form -->
             <div class="row">
-                <div class="col-12"> <form action="<%= request.getContextPath()%>/home" method="get">
+                <div class="col-12"> 
+                    <form action="<%= request.getContextPath()%>/home" method="get">
                         <input type="hidden" name="action" value="search">
                         <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
-                        <button class="search-btn">Search</button>                    
-                    </form></div>
+                        <button class="search-btn">Search</button>
+                        <a href="home" class="clear-search-btn" 
+                           style="background-color: #ef4444;
+                           color: #fff;
+                           padding: 8px;
+                           border-radius: 13px;">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    </form>
+                </div>
                 <div class="col-12 mt-3 text-center">
                     <h2>Category:</h2>
-                    <button class="btn custom-category-btn active">All Category</button>
-                    <button class="btn custom-category-btn">Game</button>
-                    <button class="btn custom-category-btn">Headset</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword='">All</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=game'">Game</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=headset'">Headset</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=keyboard'">KeyBoard</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=mouse'">Mouse</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=controller'">Controller</button>
                 </div>
             </div>
-            <!-- Title -->
-            <div class="row mt-5">
-                <div class="col-12">
-                    <h2 class="section__title">All Products</h2>
-                </div>
+            <div id="message" style="color: yellow;
+                margin: 5px;">
+                <p id="messageText">
+                    <c:choose>
+                        <c:when test="${not empty messageFilter}">
+                            Currently searching for: ${messageFilter}
+                        </c:when>
+                        <c:otherwise>
+                            Currently searching for: All
+                        </c:otherwise>
+                    </c:choose>
+                </p>
             </div>
-
             <!-- Product Grid -->
             <div class="row">
                 <%

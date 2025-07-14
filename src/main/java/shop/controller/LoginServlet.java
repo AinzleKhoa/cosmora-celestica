@@ -61,26 +61,34 @@ public class LoginServlet extends HttpServlet {
 
         if (customer != null) {
             if (!customer.isIsDeactivated()) {
-                // Check password match before setting session
-                boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
-                if (isPasswordMatched) {
-                    HttpSession session = request.getSession(true);
-                    session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
+                if (customer.getGoogleId() == null) {
+                    // Check password match before setting session
+                    boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+                    if (isPasswordMatched) {
+                        HttpSession session = request.getSession(true);
+                        session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
 
-                    CartDAO cartDAO = new CartDAO();
-                    int customerId = customer.getCustomerId();
-                    int cartCount = cartDAO.countCartItems(customerId);
-                    session.setAttribute("cartCount", cartCount);
+                        CartDAO cartDAO = new CartDAO();
+                        int customerId = customer.getCustomerId();
+                        int cartCount = cartDAO.countCartItems(customerId);
+                        session.setAttribute("cartCount", cartCount);
 
-                    cDAO.updateLastLoginTime(customer); // Update login time
+                        cDAO.updateLastLoginTime(customer); // Update login time
 
-                    // Redirect to the home page upon successful login
-                    response.sendRedirect(request.getContextPath() + "/home");
+                        // Redirect to the home page upon successful login
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        // If password doesn't match, set error message and forward to login page
+                        request.setAttribute("email", email);
+                        request.setAttribute("password", password);
+                        request.setAttribute("message", "Email or password is incorrect. Try again.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
                 } else {
-                    // If password doesn't match, set error message and forward to login page
+                    // If account is an google account already, set error message and forward to login page
                     request.setAttribute("email", email);
                     request.setAttribute("password", password);
-                    request.setAttribute("message", "Email or password is incorrect. Try again.");
+                    request.setAttribute("message", "This account is linked to Google. Please log in using your Google account.");
                     request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
                 }
             } else {

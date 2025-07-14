@@ -9,27 +9,22 @@ package shop.model;
  * @author PHUCHH
  */
 public class CartItem {
-
+    
     private int cartId;
     private int customerId;
     private int productId;
-    private int cartQuantity;      
-    private int productQuantity;   
-
+    private int quantity;
     private String productName;
     private double price;
     private Double salePrice;
     private String imageUrl;
     private String categoryName;
 
-    // Full constructor
-    public CartItem(int cartId, int customerId, int productId, int cartQuantity, int productQuantity,
-                    String productName, double price, Double salePrice, String imageUrl, String categoryName) {
+    public CartItem(int cartId, int customerId, int productId, int quantity, String productName, double price, Double salePrice, String imageUrl, String categoryName) {
         this.cartId = cartId;
         this.customerId = customerId;
         this.productId = productId;
-        this.cartQuantity = cartQuantity;
-        this.productQuantity = productQuantity;
+        this.quantity = quantity;
         this.productName = productName;
         this.price = price;
         this.salePrice = salePrice;
@@ -39,6 +34,8 @@ public class CartItem {
 
     public CartItem() {
     }
+
+
 
     public int getCartId() {
         return cartId;
@@ -64,20 +61,12 @@ public class CartItem {
         this.productId = productId;
     }
 
-    public int getCartQuantity() {
-        return cartQuantity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setCartQuantity(int cartQuantity) {
-        this.cartQuantity = cartQuantity;
-    }
-
-    public int getProductQuantity() {
-        return productQuantity;
-    }
-
-    public void setProductQuantity(int productQuantity) {
-        this.productQuantity = productQuantity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public String getProductName() {
@@ -119,4 +108,6 @@ public class CartItem {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+    
+    
 }

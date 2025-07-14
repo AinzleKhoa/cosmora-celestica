@@ -397,8 +397,8 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    public List<Product> getAllProducts() {
-        List<Product> productList = new ArrayList<>();
+    public ArrayList<Product> getAllProducts() {
+        ArrayList<Product> productList = new ArrayList<>();
         String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity,p.active_product, c.name AS category_name, b.brand_name, "
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "

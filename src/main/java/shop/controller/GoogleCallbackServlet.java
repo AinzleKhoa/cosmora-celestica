@@ -61,12 +61,15 @@ public class GoogleCallbackServlet extends HttpServlet {
         if (customer != null) {
             if (!customer.isIsDeactivated()) {
                 if (customer.getGoogleId() == null) {
-                    System.out.println(googleId);
                     customer.setGoogleId(googleId);
+                    customer.setPasswordHash("GOOGLE_OAUTH_USER");
+                    cDAO.updateLastLoginTime(customer); // Update login time
                     cDAO.updateCustomer(customer); // Save linked Google ID
-                } else if (!customer.getGoogleId().equals(googleId)) { // Rare exception
-                    request.setAttribute("message", "Google ID mismatch. Please contact support.");
-                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                } else {
+                    HttpSession session = request.getSession();
+                    cDAO.updateLastLoginTime(customer); // Update login time
+                    session.setAttribute("currentCustomer", customer);
+                    response.sendRedirect(request.getContextPath() + "/home");
                 }
             } else {
                 request.getSession().setAttribute("message", "Your account is locked. Please contact us for more information.");
@@ -86,6 +89,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             customer.setUpdatedAt(Timestamp.from(Instant.now()));
             cDAO.createCustomer(customer);
             HttpSession session = request.getSession();
+            cDAO.updateLastLoginTime(customer); // Update login time
             session.setAttribute("currentCustomer", customer);
 
             response.sendRedirect(request.getContextPath() + "/home");

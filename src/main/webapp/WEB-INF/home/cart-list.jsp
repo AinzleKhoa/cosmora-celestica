@@ -45,7 +45,7 @@
 
                                     if (cartItems == null || cartItems.isEmpty()) {
                                 %>
-
+                                <!-- Gi? h?ng r?ng -->
                                 <h2 style="color: white">Your cart is empty.</h2>
                                 <%
                                 } else {
@@ -65,31 +65,19 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                             <%
                                                 for (CartItem item : cartItems) {
-                                                    int cartQuantity = item.getCartQuantity();
-                                                    int productQuantity = item.getProductQuantity(); 
-
-                                                    if (cartQuantity > productQuantity) {
-                                                        cartQuantity = productQuantity;
-                                                    }
-
-                                                    boolean canIncrease = cartQuantity < productQuantity;
-
                                                     double unitPrice = item.getSalePrice() != null ? item.getSalePrice() : item.getPrice();
-                                                    double totalPrice = unitPrice * cartQuantity;
+                                                    double totalPrice = unitPrice * item.getQuantity();
                                             %>
-
-
                                             <tr>
                                                 <!-- Checkbox -->
                                                 <td>
                                                     <input type="checkbox"
                                                            class="product-check"
-                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getCartQuantity())%>"
+                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getQuantity())%>"
                                                            data-product-id="<%= item.getProductId()%>"
-                                                           data-quantity="<%= item.getCategoryName()%>"
+                                                           data-quantity="<%= item.getQuantity()%>"
                                                            onclick="updateTotalPrice()"
                                                            style="transform: scale(1.5); appearance: auto; margin-right: 10px;" />
                                                 </td>
@@ -125,11 +113,8 @@
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">-</button>
                                                         </form>
-
-                                                        <span class="cart__price"><%= cartQuantity%></span>
-
+                                                        <span class="cart__price"><%= item.getQuantity()%></span>
                                                         <!-- Increase -->
-                                                        <% if (canIncrease) {%>
                                                         <form method="post" action="cart" style="display:inline;">
                                                             <input type="hidden" name="page" value="cart">
                                                             <input type="hidden" name="action" value="add">
@@ -137,10 +122,8 @@
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">+</button>
                                                         </form>
-                                                        <% }%>
                                                     </div>
                                                 </td>
-
 
                                                 <!-- Delete -->
                                                 <td>
@@ -275,4 +258,89 @@
             </body>
 
             </html>
+
+            <!-- Facebook Button -->
+            <a href="https://www.facebook.com/YourPage" 
+               style="position: fixed;
+               bottom: 20px;
+               right: 20px;
+               background-color: #4267B2;
+               color: white;
+               padding: 15px 20px;
+               border-radius: 50%;
+               font-size: 24px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s, transform 0.3s;
+               text-decoration: none;
+               cursor: pointer;
+               z-index: 100;">
+                <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+            </a>
+
+            <!-- Phone Button -->
+            <a href="tel:+1234567890" 
+               id="phoneButton"
+               style="position: fixed;
+               bottom: 80px;
+               right: 20px;
+               background-color: #34b7f1;
+               color: white;
+               padding: 15px;
+               border-radius: 50%;
+               font-size: 24px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s, transform 0.3s;
+               text-decoration: none;
+               cursor: pointer;
+               z-index: 100;">
+                <i class="fas fa-phone-alt"></i>
+                <span id="phoneText" style="display: none;
+                      position: absolute;
+                      top: -30px;
+                      left: 0%;
+                      transform: translateX(-50%);
+                      background-color: #34b7f1;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 5px;
+                      font-size: 14px;">+1234567890</span>
+            </a>
+
+            <script>
+                // Hover effect to show phone number
+                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+                    document.getElementById('phoneText').style.display = 'block';
+                });
+
+                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+                    document.getElementById('phoneText').style.display = 'none';
+                });
+
+                // Click-to-copy phone number functionality
+                document.getElementById('phoneButton').addEventListener('click', function (e) {
+                    e.preventDefault(); // Prevent the default action (making a call)
+
+                    // Create a temporary input element to copy the phone number
+                    const tempInput = document.createElement('input');
+                    tempInput.value = "+1234567890"; // Phone number to copy
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+                    // Copy the text to the clipboard
+                    document.execCommand('copy');
+
+                    // Remove the temporary input element
+                    document.body.removeChild(tempInput);
+
+                    // Display a message or change button style to indicate success
+                    alert('Phone number copied to clipboard!');
+                });
+            </script>
             <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

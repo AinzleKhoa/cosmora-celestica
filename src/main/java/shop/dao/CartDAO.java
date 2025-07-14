@@ -39,19 +39,19 @@ public class CartDAO extends DBContext {
     }
 
     public List<CartItem> getCartItemsByCustomerId(int customerId) throws SQLException {
-        List<CartItem> cartItems = new ArrayList<>();
+        List<CartItem> CartItems = new ArrayList<>();
 
-        String sql = "SELECT c.cart_id, c.customer_id, c.product_id, c.quantity AS cart_quantity, "
-                + "p.name AS product_name, p.price, p.sale_price, p.quantity AS product_quantity, "
+        String sql = "SELECT c.cart_id, c.customer_id, c.product_id, c.quantity, "
+                + "p.name AS product_name, p.price, p.sale_price, "
                 + "i.image_id, i.image_URL AS image_url, "
                 + "cat.name AS category_name "
                 + "FROM cart c "
                 + "JOIN product p ON c.product_id = p.product_id "
                 + "LEFT JOIN category cat ON p.category_id = cat.category_id "
                 + "LEFT JOIN image i ON i.image_id = ( "
-                + "    SELECT MIN(image_id) FROM image WHERE product_id = p.product_id "
+                + "    SELECT MIN(image_id) FROM image WHERE product_id = p.product_id"
                 + ") "
-                + "WHERE c.customer_id = ?";
+                + "WHERE c.customer_id = ?   ";
 
         Object[] params = {customerId};
         ResultSet rs = execSelectQuery(sql, params);
@@ -61,17 +61,16 @@ public class CartDAO extends DBContext {
             item.setCartId(rs.getInt("cart_id"));
             item.setCustomerId(rs.getInt("customer_id"));
             item.setProductId(rs.getInt("product_id"));
-            item.setCartQuantity(rs.getInt("cart_quantity")); // tên mới
-            item.setProductQuantity(rs.getInt("product_quantity")); // thêm mới
+            item.setQuantity(rs.getInt("quantity"));
             item.setProductName(rs.getString("product_name"));
             item.setPrice(rs.getDouble("price"));
             item.setSalePrice(rs.getObject("sale_price") != null ? rs.getDouble("sale_price") : null);
             item.setImageUrl(rs.getString("image_url"));
             item.setCategoryName(rs.getString("category_name"));
-            cartItems.add(item);
+            CartItems.add(item);
         }
 
-        return cartItems;
+        return CartItems;
     }
 
     // Thêm sản phẩm mới vào giỏ

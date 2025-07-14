@@ -16,7 +16,14 @@
                 <form action="<%= request.getContextPath()%>/manage-vouchers" method="get">
                     <input type="hidden" name="view" value="search" />
                     <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
-                    <button class="search-btn">Search</button>                    
+                    <button class="search-btn">Search</button>
+                    <a href="manage-vouchers" class="clear-search-btn" 
+                       style="background-color: #ef4444;
+                       color: #fff;
+                       padding: 8px;
+                       border-radius: 13px;">
+                        <i class="fas fa-times "></i> Clear
+                    </a>                    
                 </form>
 
             </div>

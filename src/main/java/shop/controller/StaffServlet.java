@@ -82,7 +82,7 @@ public class StaffServlet extends HttpServlet {
                 Staff oneStaff = sDAO.getOneById(id);
 
                 if (oneStaff == null) {
-                   request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                     return;
                 }
 
@@ -242,7 +242,12 @@ public class StaffServlet extends HttpServlet {
                     // Lấy staff cũ để giữ avatar nếu người dùng không chọn ảnh mới
                     Staff oldStaff = sDAO.getOneById(id);
 
-              
+                    // Lấy password cũ nếu admin không input password mới
+                    if (password == null || password.trim().isEmpty()) {
+                        password = oldStaff.getPasswordHash();
+                    } else {
+                        password = PasswordUtils.hashPassword(password);
+                    }
 
                     // Kiểm tra email đã tồn tại ở staff khác chưa
                     if (sDAO.isEmailExistForOtherStaff(email, id)) {
@@ -271,9 +276,7 @@ public class StaffServlet extends HttpServlet {
                         avatarUrl = oldStaff.getAvatarUrl();
                     }
 
-                    String hashedPassword = PasswordUtils.hashPassword(password);
-
-                    Staff updatedStaff = new Staff(id, fullName, email, hashedPassword, gender, phone, role, dateOfBirth, avatarUrl);
+                    Staff updatedStaff = new Staff(id, fullName, email, password, gender, phone, role, dateOfBirth, avatarUrl);
 
                     int isUpdate = sDAO.update(updatedStaff);
                     if (isUpdate == 1) {

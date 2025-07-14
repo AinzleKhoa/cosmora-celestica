@@ -20,12 +20,8 @@
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-list.css">
 
-<section class="section section--bg section__ad--bg section--first" data-bg="<%= request.getContextPath()%>/assets/img/bg3.png">
-    <div class="owl-carousel section__carousel--ad" id="carousel00">
-        <a href="#" class="advertisement__card-link" target="_blank"><div class="advertisement__card card"><div class="advertisement__image-wrapper"><img src="<%= request.getContextPath()%>/assets/img/advertisement/ad1.png" alt="Advertisement 1" class="advertisement__image" /></div></div></a>
-        <a href="#" class="advertisement__card-link" target="_blank"><div class="advertisement__card card"><div class="advertisement__image-wrapper"><img src="<%= request.getContextPath()%>/assets/img/advertisement/ad2.png" alt="Advertisement 2" class="advertisement__image" /></div></div></a>
-    </div>
-</section>
+<section class="section section--bg section__ad--bg section--first" style="height: 300px" data-bg="<%= request.getContextPath()%>/assets/img/bg3.png"></section>
+
 <%
     String successMsg = (String) session.getAttribute("buysucces");
     if (successMsg != null) {
@@ -72,16 +68,28 @@
     <section class="custom-section">
         <div class="container">
             <div class="row">
-                <div class="col-12"> <form action="<%= request.getContextPath()%>/home" method="get">
+                <div class="col-12"> 
+                    <form action="<%= request.getContextPath()%>/home" method="get">
                         <input type="hidden" name="action" value="search">
                         <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
-                        <button class="search-btn">Search</button>                    
-                    </form></div>
+                        <button class="search-btn">Search</button>
+                        <a href="home" class="clear-search-btn" 
+                           style="background-color: #ef4444;
+                           color: #fff;
+                           padding: 8px;
+                           border-radius: 13px;">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    </form>
+                </div>
                 <div class="col-12 mt-3 text-center">
                     <h2>Category:</h2>
-                    <button class="btn custom-category-btn active">All Category</button>
-                    <button class="btn custom-category-btn">Game</button>
-                    <button class="btn custom-category-btn">Headset</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword='">All</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=game'">Game</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=headset'">Headset</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=keyboard'">KeyBoard</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=mouse'">Mouse</button>
+                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=controller'">Controller</button>
                 </div>
             </div>
 
@@ -257,32 +265,117 @@
             </div>
         </section>
 
-        <script>
-            function initializeFreeSlider(viewportId, prevButtonId, nextButtonId) {
-                const viewport = document.getElementById(viewportId);
-                if (!viewport)
-                    return;
+        <!-- Facebook Button -->
+        <a href="https://www.facebook.com/YourPage" 
+           style="position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #4267B2;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 50%;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.3s, transform 0.3s;
+        text-decoration: none;
+        cursor: pointer;
+        z-index: 100;">
+        <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+    </a>
 
-                const prevButton = document.getElementById(prevButtonId);
-                const nextButton = document.getElementById(nextButtonId);
+    <!-- Phone Button -->
+    <a href="tel:+1234567890" 
+       id="phoneButton"
+       style="position: fixed;
+       bottom: 80px;
+       right: 20px;
+       background-color: #34b7f1;
+       color: white;
+       padding: 15px;
+       border-radius: 50%;
+       font-size: 24px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+       transition: background-color 0.3s, transform 0.3s;
+       text-decoration: none;
+       cursor: pointer;
+       z-index: 100;">
+        <i class="fas fa-phone-alt"></i>
+        <span id="phoneText" style="display: none;
+              position: absolute;
+              top: -30px;
+              left: 0%;
+              transform: translateX(-50%);
+              background-color: #34b7f1;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 5px;
+              font-size: 14px;">+1234567890</span>
+    </a>
 
-                const scrollAmount = viewport.clientWidth * 0.8;
+    <script>
+        // Hover effect to show phone number
+        document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+            document.getElementById('phoneText').style.display = 'block';
+        });
 
-                nextButton.addEventListener('click', function () {
-                    viewport.scrollBy({left: scrollAmount, behavior: 'smooth'});
-                });
+        document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+            document.getElementById('phoneText').style.display = 'none';
+        });
 
-                prevButton.addEventListener('click', function () {
-                    viewport.scrollBy({left: -scrollAmount, behavior: 'smooth'});
-                });
-            }
+        // Click-to-copy phone number functionality
+        document.getElementById('phoneButton').addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent the default action (making a call)
 
-            document.addEventListener('DOMContentLoaded', function () {
-                initializeFreeSlider('accessory-viewport', 'prevAccessory', 'nextAccessory');
-                initializeFreeSlider('game-viewport', 'prevGame', 'nextGame');
+            // Create a temporary input element to copy the phone number
+            const tempInput = document.createElement('input');
+            tempInput.value = "+1234567890"; // Phone number to copy
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy the text to the clipboard
+            document.execCommand('copy');
+
+            // Remove the temporary input element
+            document.body.removeChild(tempInput);
+
+            // Display a message or change button style to indicate success
+            alert('Phone number copied to clipboard!');
+        });
+    </script>
+
+    <script>
+        function initializeFreeSlider(viewportId, prevButtonId, nextButtonId) {
+            const viewport = document.getElementById(viewportId);
+            if (!viewport)
+                return;
+
+            const prevButton = document.getElementById(prevButtonId);
+            const nextButton = document.getElementById(nextButtonId);
+
+            const scrollAmount = viewport.clientWidth * 0.8;
+
+            nextButton.addEventListener('click', function () {
+                viewport.scrollBy({left: scrollAmount, behavior: 'smooth'});
             });
-        </script>
 
-        <%@include file="/WEB-INF/include/home-footer.jsp" %>
+            prevButton.addEventListener('click', function () {
+                viewport.scrollBy({left: -scrollAmount, behavior: 'smooth'});
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeFreeSlider('accessory-viewport', 'prevAccessory', 'nextAccessory');
+            initializeFreeSlider('game-viewport', 'prevGame', 'nextGame');
+        });
+    </script>
+
+    <%@include file="/WEB-INF/include/home-footer.jsp" %>
 
 

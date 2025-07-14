@@ -65,7 +65,7 @@ public class LoginDashboardServlet extends HttpServlet {
                 session.setAttribute("currentEmployee", staff); // Session CurrentEmployee
 
                 // Redirect to the home page upon successful login
-                response.sendRedirect(request.getContextPath() + "/manage-products");
+                response.sendRedirect(request.getContextPath() + "/manage-orders");
             } else {
                 // If password doesn't match, set error message and forward to login page
                 request.setAttribute("email", email);

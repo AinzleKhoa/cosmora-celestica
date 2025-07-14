@@ -341,7 +341,8 @@
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="phone">Phone Number</label>
                                     <input id="phone" type="text" name="phone" class="form__input"
-                                           value="${user.phone}" placeholder="${user.phone}">
+                                           value="${user.phone != null && !user.phone.equals('0') ? user.phone : ''}" 
+                                           placeholder="${user.phone != null && !user.phone.equals('0') ? user.phone : ''}">
                                 </div>
 
                                 <!-- Gender -->
@@ -376,9 +377,9 @@
                                     <p class="profile__info"><strong>Last Updated At:</strong> 
                                         <fmt:formatDate value="${user.updatedAt}" pattern="dd MMM yyyy HH:mm" />
                                     </p>
-                                    <p class="profile__info"><strong>Email Verified:</strong> 
+                                    <p class="profile__info"><strong>Google Linked Account:</strong> 
                                         <c:choose>
-                                            <c:when test="${user.emailVerified}">Yes</c:when>
+                                            <c:when test="${not empty user.googleId}">Yes</c:when>
                                             <c:otherwise>No</c:otherwise>
                                         </c:choose>
                                     </p>
@@ -457,110 +458,117 @@
 
             <div class="tab-pane fade" id="tab-2" role="tabpanel">
                 <div class="row">
-                    <!-- details form -->
-                    <div class="col-12 col-lg-7">
-                        <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="resetPasswordForm" class="form">
-                            <input type="hidden" name="action" value="updatePassword"/>
-                            <input type="hidden" name="id" value="${user.customerId}"/>
-                            <div class="row">
-                                <div class="col-12">
-                                    <h4 class="form__title">Change password</h4>
-                                </div>
+                    <c:choose>
+                        <c:when test="${empty customer.googleId}">
+                            <p class="page-404__text">Since your account is linked to Google, the password cannot be changed.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- details form -->
+                            <div class="col-12 col-lg-7">
+                                <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="resetPasswordForm" class="form">
+                                    <input type="hidden" name="action" value="updatePassword"/>
+                                    <input type="hidden" name="id" value="${user.customerId}"/>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h4 class="form__title">Change password</h4>
+                                        </div>
 
-                                <!-- New Password -->
-                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                    <label class="form__label" for="newpass">New Password</label>
-                                    <input id="newpass" type="password" name="newpass" class="form__input" required>
-                                </div>
+                                        <!-- New Password -->
+                                        <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                            <label class="form__label" for="newpass">New Password</label>
+                                            <input id="newpass" type="password" name="newpass" class="form__input" required>
+                                        </div>
 
-                                <!-- Confirm New Password -->
-                                <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                    <label class="form__label" for="confirmpass">Confirm New Password</label>
-                                    <input id="confirmpass" type="password" name="confirmnewpass" class="form__input" required>
-                                </div>
+                                        <!-- Confirm New Password -->
+                                        <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                            <label class="form__label" for="confirmpass">Confirm New Password</label>
+                                            <input id="confirmpass" type="password" name="confirmnewpass" class="form__input" required>
+                                        </div>
 
-                                <div class="col-12">
-                                    <h4 class="form__title">Your old Password is required to update profile</h4>
-                                </div>
+                                        <div class="col-12">
+                                            <h4 class="form__title">Your old Password is required to update profile</h4>
+                                        </div>
 
-                                <!-- Old Password -->
-                                <div class="col-12">
-                                    <label class="form__label" for="oldpass">Old Password</label>
-                                    <input id="oldpass" type="password" name="oldpass" class="form__input" required>
-                                </div>
+                                        <!-- Old Password -->
+                                        <div class="col-12">
+                                            <label class="form__label" for="oldpass">Old Password</label>
+                                            <input id="oldpass" type="password" name="oldpass" class="form__input" required>
+                                        </div>
 
-                                <!-- Save Button -->
-                                <div class="col-12">
-                                    <button class="form__btn" type="submit">Save</button>
-                                </div>
+                                        <!-- Save Button -->
+                                        <div class="col-12">
+                                            <button class="form__btn" type="submit">Save</button>
+                                        </div>
 
-                                <div class="col-12 mt-5">
-                                    <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- end details form -->
-                    <div class="col-12 col-lg-4">
-                        <!-- Avatar selection modal (initially hidden) -->
-                        <div class="modal avatar-modal" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
-                            <div class="modal-dialog avatar-modal-dialog" role="document"> <!-- Fixed modal width -->
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="avatarModalLabel">Select an Avatar</h5>
+                                        <div class="col-12 mt-5">
+                                            <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
+                                        </div>
                                     </div>
-                                    <div class="modal-body">
-                                        <!-- Avatar grid container -->
-                                        <div class="avatar-selection-container">
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" alt="Avatar 1">
+                                </form>
+                            </div>
+                            <!-- end details form -->
+                            <div class="col-12 col-lg-4">
+                                <!-- Avatar selection modal (initially hidden) -->
+                                <div class="modal avatar-modal" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog avatar-modal-dialog" role="document"> <!-- Fixed modal width -->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="avatarModalLabel">Select an Avatar</h5>
                                             </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" alt="Avatar 2">
+                                            <div class="modal-body">
+                                                <!-- Avatar grid container -->
+                                                <div class="avatar-selection-container">
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" alt="Avatar 1">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" alt="Avatar 2">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" alt="Avatar 3">
+                                                    </div>
+                                                    <div class="avatar-item">
+                                                        <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" 
+                                                             class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" alt="Avatar 3">
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" alt="Avatar 3">
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn closeBtnModal" id="closeBtnModal" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn closeBtnModal" id="closeBtnModal" data-dismiss="modal">Close</button>
-                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
 
@@ -569,6 +577,91 @@
     </div>
 </section>
 <!-- end section -->
+
+<!-- Facebook Button -->
+<a href="https://www.facebook.com/YourPage" 
+   style="position: fixed;
+   bottom: 20px;
+   right: 20px;
+   background-color: #4267B2;
+   color: white;
+   padding: 15px 20px;
+   border-radius: 50%;
+   font-size: 24px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+   transition: background-color 0.3s, transform 0.3s;
+   text-decoration: none;
+   cursor: pointer;
+   z-index: 100;">
+    <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+</a>
+
+<!-- Phone Button -->
+<a href="tel:+1234567890" 
+   id="phoneButton"
+   style="position: fixed;
+   bottom: 80px;
+   right: 20px;
+   background-color: #34b7f1;
+   color: white;
+   padding: 15px;
+   border-radius: 50%;
+   font-size: 24px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+   transition: background-color 0.3s, transform 0.3s;
+   text-decoration: none;
+   cursor: pointer;
+   z-index: 100;">
+    <i class="fas fa-phone-alt"></i>
+    <span id="phoneText" style="display: none;
+          position: absolute;
+          top: -30px;
+          left: 0%;
+          transform: translateX(-50%);
+          background-color: #34b7f1;
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          font-size: 14px;">+1234567890</span>
+</a>
+
+<script>
+    // Hover effect to show phone number
+    document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+        document.getElementById('phoneText').style.display = 'block';
+    });
+
+    document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+        document.getElementById('phoneText').style.display = 'none';
+    });
+
+    // Click-to-copy phone number functionality
+    document.getElementById('phoneButton').addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent the default action (making a call)
+
+        // Create a temporary input element to copy the phone number
+        const tempInput = document.createElement('input');
+        tempInput.value = "+1234567890"; // Phone number to copy
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text to the clipboard
+        document.execCommand('copy');
+
+        // Remove the temporary input element
+        document.body.removeChild(tempInput);
+
+        // Display a message or change button style to indicate success
+        alert('Phone number copied to clipboard!');
+    });
+</script>
 
 <script>
     // Toggle the avatar selection modal when the "Change Avatar" button is clicked
@@ -700,5 +793,3 @@
 
 </script>
 <%@include file="/WEB-INF/include/home-footer.jsp" %>
-
-269154426187-nkt8qnsov2rjis59n8ji48lfuop0e4on.apps.googleusercontent.com
