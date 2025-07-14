@@ -72,9 +72,11 @@ public class HomeServlet extends HttpServlet {
                         String keyword = request.getParameter("keyword");
                         if (keyword != null && !keyword.trim().isEmpty()) {
                             productlist = productDAO.getProductsByCategory(keyword);
-                            request.setAttribute("productList", productlist);
-                            System.out.print(productlist);
+                        } else {
+                            productlist = productDAO.getAllProducts();
                         }
+                        request.setAttribute("productList", productlist);
+                        request.setAttribute("messageFilter", keyword);
                         request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
 
                     } catch (Exception ex) {

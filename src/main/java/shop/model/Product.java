@@ -32,6 +32,25 @@ public class Product {
     private List<String> imageUrls;
     private double averageStars;
     private int active;
+    private int activeProduct;
+
+    public int getActiveProduct() {
+        return activeProduct;
+    }
+
+    public void setActiveProduct(int activeProduct) {
+        this.activeProduct = activeProduct;
+    }
+
+    // Sửa lại constructor này nếu bạn có sử dụng nó ở đâu đó
+    public Product(int productId, String name, BigDecimal price, BigDecimal salePrice, int active, int activeProduct) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.salePrice = salePrice;
+        this.active = active; // Giả sử 'active' dùng cho mục đích khác
+        this.activeProduct = activeProduct; // Đã sửa tên tham số
+    }
 
     public Product(int productId, String name, BigDecimal price, BigDecimal salePrice, int active) {
         this.productId = productId;

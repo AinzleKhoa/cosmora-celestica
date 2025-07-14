@@ -77,6 +77,11 @@ public class DiscountServlet extends HttpServlet {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        else {
+            request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
+          
+        }
+
     }
 
     @Override

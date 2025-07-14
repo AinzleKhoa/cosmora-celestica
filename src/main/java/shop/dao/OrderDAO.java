@@ -34,7 +34,8 @@ public class OrderDAO extends DBContext {
                 + "FROM \n"
                 + "    [order] o\n"
                 + "JOIN \n"
-                + "    customer c ON o.customer_id = c.customer_id;";
+                + "    customer c ON o.customer_id = c.customer_id \n"
+                + "ORDER BY o.order_date DESC;";
         ResultSet rs = execSelectQuery(query);
         while (rs.next()) {
             order.add(new Order(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getBigDecimal(4), rs.getString(5), rs.getString(6), rs.getObject("order_date", LocalDateTime.class),
@@ -72,21 +73,38 @@ public class OrderDAO extends DBContext {
                 + "    od.price,\n"
                 + "    p.name AS product_name,\n"
                 + "    img.image_URL,\n"
-                + "    c.name AS category_name\n"
+                + "    c.name AS category_name,\n"
+                + "    gk.key_code\n"
                 + "FROM order_detail od\n"
                 + "JOIN product p ON od.product_id = p.product_id\n"
+                + "\n"
                 + "OUTER APPLY (\n"
                 + "    SELECT TOP 1 image_URL\n"
                 + "    FROM image\n"
                 + "    WHERE image.product_id = p.product_id\n"
-                + "    ORDER BY image_id -- hoặc created_at nếu có\n"
+                + "    ORDER BY image_id\n"
                 + ") AS img\n"
+                + "\n"
                 + "LEFT JOIN category c ON p.category_id = c.category_id\n"
-                + "WHERE od.order_id = ?;";
+                + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id\n"
+                + "\n"
+                + "-- Chỉ lấy 1 game key (nếu có) với OUTER APPLY\n"
+                + "OUTER APPLY (\n"
+                + "    SELECT TOP 1 key_code\n"
+                + "    FROM game_key\n"
+                + "    WHERE game_key.game_details_id = gd.game_details_id\n"
+                + "    ORDER BY game_key_id\n"
+                + ") AS gk\n"
+                + "\n"
+                + "WHERE od.order_id =?;";
         Object[] params = {orderId};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
-            temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getBigDecimal(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+            if (rs.getString(6).equalsIgnoreCase("game")) {
+                temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getBigDecimal(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+            } else {
+                temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getBigDecimal(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+            }
         }
         return temp;
 
@@ -131,7 +149,8 @@ public class OrderDAO extends DBContext {
         String query = "SELECT o.*, c.full_name\n"
                 + "FROM [Order] o\n"
                 + "JOIN Customer c ON o.customer_id = c.customer_id\n"
-                + "WHERE c.full_name LIKE ?;";
+                + "WHERE c.full_name LIKE ? \n"
+                + "ORDER BY o.order_date DESC;";
         Object[] params = {"%" + customer_name + "%"};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
@@ -151,7 +170,8 @@ public class OrderDAO extends DBContext {
                 + "    [order] o\n"
                 + "JOIN \n"
                 + "    customer c ON o.customer_id = c.customer_id \n" // thêm khoảng trắng hoặc xuống dòng
-                + "WHERE o.customer_id = ?;";
+                + "WHERE o.customer_id = ? \n"
+                + "ORDER BY o.order_date DESC;";
 
         Object[] params = {customerId};
         ResultSet rs = execSelectQuery(query, params);

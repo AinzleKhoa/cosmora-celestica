@@ -25,11 +25,40 @@
                 <input type="hidden" class="search-input" name="action" value="search" placeholder="Enter staff name...">
 
                 <button class="search-btn" type="submit">Search</button>
+                <a href="manage-staffs" class="clear-search-btn" 
+                   style="background-color: #ef4444;
+                   color: #fff;
+                   padding: 8px;
+                   border-radius: 13px;">
+                    <i class="fas fa-times "></i> Clear
+                </a>
             </form>
         </div>
     </section>
 
     <section class="admin-table-wrapper">
+        <% String message = (String) session.getAttribute("sMessage");
+            if (message != null) {%>
+        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= message%>
+        </div>
+        <%
+
+            }
+            session.removeAttribute("errorMessage");
+        %>
+
+        <% String errorMessage = (String) session.getAttribute("errorMessage");
+            if (errorMessage != null) {%>
+        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage%>
+        </div>
+        <%
+
+            }
+            session.removeAttribute("errorMessage");
+        %>
+
         <div class="table-responsive shadow-sm rounded overflow-hidden">
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">
@@ -39,7 +68,6 @@
                         <th>Full Name</th>
                         <th>Email</th>
                         <th>Role</th>
-                        <th>Status</th>
                         <th style="text-align: center;">Action</th>
                     </tr>
                 </thead>
@@ -66,14 +94,29 @@
                         </td>
                         <td><%= s.getFullName()%></td>
                         <td><%= s.getEmail()%></td>
-                        <td><%= s.getRole()%></td>
-                        <td><span class="badge-status">Active</span></td>
+                        <td>
+                            <span style="
+                                  display: inline-block;
+                                  padding: 4px 10px;
+                                  border-radius: 12px;
+                                  font-size: 0.9em;
+                                  font-weight: bold;
+                                  color: white;
+                                  background-color: <%= "admin".equalsIgnoreCase(s.getRole()) ? "#4CAF50" : "#2196F3"%>;">
+                                <%= s.getRole()%>
+                            </span>
+                        </td>
                         <td>
                             <div class="table-actions-center">
+                                <%
+                                    if (!"admin".equalsIgnoreCase(s.getRole())) {
+                                %>
                                 <a class="btn-action btn-details" href="${pageContext.servletContext.contextPath}/manage-staffs?view=details&id=<%= s.getId()%>">Details</a>
                                 <a class="btn-action btn-edit" href="${pageContext.servletContext.contextPath}/manage-staffs?view=edit&id=<%= s.getId()%>">Edit</a>
                                 <a class="btn-action btn-delete" href="${pageContext.servletContext.contextPath}/manage-staffs?view=delete&id=<%= s.getId()%>">Delete</a>
-
+                                <%
+                                    }
+                                %>
                             </div>
                         </td>
                     </tr>

@@ -26,6 +26,13 @@
                 <input type="hidden" name="action" value="search" />
                 <input type="text" name="customer_name" class="search-input" placeholder="Enter customer name...">
                 <button type="submit" class="search-btn">Search</button>
+                <a href="manage-orders" class="clear-search-btn" 
+                   style="background-color: #ef4444;
+                   color: #fff;
+                   padding: 8px;
+                   border-radius: 13px;">
+                    <i class="fas fa-times "></i> Clear
+                </a>
             </form>
         </div>
 
@@ -69,12 +76,38 @@
                                 statusLevel = 3;
                             else if (status.equals("Delivered"))
                                 statusLevel = 4;
+                            else if (status.equals("Canceled"))
+                                statusLevel = 5;
                             %>
 
+                            <%
+                                String borderColor;
+                                switch (status) {
+                                    case "Pending":
+                                        borderColor = "#FFC107"; // amber
+                                        break;
+                                    case "Confirmed":
+                                        borderColor = "#2196F3"; // blue
+                                        break;
+                                    case "Shipped":
+                                        borderColor = "#3F51B5"; // indigo
+                                        break;
+                                    case "Delivered":
+                                        borderColor = "#4CAF50"; // green
+                                        break;
+                                    case "Canceled":
+                                        borderColor = "#F44336"; // red
+                                        break;
+                                    default:
+                                        borderColor = "#9E9E9E"; // grey
+                                }
+                            %>
                             <form action="manage-orders" method="post">
                                 <input type="hidden" name="action" value="update" />
                                 <input type="hidden" name="orderId" value="<%= order.getOrderId()%>" />
-                                <select name="status" class="admin-filter-select" onchange="this.form.submit()">
+                                <select name="status" class="admin-filter-select" 
+                                        style="border: 2px solid <%= borderColor%>; border-radius: 4px; padding: 2px;"
+                                        onchange="this.form.submit()">
                                     <option value="Pending"
                                             <%= status.equals("Pending") ? "selected" : ""%>
                                             <%= statusLevel > 1 ? "disabled" : ""%>>Pending</option>
@@ -90,13 +123,14 @@
                                     <option value="Delivered"
                                             <%= status.equals("Delivered") ? "selected" : ""%>
                                             <%= statusLevel > 4 ? "disabled" : ""%>>Delivered</option>
+
+                                    <option value="Canceled"
+                                            <%= status.equals("Canceled") ? "selected" : ""%>
+                                            <%= statusLevel > 5 ? "disabled" : ""%>>Canceled</option>
                                 </select>
                             </form>
-
-
-
-
                         </td>
+
                         <td>
                             <div class="table-actions-center">
                                 <button class="btn-action btn-details"

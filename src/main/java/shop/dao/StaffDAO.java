@@ -190,6 +190,30 @@ public class StaffDAO extends DBContext {
         return 0;
     }
 
+    public boolean isEmailExist(String email) {
+        String sql = "SELECT 1 FROM Staff WHERE email = ?";
+        try {
+            ResultSet rs = this.execSelectQuery(sql, new Object[]{email});
+            return rs.next(); // Trả về true nếu tìm thấy ít nhất 1 kết quả
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEmailExistForOtherStaff(String email, int staffId) {
+        String sql = "SELECT 1 FROM Staff WHERE email = ? AND id != ?";
+        try {
+            ResultSet rs = this.execSelectQuery(sql, new Object[]{email, staffId});
+            boolean exists = rs.next();
+            rs.getStatement().getConnection().close(); // Đảm bảo đóng kết nối
+            return exists;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean isEmailTakenByOthers(String email, int id) {
         try {
             String query = "SELECT COUNT(*) FROM staff \n"

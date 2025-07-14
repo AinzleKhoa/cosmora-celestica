@@ -49,12 +49,6 @@
                     <input type="email" class="form-control admin-manage-input" value="<%=s.getEmail()%>" name="email" id="email" readonly>
                 </div>
 
-                <!-- Password -->
-                <div class="col-md-6">
-                    <label class="form-label admin-manage-label">Password</label>
-                    <input type="text" class="form-control admin-manage-input" name="password" id="password" readonly>
-                </div>
-
                 <!-- Phone -->
                 <div class="col-md-6">
                     <label class="form-label admin-manage-label">Phone</label>

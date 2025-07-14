@@ -15,11 +15,17 @@
 
     <section class="admin-header">
         <div class="admin-header-top">
-            <div class="search-filter-wrapper" style="display: flex; margin-left: auto;">
+            <div class="search-filter-wrapper" style="margin-left: auto;">
                 <form method="GET" action="${pageContext.servletContext.contextPath}/manage-customers">
                     <input type="text" name="searchName" class="search-input" placeholder="Enter customer name..." value="${param.searchName}">
                     <button type="submit" class="search-btn">Search</button>
-                    <a type="button" class="search-btn" href="${pageContext.servletContext.contextPath}/manage-customers">Clear</a>
+                    <a href="manage-customers" class="clear-search-btn" 
+                       style="background-color: #ef4444;
+                       color: #fff;
+                       padding: 8px;
+                       border-radius: 13px;">
+                        <i class="fas fa-times "></i> Clear
+                    </a>
                 </form>
             </div>
         </div>
@@ -42,7 +48,7 @@
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Status</th>
-                                <th>Email Verified</th>
+                                <th>Google Account</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
@@ -54,14 +60,32 @@
                                     <td>${customer.fullName}</td>
                                     <td>${customer.username}</td>
                                     <td>${customer.email}</td>
-                                    <td>                            
-                                        <span class="badge-status ${customer.isDeactivated ? 'badge-suspend' : 'badge-active'}">
-                                            ${customer.isDeactivated ? 'Suspended' : 'Active'}
-                                        </span>
+                                    <td style="text-align: center; display:flex; align-content: center">
+                                        <form action="manage-customers" method="POST" style="margin: 0;">
+                                            <input type="hidden" name="action" value="statusUpdate">
+                                            <input type="hidden" name="id" value="${customer.customerId}">
+                                            <input type="hidden" name="page" value="${param.page != null ? param.page : '1'}">
+
+                                            <c:choose>
+                                                <c:when test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                                                    <select name="status" class="admin-filter-select" 
+                                                            style="border: 1px solid ${customer.isDeactivated ? '#F44336' : '#4CAF50'}; border-radius: 4px; padding: 2px;"
+                                                            onchange="this.form.submit()">
+                                                        <option value="false" ${customer.isDeactivated == false ? "selected" : ""}>Active</option>
+                                                        <option value="true" ${customer.isDeactivated == true ? "selected" : ""}>Inactive</option>
+                                                    </select>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge-status ${customer.isDeactivated ? 'badge-suspend' : 'badge-active'}">
+                                                        ${customer.isDeactivated ? 'Suspended' : 'Active'}
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </form>
                                     </td>
                                     <td>                            
-                                        <span class="badge-status ${customer.emailVerified ? 'badge-suspend' : 'badge-active'}">
-                                            ${customer.emailVerified ? 'No' : 'Yes'}
+                                        <span class="badge-status ${empty customer.googleId ? 'badge-suspend' : 'badge-active'}">
+                                            ${empty customer.googleId ? 'No' : 'Yes'}
                                         </span>
                                     </td>
                                     <td>
@@ -72,18 +96,22 @@
                                                    <c:param name="id" value="${customer.customerId}"/>
                                                </c:url>
                                                ">Details</a>
-                                            <a class="btn-action btn-edit" href="
-                                               <c:url value="/manage-customers">
-                                                   <c:param name="view" value="edit"/>
-                                                   <c:param name="id" value="${customer.customerId}"/>
-                                               </c:url>
-                                               ">Edit</a>
-                                            <a class="btn-action btn-delete" href="
-                                               <c:url value="/manage-customers">
-                                                   <c:param name="view" value="delete"/>
-                                                   <c:param name="id" value="${customer.customerId}"/>
-                                               </c:url>
-                                               ">Delete</a>
+                                            <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                                                <a class="btn-action btn-edit" href="
+                                                   <c:url value="/manage-customers">
+                                                       <c:param name="view" value="edit"/>
+                                                       <c:param name="id" value="${customer.customerId}"/>
+                                                   </c:url>
+                                                   ">Edit</a>
+                                            </c:if>
+                                            <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                                                <a class="btn-action btn-delete" href="
+                                                   <c:url value="/manage-customers">
+                                                       <c:param name="view" value="delete"/>
+                                                       <c:param name="id" value="${customer.customerId}"/>
+                                                   </c:url>
+                                                   ">Delete</a>
+                                            </c:if>
                                             <a class="btn-action btn-history" onclick="location.href = '<%= request.getContextPath()%>/manage-customers?view=history&id=${customer.customerId}'">Order
                                                 History</a>
                                         </div>

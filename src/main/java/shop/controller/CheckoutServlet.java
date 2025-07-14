@@ -169,6 +169,7 @@ public class CheckoutServlet extends HttpServlet {
                     CartDAO cartDAO = new CartDAO();
                     cartDAO.deleteCartAfterBuy(customerId, ids);
                     int cartCount = cartDAO.countCartItems(customerId);
+                    CD.decreaseQuantity(ids, quantities);
                     session.setAttribute("cartCount", cartCount);
                     session.setAttribute("buysucces", "You have successfully placed your order.");
                     response.sendRedirect(request.getContextPath() + "/home");

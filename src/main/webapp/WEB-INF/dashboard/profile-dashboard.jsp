@@ -438,10 +438,6 @@
                                 <div class="col-12">
                                     <button class="form__btn" type="submit">Save</button>
                                 </div>
-
-                                <div class="col-12 mt-5">
-                                    <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
-                                </div>
                             </div>
                         </form>
                     </div>

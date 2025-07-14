@@ -51,6 +51,9 @@
                                         </c:if>
                                     </p>
                                 </div>
+                                <%
+                                    request.getSession().removeAttribute("message");
+                                %>
 
                                 <div class="sign__group">
                                     <input type="email" class="sign__input" placeholder="Email" name="email" id="email" value="${requestScope.email}" autocomplete="username" required>
@@ -61,18 +64,13 @@
                                            autocomplete="new-password" required>
                                 </div>
 
-                                <div class="sign__group sign__group--checkbox">
-                                    <input id="remember" name="remember" type="checkbox" checked="checked">
-                                    <label for="remember">Remember Me</label>
-                                </div>
-
                                 <button class="sign__btn" type="submit">Sign in</button>
 
                                 <span class="sign__delimiter">or</span>
 
                                 <div class="sign__social">
-                                    <a class="gl" href="#"><svg xmlns='http://www.w3.org/2000/svg' class='ionicon'
-                                                                viewBox='0 0 512 512'>
+                                    <a class="gl" href="${pageContext.servletContext.contextPath}/login-google"><svg xmlns='http://www.w3.org/2000/svg' class='ionicon'
+                                                                                                                     viewBox='0 0 512 512'>
                                         <path
                                             d='M473.16 221.48l-2.26-9.59H262.46v88.22H387c-12.93 61.4-72.93 93.72-121.94 93.72-35.66 0-73.25-15-98.13-39.11a140.08 140.08 0 01-41.8-98.88c0-37.16 16.7-74.33 41-98.78s61-38.13 97.49-38.13c41.79 0 71.74 22.19 82.94 32.31l62.69-62.36C390.86 72.72 340.34 32 261.6 32c-60.75 0-119 23.27-161.58 65.71C58 139.5 36.25 199.93 36.25 256s20.58 113.48 61.3 155.6c43.51 44.92 105.13 68.4 168.58 68.4 57.73 0 112.45-22.62 151.45-63.66 38.34-40.4 58.17-96.3 58.17-154.9 0-24.67-2.48-39.32-2.59-39.96z' />
                                         </svg></a>
@@ -89,6 +87,91 @@
                 </div>
             </div>
         </div>
+
+        <!-- Facebook Button -->
+        <a href="https://www.facebook.com/YourPage" 
+           style="position: fixed;
+           bottom: 20px;
+           right: 20px;
+           background-color: #4267B2;
+           color: white;
+           padding: 15px 20px;
+           border-radius: 50%;
+           font-size: 24px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+           transition: background-color 0.3s, transform 0.3s;
+           text-decoration: none;
+           cursor: pointer;
+           z-index: 100;">
+            <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+        </a>
+
+        <!-- Phone Button -->
+        <a href="tel:+1234567890" 
+           id="phoneButton"
+           style="position: fixed;
+           bottom: 80px;
+           right: 20px;
+           background-color: #34b7f1;
+           color: white;
+           padding: 15px;
+           border-radius: 50%;
+           font-size: 24px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+           transition: background-color 0.3s, transform 0.3s;
+           text-decoration: none;
+           cursor: pointer;
+           z-index: 100;">
+            <i class="fas fa-phone-alt"></i>
+            <span id="phoneText" style="display: none;
+                  position: absolute;
+                  top: -30px;
+                  left: 0%;
+                  transform: translateX(-50%);
+                  background-color: #34b7f1;
+                  color: white;
+                  padding: 5px 10px;
+                  border-radius: 5px;
+                  font-size: 14px;">+1234567890</span>
+        </a>
+
+        <script>
+            // Hover effect to show phone number
+            document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+                document.getElementById('phoneText').style.display = 'block';
+            });
+
+            document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+                document.getElementById('phoneText').style.display = 'none';
+            });
+
+            // Click-to-copy phone number functionality
+            document.getElementById('phoneButton').addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the default action (making a call)
+
+                // Create a temporary input element to copy the phone number
+                const tempInput = document.createElement('input');
+                tempInput.value = "+1234567890"; // Phone number to copy
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+                // Copy the text to the clipboard
+                document.execCommand('copy');
+
+                // Remove the temporary input element
+                document.body.removeChild(tempInput);
+
+                // Display a message or change button style to indicate success
+                alert('Phone number copied to clipboard!');
+            });
+        </script>
         <!-- end sign in -->
         <!-- JS -->
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>

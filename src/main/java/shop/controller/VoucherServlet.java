@@ -30,7 +30,6 @@ public class VoucherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String view = request.getParameter("view");
-
         VouchersDAO vD = new VouchersDAO();
         if (view == null || view.isEmpty() || view.equals("list")) {
 
@@ -40,6 +39,7 @@ public class VoucherServlet extends HttpServlet {
                 request.setAttribute("voucherslist", voucherslist);
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
             } catch (Exception ex) {
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -51,6 +51,7 @@ public class VoucherServlet extends HttpServlet {
                 request.setAttribute("voucher", voucher);
                 request.setAttribute("id", id);
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-edit.jsp").forward(request, response);
+
             } catch (Exception ex) {
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -59,6 +60,7 @@ public class VoucherServlet extends HttpServlet {
             try {
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-create.jsp").forward(request, response);
             } catch (Exception ex) {
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (view.equals(
@@ -78,8 +80,12 @@ public class VoucherServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/dashboard/voucher-list.jsp").forward(request, response);
 
             } catch (Exception ex) {
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 Logger.getLogger(VoucherServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
+          
         }
 
     }

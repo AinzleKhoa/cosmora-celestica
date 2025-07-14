@@ -210,7 +210,7 @@
             <div class="col-12">
                 <div class="section__wrap">
                     <!-- section title -->
-                    <h2 class="section__title">Profile</h2>
+                    <h2 class="section__title">Order History</h2>
                     <!-- end section title -->
 
                     <!-- breadcrumb -->
@@ -228,8 +228,13 @@
 </section>
 <section class="section section--last">
 
-    <div class="row">
+    <div class="row" style="padding: 80px">
         <div class="col-12">
+            <div class="mb-4">
+                <a href="${pageContext.servletContext.contextPath}/profile" class="admin-manage-back mb-5">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </a>
+            </div>
             <div class="table-responsive table-responsive--border">
                 <table class="profile__table">
                     <thead>
@@ -239,10 +244,10 @@
                             <th>Date</th>
                             <th>Status</th>
                             <th>Review</th>
-                            <th></th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <%  List<Order> order = (List<Order>) request.getAttribute("order"); 
+                    <%  List<Order> order = (List<Order>) request.getAttribute("order");
 
                         for (Order od : order) {
 
@@ -255,25 +260,18 @@
                             <td><span class="profile__price"><%= od.getTotalAmount()%></span></td>
                             <td><%= od.getOrderDate()%></td>
                             <td><span class="profile__status"><%= od.getStatus()%></span></td>
+                                <% if (od.getStatus().equalsIgnoreCase("Shipped") || od.getStatus().equalsIgnoreCase("Delivered")) {%>
                             <td>
                                 <%
                                     Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
-                                    boolean isReviewed = false;
 
-                                    try {
-                                        ProductDAO pd = new ProductDAO();
-                                        isReviewed = pd.isOrderReviewed(od.getOrderId(), currentCustomer.getCustomerId());
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    if (isReviewed) {
+                                    if (od.isIsReviewed()) {
                                 %>
-                                <p style="color: lightgreen;">Reviewed applied successfully!</p>
+                                <p style="color: lightgreen;">This product has been previously reviewed.</p>
                                 <%
                                 } else {
                                 %>
-                                <form action="profile" method="post">
+                                <form action="profile-order-history" method="post">
                                     <input type="hidden" name="action" value="review">
                                     <input type="hidden" name="orderId" value="<%= od.getOrderId()%>">
                                     <style>
@@ -311,7 +309,9 @@
                                 %>
 
                             </td>
-                            <td><form action="<%= request.getContextPath()%>/profile" method="post" class="table-actions-center" style="display:inline;">
+                            <% } else {%>
+                            <<td>Order is still in transit</td><%}%>
+                            <td><form action="<%= request.getContextPath()%>/profile-order-history" method="post" class="table-actions-center" style="display:inline;">
                                     <input type="hidden" name="action" value="details">
                                     <input type="hidden" name="order_id" value="<%= od.getOrderId()%>">
                                     <button type="submit" class="btn-action btn-details">Details</button>
@@ -355,15 +355,100 @@
             </ul>
         </nav>
 
-        <script>
-            function submitPage(pageNumber) {
-                document.getElementById('pageInput').value = pageNumber;
-                document.getElementById('paginationForm').submit();
-            }
-        </script>
+
         <!-- end paginator -->
     </div>
-</div>
 </section>
 
+<!-- Facebook Button -->
+<a href="https://www.facebook.com/YourPage" 
+   style="position: fixed;
+   bottom: 20px;
+   right: 20px;
+   background-color: #4267B2;
+   color: white;
+   padding: 15px 20px;
+   border-radius: 50%;
+   font-size: 24px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+   transition: background-color 0.3s, transform 0.3s;
+   text-decoration: none;
+   cursor: pointer;
+   z-index: 100;">
+    <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+</a>
+
+<!-- Phone Button -->
+<a href="tel:+1234567890" 
+   id="phoneButton"
+   style="position: fixed;
+   bottom: 80px;
+   right: 20px;
+   background-color: #34b7f1;
+   color: white;
+   padding: 15px;
+   border-radius: 50%;
+   font-size: 24px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+   transition: background-color 0.3s, transform 0.3s;
+   text-decoration: none;
+   cursor: pointer;
+   z-index: 100;">
+    <i class="fas fa-phone-alt"></i>
+    <span id="phoneText" style="display: none;
+          position: absolute;
+          top: -30px;
+          left: 0%;
+          transform: translateX(-50%);
+          background-color: #34b7f1;
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          font-size: 14px;">+1234567890</span>
+</a>
+
+<script>
+    // Hover effect to show phone number
+    document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+        document.getElementById('phoneText').style.display = 'block';
+    });
+
+    document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+        document.getElementById('phoneText').style.display = 'none';
+    });
+
+    // Click-to-copy phone number functionality
+    document.getElementById('phoneButton').addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent the default action (making a call)
+
+        // Create a temporary input element to copy the phone number
+        const tempInput = document.createElement('input');
+        tempInput.value = "+1234567890"; // Phone number to copy
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text to the clipboard
+        document.execCommand('copy');
+
+        // Remove the temporary input element
+        document.body.removeChild(tempInput);
+
+        // Display a message or change button style to indicate success
+        alert('Phone number copied to clipboard!');
+    });
+</script>
+
+<script>
+    function submitPage(pageNumber) {
+        document.getElementById('pageInput').value = pageNumber;
+        document.getElementById('paginationForm').submit();
+    }
+</script>
 <%@include file="/WEB-INF/include/home-footer.jsp" %>

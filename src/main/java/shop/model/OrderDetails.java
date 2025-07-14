@@ -20,6 +20,7 @@ public class OrderDetails {
     private String productName;
     private String imageURL;
     private String categoryName;
+    private String gameKey ;
 
     public OrderDetails(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price, String productName) {
         this.orderDetailId = orderDetailId;
@@ -38,9 +39,27 @@ public class OrderDetails {
         this.imageURL = imageURL;
         this.categoryName = categoryName;
     }
+    public OrderDetails(int productId, int quantity, BigDecimal price, String productName, String imageURL, String categoryName, String gameKey) {
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.productName = productName;
+        this.imageURL = imageURL;
+        this.categoryName = categoryName;
+        this.gameKey = gameKey;
+    }
 
     public OrderDetails() {
     }
+
+    public String getGameKey() {
+        return gameKey;
+    }
+
+    public void setGameKey(String gameKey) {
+        this.gameKey = gameKey;
+    }
+    
 
     public String getImageURL() {
         return imageURL;

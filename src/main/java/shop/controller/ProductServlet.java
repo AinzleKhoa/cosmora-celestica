@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package shop.controller;
 
 import java.io.IOException;
@@ -129,11 +125,17 @@ public class ProductServlet extends HttpServlet {
                     ProductDAO productDAO = new ProductDAO();
                     Product product = productDAO.getProductById(id);
 
+                    // 1. Kiểm tra xem sản phẩm có tồn tại không
                     if (product == null) {
                         response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
-                        return;
+                        return; // Dừng xử lý ngay lập tức
                     }
 
+                    // 2. Nếu sản phẩm tồn tại, lấy số sao và gán vào sản phẩm (không cần vòng lặp)
+                    double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                    product.setAverageStars(stars);
+
+                    // 3. Xử lý các logic còn lại
                     if ("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetailsId() != null && product.getGameDetailsId() > 0) {
                         int gameDetailsId = product.getGameDetailsId();
                         request.setAttribute("gameKeys", new GameKeyDAO().findByGameDetailsId(gameDetailsId));
@@ -165,10 +167,11 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("currencyFormatter", NumberFormat.getCurrencyInstance(localeVN));
                     request.setAttribute("timestampFormatter", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"));
                     request.setAttribute("dateFormatter", new SimpleDateFormat("dd/MM/yyyy"));
+
+                    // 4. Gửi dữ liệu tới JSP
                     request.setAttribute("product", product);
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-details.jsp").forward(request, response);
                     break;
-
                 }
                 case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
@@ -260,8 +263,16 @@ public class ProductServlet extends HttpServlet {
                     String productType = request.getParameter("productType");
                     String name = request.getParameter("name");
                     BigDecimal price = new BigDecimal(request.getParameter("price"));
+                    if (price.compareTo(BigDecimal.ZERO) <= 0) {
+                        request.setAttribute("errorMessage", "Price must be greater than 0!");
+                        request.setAttribute("categoriesList", new CategoryDAO().getAllCategories());
+                        request.setAttribute("brandsList", new BrandDAO().getAllBrands());
+                        request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
+                        request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
+                        request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
+                        return;
+                    }
                     String description = request.getParameter("description");
-                    int quantity = Integer.parseInt(request.getParameter("quantity"));
                     int categoryId = Integer.parseInt(request.getParameter("categoryId"));
 
                     List<String> imageUrls = new ArrayList<>();
@@ -284,12 +295,13 @@ public class ProductServlet extends HttpServlet {
                     product.setName(name);
                     product.setDescription(description);
                     product.setPrice(price);
-                    product.setQuantity(quantity);
+//                    product.setQuantity(quantity);
                     product.setCategoryId(categoryId);
 
                     ProductDAO productDAO = new ProductDAO();
 
                     if ("game".equals(productType)) {
+                        product.setQuantity(1);
                         GameDetails gameDetails = new GameDetails();
                         gameDetails.setDeveloper(request.getParameter("developer"));
                         gameDetails.setGenre(request.getParameter("genre"));
@@ -302,6 +314,19 @@ public class ProductServlet extends HttpServlet {
 
                         productDAO.addFullGameProduct(product, gameDetails, imageUrls, platformIds, osIds, newKeys);
                     } else {
+
+                        // For accessories, get quantity from the form
+                        int quantity = Integer.parseInt(request.getParameter("quantity"));
+                        if (quantity <= 0) {
+                            request.setAttribute("errorMessage", "Quantity must be greater than 0!");
+                            request.setAttribute("categoriesList", new CategoryDAO().getAllCategories());
+                            request.setAttribute("brandsList", new BrandDAO().getAllBrands());
+                            request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
+                            request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
+                            request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
+                            return;
+                        }
+                        product.setQuantity(quantity);
                         String brandIdStr = request.getParameter("brandId");
                         product.setBrandId((brandIdStr != null && !brandIdStr.isEmpty()) ? Integer.parseInt(brandIdStr) : null);
 
@@ -328,8 +353,14 @@ public class ProductServlet extends HttpServlet {
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     String name = request.getParameter("name");
                     BigDecimal price = new BigDecimal(request.getParameter("price"));
+                    if (price.compareTo(BigDecimal.ZERO) <= 0) {
+                        request.setAttribute("errorMessage", "Price must be greater than 0!");
+                        request.getRequestDispatcher("/WEB-INF/dashboard/product-edit.jsp").forward(request, response);
+                        return;
+                    }
                     String description = request.getParameter("description");
-                    int quantity = Integer.parseInt(request.getParameter("quantity"));
+//                    int quantity = Integer.parseInt(request.getParameter("quantity"));
+
                     int categoryId = Integer.parseInt(request.getParameter("categoryId"));
                     String productType = request.getParameter("productType");
 
@@ -362,7 +393,7 @@ public class ProductServlet extends HttpServlet {
                     product.setName(name);
                     product.setDescription(description);
                     product.setPrice(price);
-                    product.setQuantity(quantity);
+//                    product.setQuantity(quantity);
                     product.setCategoryId(categoryId);
 
                     GameDetails gameDetails = null;
@@ -372,6 +403,7 @@ public class ProductServlet extends HttpServlet {
                     String[] newKeys = null;
 
                     if ("game".equalsIgnoreCase(productType)) {
+                        product.setQuantity(1);
                         product.setBrandId(null);
                         int gameDetailsId = 0;
                         String gameDetailsIdStr = request.getParameter("gameDetailsId");
@@ -397,6 +429,14 @@ public class ProductServlet extends HttpServlet {
                             newKeys = newKeysRaw.split("\\r?\\n");
                         }
                     } else {
+                        // For accessories, get quantity from the form
+                        int quantity = Integer.parseInt(request.getParameter("quantity"));
+                        if (quantity <= 0) {
+                            request.setAttribute("errorMessage", "Quantity must be greater than 0!");
+                            request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
+                            return;
+                        }
+                        product.setQuantity(quantity);
                         product.setGameDetailsId(null);
                         String brandIdStr = request.getParameter("brandId");
                         product.setBrandId((brandIdStr != null && !brandIdStr.isEmpty()) ? Integer.parseInt(brandIdStr) : null);
@@ -420,12 +460,29 @@ public class ProductServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
                 }
-                case "delete":
+                case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
                     productDAO.deleteProduct(id);
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
+                }
+                case "updateVisibility": {
+                    int productId = Integer.parseInt(request.getParameter("id"));
+                    int newStatus = Integer.parseInt(request.getParameter("newStatus"));
+                    String page = request.getParameter("page");
+
+                    ProductDAO productDAO = new ProductDAO();
+                    productDAO.updateProductVisibility(productId, newStatus);
+
+                    String redirectUrl = request.getContextPath() + "/manage-products?action=list";
+                    if (page != null && !page.isEmpty()) {
+                        redirectUrl += "&page=" + page;
+                    }
+
+                    response.sendRedirect(redirectUrl);
+                    break;
+                }
                 default:
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;

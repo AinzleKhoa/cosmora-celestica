@@ -8,7 +8,7 @@ package shop.model;
  *
  * @author PHUCHH
  */
-public class cartItem {
+public class CartItem {
     
     private int cartId;
     private int customerId;
@@ -20,7 +20,7 @@ public class cartItem {
     private String imageUrl;
     private String categoryName;
 
-    public cartItem(int cartId, int customerId, int productId, int quantity, String productName, double price, Double salePrice, String imageUrl, String categoryName) {
+    public CartItem(int cartId, int customerId, int productId, int quantity, String productName, double price, Double salePrice, String imageUrl, String categoryName) {
         this.cartId = cartId;
         this.customerId = customerId;
         this.productId = productId;
@@ -32,7 +32,7 @@ public class cartItem {
         this.categoryName = categoryName;
     }
 
-    public cartItem() {
+    public CartItem() {
     }
 
 

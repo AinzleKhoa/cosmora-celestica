@@ -19,9 +19,9 @@ import shop.util.SessionUtil;
  *
  * @author Le Anh Khoa - CE190449
  */
-//@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {
-//    "/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers",
-//    "/manage-discounts", "/profile-dashboard", "/dashboard"})
+@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {
+    "/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers",
+    "/manage-discounts", "/profile-dashboard", "/dashboard"})
 public class EmployeeAuthFilter implements Filter {
 
     @Override
@@ -31,7 +31,11 @@ public class EmployeeAuthFilter implements Filter {
         if (SessionUtil.isStaffLoggedIn(req)) {
             // Staff can only access specific pages
             String requestedUrl = req.getRequestURI();
-            if (requestedUrl.contains("/manage-discounts") || requestedUrl.contains("/profile-dashboard") || requestedUrl.contains("/dashboard")) {
+            if (requestedUrl.contains("/manage-discounts") || 
+                    requestedUrl.contains("/profile-dashboard") || 
+                    requestedUrl.contains("/dashboard") || 
+                    requestedUrl.contains("/manage-vouchers") ||
+                    requestedUrl.contains("/manage-products")) {
                 ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/404");
                 System.out.println("Staff tried to access a restricted page! Redirecting to 404.");
             } else {

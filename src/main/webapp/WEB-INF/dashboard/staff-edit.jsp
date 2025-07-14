@@ -18,6 +18,15 @@
             <fieldset class="mb-4 admin-manage-fieldset">
                 <legend class="admin-manage-subtitle">Staff Information</legend>
                 <%
+                    String error = (String) session.getAttribute("errorMessage");
+                    if (error != null) {
+                %>
+                <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 10px; margin-top: 15px; border-radius: 5px;">
+                    <strong>Error:</strong> <%= error%>
+
+                </div>
+                <%} %>
+                <%
                     Staff s = (Staff) request.getAttribute("s");
                     if (s == null) {
                 %>
@@ -45,7 +54,7 @@
                     <!-- Password -->
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Password</label>
-                        <input type="text" class="form-control admin-manage-input" name="password" id="password" required>
+                        <input type="text" class="form-control admin-manage-input" name="password" placeholder="*******" id="password">
                     </div>
 
                     <!-- Phone -->
@@ -61,7 +70,7 @@
                             <option value="">-- Select Gender --</option>
                             <option value="Male" <%= "Male".equalsIgnoreCase(s.getGender()) ? "selected" : ""%>>Male</option>
                             <option value="Female" <%= "Female".equalsIgnoreCase(s.getGender()) ? "selected" : ""%>>Female</option>
-                           
+
                         </select>
                     </div>
 
@@ -107,19 +116,23 @@
     document.getElementById("editStaffForm").addEventListener("submit", function (e) {
         const username = this.querySelector('[name="username"]').value;
         const email = this.querySelector('[name="email"]').value;
-        const password = this.querySelector('[name="password"]').value;
+        const password = this.querySelector('[name="password"]').value.trim();
         const phone = this.querySelector('[name="phone"]').value;
 
-        // Password - must be at least 8 characters long and contain at least 1 letter and 1 number
-        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if (password.length < 8) {
-            alert("Password must be at least 8 characters long.");
-            e.preventDefault();
-            return;
-        } else if (!passwordRegex.test(password)) {
-            alert("Password must contain at least 1 letter and 1 number.");
-            e.preventDefault();
-            return;
+        // Password is not rerquired
+        if (password !== "") {
+            // Password - must be at least 8 characters long and contain at least 1 letter and 1 number
+            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+            if (password.length < 8) {
+                alert("Password must be at least 8 characters long.");
+                e.preventDefault();
+                return;
+            } else if (!passwordRegex.test(password)) {
+                alert("Password must contain at least 1 letter and 1 number.");
+                e.preventDefault();
+                return;
+            }
         }
 
         // Email - must be a valid Gmail address
