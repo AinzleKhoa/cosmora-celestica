@@ -229,7 +229,7 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
-    
+
     public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
         try {
             String query = "SELECT COUNT(*) FROM customer \n"
@@ -244,7 +244,7 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
-    
+
     public int storeOtpForEmail(String email, String otp, Timestamp expiry) {
         try {
             String query = "UPDATE customer SET email_verification_token = ?, email_verification_expiry = ? WHERE email = ?";
@@ -277,15 +277,14 @@ public class CustomerDAO extends DBContext {
     public int createCustomer(Customer customer) {
         try {
             String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, created_at)\n"
-                    + "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
+                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
             Object[] params = {
                 customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
                 customer.getPasswordHash(),
                 customer.getAvatarUrl(),
-                customer.getGoogleId(),
-            };
+                customer.getGoogleId(),};
             return execQuery(query, params);
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -320,7 +319,7 @@ public class CustomerDAO extends DBContext {
         }
         return 0;
     }
-    
+
     public int updateProfileCustomer(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
@@ -389,6 +388,24 @@ public class CustomerDAO extends DBContext {
             Object[] params = {
                 customer.getPasswordHash(),
                 customer.getEmail()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public int updateCustomerStatus(int id, boolean status) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET "
+                    + " is_deactivated = ?,\n"
+                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                status,
+                id
             };
             return execQuery(query, params);
         } catch (SQLException ex) {

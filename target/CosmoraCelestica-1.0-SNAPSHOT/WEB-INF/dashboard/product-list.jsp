@@ -103,7 +103,9 @@
                                 <input type="hidden" name="page" value="<%= currentPage%>">
 
                                 <%-- Thẻ select với sự kiện onchange --%>
-                                <select name="newStatus" class="admin-filter-select" onchange="this.form.submit()">
+                                <select name="newStatus" class="admin-filter-select" 
+                                        style="border: 1px solid <%= (p.getActiveProduct() == 0) ? "F44336" : "#4CAF50"%>; border-radius: 4px; padding: 2px;"
+                                        onchange="this.form.submit()">
                                     <option value="1" <%= (p.getActiveProduct() == 1) ? "selected" : ""%>>
                                         Enabled
                                     </option>

@@ -59,13 +59,18 @@ public class GoogleCallbackServlet extends HttpServlet {
         Customer customer = cDAO.getAccountByEmail(email);
 
         if (customer != null) {
-            if (customer.getGoogleId() == null) {
-                System.out.println(googleId);
-                customer.setGoogleId(googleId);
-                cDAO.updateCustomer(customer); // Save linked Google ID
-            } else if (!customer.getGoogleId().equals(googleId)) { // Rare exception
-                request.setAttribute("message", "Google ID mismatch. Please contact support.");
-                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+            if (!customer.isIsDeactivated()) {
+                if (customer.getGoogleId() == null) {
+                    System.out.println(googleId);
+                    customer.setGoogleId(googleId);
+                    cDAO.updateCustomer(customer); // Save linked Google ID
+                } else if (!customer.getGoogleId().equals(googleId)) { // Rare exception
+                    request.setAttribute("message", "Google ID mismatch. Please contact support.");
+                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                }
+            } else {
+                request.getSession().setAttribute("message", "Your account is locked. Please contact us for more information.");
+                response.sendRedirect(request.getContextPath() + "/login");
             }
         } else {
             // New Google user
@@ -80,11 +85,10 @@ public class GoogleCallbackServlet extends HttpServlet {
             customer.setCreatedAt(Timestamp.from(Instant.now()));
             customer.setUpdatedAt(Timestamp.from(Instant.now()));
             cDAO.createCustomer(customer);
+            HttpSession session = request.getSession();
+            session.setAttribute("currentCustomer", customer);
+
+            response.sendRedirect(request.getContextPath() + "/home");
         }
-
-        HttpSession session = request.getSession();
-        session.setAttribute("currentCustomer", customer);
-
-        response.sendRedirect(request.getContextPath() + "/home");
     }
 }

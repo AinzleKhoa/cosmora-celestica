@@ -64,24 +64,18 @@ public class LoginServlet extends HttpServlet {
                 // Check password match before setting session
                 boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
                 if (isPasswordMatched) {
-                    if (cDAO.updateLastLoginTime(customer) > 0) {
-                        HttpSession session = request.getSession(true);
-                        session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
 
-                        CartDAO cartDAO = new CartDAO();
-                        int customerId = customer.getCustomerId();
-                        int cartCount = cartDAO.countCartItems(customerId);
-                        session.setAttribute("cartCount", cartCount);
+                    CartDAO cartDAO = new CartDAO();
+                    int customerId = customer.getCustomerId();
+                    int cartCount = cartDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
 
-                        // Redirect to the home page upon successful login
-                        response.sendRedirect(request.getContextPath() + "/home");
-                    } else {
-                        // If password doesn't match, set error message and forward to login page
-                        request.setAttribute("email", email);
-                        request.setAttribute("password", password);
-                        request.setAttribute("message", "We're unable to update your login time at the moment. Please try again later.");
-                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                    }
+                    cDAO.updateLastLoginTime(customer); // Update login time
+
+                    // Redirect to the home page upon successful login
+                    response.sendRedirect(request.getContextPath() + "/home");
                 } else {
                     // If password doesn't match, set error message and forward to login page
                     request.setAttribute("email", email);

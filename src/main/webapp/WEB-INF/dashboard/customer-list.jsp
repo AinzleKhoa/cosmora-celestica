@@ -42,7 +42,7 @@
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Status</th>
-                                <th>Email Verified</th>
+                                <th>Google Account</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
@@ -54,14 +54,23 @@
                                     <td>${customer.fullName}</td>
                                     <td>${customer.username}</td>
                                     <td>${customer.email}</td>
-                                    <td>                            
-                                        <span class="badge-status ${customer.isDeactivated ? 'badge-suspend' : 'badge-active'}">
-                                            ${customer.isDeactivated ? 'Suspended' : 'Active'}
-                                        </span>
+                                    <td style="text-align: center;">
+                                        <form action="manage-customers" method="POST" style="margin: 0;">
+                                            <input type="hidden" name="action" value="statusUpdate">
+                                            <input type="hidden" name="id" value="${customer.customerId}">
+                                            <input type="hidden" name="page" value="${param.page != null ? param.page : '1'}">
+
+                                            <select name="status" class="admin-filter-select" 
+                                                    style="border: 1px solid ${customer.isDeactivated ? '#F44336' : '#4CAF50'}; border-radius: 4px; padding: 2px;"
+                                                    onchange="this.form.submit()">
+                                                <option value="false" ${customer.isDeactivated == false ? "selected" : ""}>Active</option>
+                                                <option value="true" ${customer.isDeactivated == true ? "selected" : ""}>Suspended</option>
+                                            </select>
+                                        </form>
                                     </td>
                                     <td>                            
-                                        <span class="badge-status ${customer.emailVerified ? 'badge-suspend' : 'badge-active'}">
-                                            ${customer.emailVerified ? 'No' : 'Yes'}
+                                        <span class="badge-status ${empty customer.googleId ? 'badge-suspend' : 'badge-active'}">
+                                            ${empty customer.googleId ? 'No' : 'Yes'}
                                         </span>
                                     </td>
                                     <td>
