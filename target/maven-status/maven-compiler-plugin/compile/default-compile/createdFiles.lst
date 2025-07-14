@@ -31,10 +31,12 @@ shop\filter\CustomerAuthFilter.class
 shop\model\Category.class
 shop\controller\LoginServlet.class
 shop\controller\ProfileDashboardServlet.class
+shop\controller\LoginGoogleServlet.class
 shop\controller\ProfileOrderHistoryServlet.class
 shop\dao\ProductDAO.class
 shop\controller\CheckoutServlet.class
 shop\util\SessionUtil.class
+shop\controller\GoogleCallbackServlet.class
 shop\model\Cart.class
 shop\model\Image.class
 shop\dao\StorePlatformDAO.class

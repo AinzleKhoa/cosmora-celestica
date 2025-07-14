@@ -45,7 +45,7 @@
 
                                     if (cartItems == null || cartItems.isEmpty()) {
                                 %>
-                                <!-- Gi? hàng r?ng -->
+
                                 <h2 style="color: white">Your cart is empty.</h2>
                                 <%
                                 } else {
@@ -65,19 +65,31 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+
                                             <%
                                                 for (CartItem item : cartItems) {
+                                                    int cartQuantity = item.getCartQuantity();
+                                                    int productQuantity = item.getProductQuantity(); 
+
+                                                    if (cartQuantity > productQuantity) {
+                                                        cartQuantity = productQuantity;
+                                                    }
+
+                                                    boolean canIncrease = cartQuantity < productQuantity;
+
                                                     double unitPrice = item.getSalePrice() != null ? item.getSalePrice() : item.getPrice();
-                                                    double totalPrice = unitPrice * item.getQuantity();
+                                                    double totalPrice = unitPrice * cartQuantity;
                                             %>
+
+
                                             <tr>
                                                 <!-- Checkbox -->
                                                 <td>
                                                     <input type="checkbox"
                                                            class="product-check"
-                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getQuantity())%>"
+                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getCartQuantity())%>"
                                                            data-product-id="<%= item.getProductId()%>"
-                                                           data-quantity="<%= item.getQuantity()%>"
+                                                           data-quantity="<%= item.getCategoryName()%>"
                                                            onclick="updateTotalPrice()"
                                                            style="transform: scale(1.5); appearance: auto; margin-right: 10px;" />
                                                 </td>
@@ -113,8 +125,11 @@
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">-</button>
                                                         </form>
-                                                        <span class="cart__price"><%= item.getQuantity()%></span>
+
+                                                        <span class="cart__price"><%= cartQuantity%></span>
+
                                                         <!-- Increase -->
+                                                        <% if (canIncrease) {%>
                                                         <form method="post" action="cart" style="display:inline;">
                                                             <input type="hidden" name="page" value="cart">
                                                             <input type="hidden" name="action" value="add">
@@ -122,8 +137,10 @@
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">+</button>
                                                         </form>
+                                                        <% }%>
                                                     </div>
                                                 </td>
+
 
                                                 <!-- Delete -->
                                                 <td>

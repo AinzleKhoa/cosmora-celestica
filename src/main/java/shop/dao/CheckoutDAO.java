@@ -46,7 +46,7 @@ public class CheckoutDAO extends DBContext {
     }
 
     public int writeOrderIntoDb(int customerId, Integer voucherId, double total, String paymentMethod, String address) throws SQLException {
-      
+
         int orderId = 0;
         String query = "INSERT INTO [order] (\n"
                 + "    customer_id, voucher_id, total_amount, payment_method, \n"
@@ -55,15 +55,15 @@ public class CheckoutDAO extends DBContext {
                 + "VALUES (\n"
                 + "    ?, ?, ?, ?, ?, GETDATE(), 'Pending', NULL\n"
                 + ");SELECT SCOPE_IDENTITY();";
-       
+
         Object[] params = {customerId, voucherId, total, paymentMethod, address};
-                
+
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
             orderId = rs.getInt(1);
         }
         return orderId;
-        
+
     }
 
     public int writeOrderDetails(int orderId, String[] productId, String[] quantity, String[] price) throws SQLException {
@@ -87,6 +87,22 @@ public class CheckoutDAO extends DBContext {
         return execQuery(query.toString(), params);
     }
 
- 
+    public void decreaseQuantity(String[] productIds, String[] quantities) throws SQLException {
+        StringBuilder query = new StringBuilder();
+        Object[] params = new Object[productIds.length * 2];
+        int index = 0;
+
+        for (int i = 0; i < productIds.length; i++) {
+            query.append("UPDATE Product SET quantity = quantity - ? WHERE product_id = ?; ");
+
+            int qty = Integer.parseInt(quantities[i]);
+            int pid = Integer.parseInt(productIds[i]);
+
+            params[index++] = qty;  // For quantity
+            params[index++] = pid;  // For product_id
+        }
+
+        execQuery(query.toString(), params);
+    }
 
 }

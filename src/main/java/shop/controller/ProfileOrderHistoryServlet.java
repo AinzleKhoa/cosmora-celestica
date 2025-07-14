@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import shop.dao.OrderDAO;
+import shop.dao.ProductDAO;
 import shop.model.Customer;
 import shop.model.Order;
+import shop.model.OrderDetails;
 
 /**
  *
@@ -72,6 +74,14 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
 
         try {
             ArrayList<Order> fullOrderList = OD.getOrderById(temp.getCustomerId());
+             //check order is reviewed
+            ProductDAO pd = new ProductDAO();
+            for (Order order : fullOrderList) {
+                
+                if (pd.isOrderReviewed(order.getOrderId(), temp.getCustomerId())) {
+                    order.setIsReviewed(true);
+                }
+            }
 
             // Lấy tham số trang từ request
             String pageParam = request.getParameter("page");
@@ -86,22 +96,24 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
 
             int itemsPerPage = 15;
             int totalOrders = fullOrderList.size();
-                int totalPages = (totalOrders == 0) ? 1 : (int) Math.ceil((double) totalOrders / itemsPerPage);
-                if (currentPage < 1) {
-                    currentPage = 1;
-                }
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                }
-           int startIndex = (currentPage - 1) * itemsPerPage;
-                int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
+            int totalPages = (totalOrders == 0) ? 1 : (int) Math.ceil((double) totalOrders / itemsPerPage);
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+            if (currentPage > totalPages) {
+                currentPage = totalPages;
+            }
+            int startIndex = (currentPage - 1) * itemsPerPage;
+            int endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
 
-           List<Order> paginatedOrders = (List<Order>) ((startIndex < endIndex)
-                        ? fullOrderList.subList(startIndex, endIndex)
-                        : new ArrayList<>());
+            List<Order> paginatedOrders = (List<Order>) ((startIndex < endIndex)
+                    ? fullOrderList.subList(startIndex, endIndex)
+                    : new ArrayList<>());
             request.setAttribute("order", paginatedOrders);
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
+
+           
             request.getRequestDispatcher("/WEB-INF/home/profile-order-history.jsp")
                     .forward(request, response);
 
@@ -122,7 +134,46 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String action = request.getParameter("action");
+
+        if (action.equals("details")) {
+            OrderDAO OD = new OrderDAO();
+            int orderid = Integer.parseInt(request.getParameter("order_id"));
+
+            try {
+                ArrayList<OrderDetails> orderDetails = OD.getOrderDetailForCus(orderid);
+                Order order = OD.getOneOrder(orderid);
+                request.setAttribute("order", order);
+                request.setAttribute("orderdetails", orderDetails);
+                request.getRequestDispatcher("/WEB-INF/home/profile-order-details.jsp").forward(request, response);
+
+            } catch (SQLException ex) {
+                Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (action.equals("review")) {
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            int value = 0;
+            String ratingStr = request.getParameter("rating");
+            if (ratingStr == null || ratingStr.isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/profile");
+                return;
+            }
+            value = Integer.parseInt(ratingStr);
+
+            HttpSession session = request.getSession();
+            Customer temp = (Customer) session.getAttribute("currentCustomer");
+            OrderDAO OD = new OrderDAO();
+            ProductDAO PD = new ProductDAO();
+            try {
+                int[] productId = OD.getProIdByOrderId(orderId);
+                if (PD.writeReviewIntoDb(productId, temp.getCustomerId(), value, orderId) != 0) {
+                    response.sendRedirect(request.getContextPath() + "/profile");
+
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     /**

@@ -32,8 +32,11 @@
         session.removeAttribute("buysucces"); // Xóa sau khi hiển thị
 %>
 <script>
-    alert("<%= successMsg%>");
+    document.addEventListener("DOMContentLoaded", function () {
+        alert("<%= successMsg%>");
+    });
 </script>
+
 <%
     }
 %>
@@ -57,6 +60,10 @@
 
     .star-icon.full {
         color: #ffc107; /* Màu vàng cho sao đầy */
+    }
+    .red-price {
+        color: red;
+        font-weight: bold;
     }
 
     .star-icon.empty {
@@ -117,7 +124,8 @@
                                     <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
                                     <span>
                                         <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
-                                        <%= currencyFormatter.format(product.getSalePrice())%> <s><%= currencyFormatter.format(product.getPrice())%></s>
+                                        <span style="color: red;"><%= currencyFormatter.format(product.getSalePrice())%></span>
+                                        <s><%= currencyFormatter.format(product.getPrice())%></s>
                                             <% } else {%>
                                             <%= currencyFormatter.format(product.getPrice())%>
                                             <% }%>
@@ -276,3 +284,5 @@
         </script>
 
         <%@include file="/WEB-INF/include/home-footer.jsp" %>
+
+

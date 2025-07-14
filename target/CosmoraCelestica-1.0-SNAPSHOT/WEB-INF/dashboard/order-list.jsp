@@ -69,6 +69,8 @@
                                 statusLevel = 3;
                             else if (status.equals("Delivered"))
                                 statusLevel = 4;
+                            else if (status.equals("Canceled"))
+                                statusLevel = 5;
                             %>
 
                             <form action="manage-orders" method="post">
@@ -90,13 +92,14 @@
                                     <option value="Delivered"
                                             <%= status.equals("Delivered") ? "selected" : ""%>
                                             <%= statusLevel > 4 ? "disabled" : ""%>>Delivered</option>
+
+                                    <option value="Canceled"
+                                            <%= status.equals("Canceled") ? "selected" : ""%>
+                                            <%= statusLevel > 5 ? "disabled" : ""%>>Canceled</option>
                                 </select>
                             </form>
-
-
-
-
                         </td>
+
                         <td>
                             <div class="table-actions-center">
                                 <button class="btn-action btn-details"

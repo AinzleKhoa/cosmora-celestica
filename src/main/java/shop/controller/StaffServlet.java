@@ -82,7 +82,7 @@ public class StaffServlet extends HttpServlet {
                 Staff oneStaff = sDAO.getOneById(id);
 
                 if (oneStaff == null) {
-                    response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
+                   request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                     return;
                 }
 
@@ -90,10 +90,10 @@ public class StaffServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/dashboard/staff-edit.jsp").forward(request, response);
 
             } catch (NumberFormatException e) {
-                System.err.println("Lỗi định dạng ID: " + e.getMessage());
+                System.err.println("Error format ID: " + e.getMessage());
                 response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
             } catch (Exception e) {
-                System.err.println("Lỗi không mong muốn: " + e.getMessage());
+                System.err.println("Error dont expection: " + e.getMessage());
                 response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
             }
         } else if (view.equals("delete")) {
@@ -134,10 +134,10 @@ public class StaffServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/dashboard/staff-details.jsp").forward(request, response);
 
             } catch (NumberFormatException e) {
-                System.err.println("Lỗi định dạng ID: " + e.getMessage());
+                System.err.println("Error format ID: " + e.getMessage());
                 response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
             } catch (Exception e) {
-                System.err.println("Lỗi không mong muốn: " + e.getMessage());
+                System.err.println("Error dont expection: " + e.getMessage());
                 response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
             }
         }
@@ -163,17 +163,24 @@ public class StaffServlet extends HttpServlet {
             switch (act) {
                 case "create":
     try ( PrintWriter out = response.getWriter()) {
-                    String fullName = request.getParameter("username"); 
+                    String fullName = request.getParameter("username");
                     String email = request.getParameter("email");
                     String password = request.getParameter("password");
                     String phone = request.getParameter("phone");
                     String role = request.getParameter("role");
-                    String gender = request.getParameter("gender"); 
+                    String gender = request.getParameter("gender");
                     String dobStr = request.getParameter("date_of_birth");
 
                     Date dateOfBirth = null;
                     if (dobStr != null && !dobStr.isEmpty()) {
                         dateOfBirth = Date.valueOf(dobStr);
+                    }
+
+                    // Check email existence before uploading image and inserting
+                    if (sDAO.isEmailExist(email)) {
+                        request.setAttribute("errorMessage", "Email already exists. Please use another email.");
+                        request.getRequestDispatcher("/WEB-INF/dashboard/staff-create.jsp").forward(request, response);
+                        return;
                     }
 
                     Part img = request.getPart("avatar_url");
@@ -197,12 +204,13 @@ public class StaffServlet extends HttpServlet {
 
                     String hashedPassword = PasswordUtils.hashPassword(password);
 
-                    // ✅ Tạo Staff với fullName và gender
                     Staff staff = new Staff(fullName, email, hashedPassword, gender, phone, role, dateOfBirth, avatarUrl);
                     int isCreated = sDAO.create(staff);
 
                     if (isCreated == 1) {
+                        request.getSession().setAttribute("sMessage", "Staff added successfully.");
                         response.sendRedirect(request.getContextPath() + "/manage-staffs");
+
                     } else {
                         out.println("<h2>Error: Can't add staff into database.</h2>");
                     }
@@ -215,7 +223,6 @@ public class StaffServlet extends HttpServlet {
 
                 case "edit":
     try ( PrintWriter out = response.getWriter()) {
-
                     String idParam = request.getParameter("id");
                     int id = Integer.parseInt(idParam);
 
@@ -224,7 +231,7 @@ public class StaffServlet extends HttpServlet {
                     String password = request.getParameter("password");
                     String phone = request.getParameter("phone");
                     String role = request.getParameter("role");
-                    String gender = request.getParameter("gender"); 
+                    String gender = request.getParameter("gender");
                     String dobStr = request.getParameter("date_of_birth");
 
                     Date dateOfBirth = null;
@@ -234,6 +241,15 @@ public class StaffServlet extends HttpServlet {
 
                     // Lấy staff cũ để giữ avatar nếu người dùng không chọn ảnh mới
                     Staff oldStaff = sDAO.getOneById(id);
+
+              
+
+                    // Kiểm tra email đã tồn tại ở staff khác chưa
+                    if (sDAO.isEmailExistForOtherStaff(email, id)) {
+                        request.getSession().setAttribute("errorMessage", "Email already exists. Please use another email.");
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs?view=list");
+                        return;
+                    }
 
                     Part img = request.getPart("avatar_url");
                     String filename = Paths.get(img.getSubmittedFileName()).getFileName().toString();
@@ -252,24 +268,28 @@ public class StaffServlet extends HttpServlet {
 
                         avatarUrl = "/CosmoraCelestica/assets/img/avatar/" + filename;
                     } else {
-                        avatarUrl = oldStaff.getAvatarUrl(); // Dùng lại avatar cũ
+                        avatarUrl = oldStaff.getAvatarUrl();
                     }
 
                     String hashedPassword = PasswordUtils.hashPassword(password);
 
-                   
                     Staff updatedStaff = new Staff(id, fullName, email, hashedPassword, gender, phone, role, dateOfBirth, avatarUrl);
 
                     int isUpdate = sDAO.update(updatedStaff);
                     if (isUpdate == 1) {
+                        // Thành công
+                        request.getSession().setAttribute("sMessage", "Staff updated successfully.");
                         response.sendRedirect(request.getContextPath() + "/manage-staffs");
                     } else {
-                        out.println("<h2>Error: Can't update staff in database.</h2>");
+                        // Thất bại
+                        request.getSession().setAttribute("errorMessage", "Email already exists. Please use another email.");
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs?view=edit&id=" + id);
                     }
 
                 } catch (Exception e) {
-                    response.getWriter().println("<h2>Upload failed!</h2>");
-                    e.printStackTrace(response.getWriter());
+                    e.printStackTrace();
+                    request.getSession().setAttribute("errorMessage", "An error occurred while updating staff. Please try again.");
+                    response.sendRedirect(request.getContextPath() + "/manage-staffs?view=edit&id=" + request.getParameter("id"));
                 }
                 break;
 

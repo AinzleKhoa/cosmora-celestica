@@ -399,7 +399,7 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, c.name AS category_name, b.brand_name, "
+        String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity,p.active_product, c.name AS category_name, b.brand_name, "
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
@@ -416,6 +416,7 @@ public class ProductDAO extends DBContext {
                 product.setCategoryName(rs.getString("category_name"));
                 product.setBrandName(rs.getString("brand_name"));
                 product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setActiveProduct(rs.getInt("active_product"));
 
                 String singleImageUrl = rs.getString("image_url");
                 List<String> imageUrls = new ArrayList<>();
@@ -783,6 +784,7 @@ public class ProductDAO extends DBContext {
         product.setBrandName(rs.getString("brand_name"));
         product.setCreatedAt(rs.getTimestamp("created_at"));
         product.setUpdatedAt(rs.getTimestamp("updated_at"));
+        product.setActiveProduct(rs.getInt("active_product"));
         return product;
     }
 
@@ -797,12 +799,13 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAccessoryProducts() {
         List<Product> productList = new ArrayList<>();
+        // Thêm "AND p.active_product = 1" vào sau điều kiện WHERE
         String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, c.name AS category_name, b.brand_name, "
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
                 + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
-                + "WHERE p.game_details_id IS NULL " // Điều kiện quan trọng
+                + "WHERE p.game_details_id IS NULL AND p.active_product = 1 " // <-- THÊM VÀO ĐÂY
                 + "ORDER BY p.product_id";
 
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
@@ -817,11 +820,12 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getGameProducts() {
         List<Product> productList = new ArrayList<>();
+        // Thêm "AND p.active_product = 1" vào sau điều kiện WHERE
         String sql = "SELECT p.product_id, p.name, p.price, p.sale_price, p.quantity, gd.developer AS brand_name, "
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id "
-                + "WHERE p.game_details_id IS NOT NULL "
+                + "WHERE p.game_details_id IS NOT NULL AND p.active_product = 1 " // <-- THÊM VÀO ĐÂY
                 + "ORDER BY p.product_id";
 
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
@@ -888,6 +892,7 @@ public class ProductDAO extends DBContext {
                     product.setGameDetailsId(rs.getInt("game_details_id"));
                     product.setCreatedAt(rs.getTimestamp("created_at"));
                     product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    product.setActiveProduct(rs.getInt("active_product"));
 
                     product.setCategoryName(rs.getString("categoryName"));
                     product.setBrandName(rs.getString("brandName"));
@@ -899,29 +904,30 @@ public class ProductDAO extends DBContext {
         return productList;
     }
 
-    public int writeReviewIntoDb(int[] productId, int customerId, int value) throws SQLException {
-        StringBuilder query = new StringBuilder("INSERT INTO star_review (product_id, customer_id, value)\n"
+    public int writeReviewIntoDb(int[] productId, int customerId, int value, int orderId) throws SQLException {
+        StringBuilder query = new StringBuilder("INSERT INTO star_review (product_id, customer_id, value, order_id)\n"
                 + "VALUES ");
-        Object[] params = new Object[productId.length * 3];
+        Object[] params = new Object[productId.length * 4];
         int index = 0;
+
         for (int i = 0; i < productId.length; i++) {
-            query.append("(?, ?, ?)");
+            query.append("(?, ?, ?, ?)");
             if (i < productId.length - 1) {
                 query.append(", ");
             }
-            int proId = productId[i];
-            params[index++] = proId;
+            params[index++] = productId[i];
             params[index++] = customerId;
             params[index++] = value;
-
+            params[index++] = orderId; // dùng cùng một order_id cho tất cả
         }
+
         return execQuery(query.toString(), params);
     }
 
-    public boolean isOrderReviewed(int orderId, int customerId) throws SQLException {
+   public boolean isOrderReviewed(int orderId, int customerId) throws SQLException {
         String query = "SELECT COUNT(*) FROM star_review sr "
                 + "JOIN order_detail od ON sr.product_id = od.product_id "
-                + "WHERE od.order_id = ? AND sr.customer_id = ?";
+                + "WHERE od.order_id = ? AND sr.customer_id = ? AND od.order_id = sr.order_id";
         Object[] params = {orderId, customerId};
         ResultSet rs = execSelectQuery(query, params);
         if (rs.next()) {
@@ -951,5 +957,17 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return averageStars;
+    }
+
+    /**
+     * Cập nhật trạng thái HIỂN THỊ SẢN PHẨM (cột 'active_product').
+     */
+    public boolean updateProductVisibility(int productId, int newStatus) throws SQLException {
+        String sql = "UPDATE product SET active_product = ?, updated_at = GETDATE() WHERE product_id = ?";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newStatus);
+            ps.setInt(2, productId);
+            return ps.executeUpdate() > 0;
+        }
     }
 }

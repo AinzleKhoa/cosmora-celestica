@@ -11,7 +11,7 @@
 
 <%
     Voucher voucher = (Voucher) request.getAttribute("voucher");
-    int id = voucher.getVoucherId();
+
 %>
 
 <main class="admin-main">
@@ -24,9 +24,9 @@
         <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 15px; border-radius: 5px;">
             <strong>Error:</strong> Voucher not found.
         </div>
-        <a href="<%= request.getContextPath()%>/manage-vouchers" class="btn btn-secondary mt-3">
-            ? Back to Voucher List
-        </a>
+       <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
+    <i class="fas fa-arrow-left mr-2" style="font-size: 1.1rem; color: #333;"></i> Back
+</a>
         <%
         } else {
         %>
@@ -44,7 +44,7 @@
     %>
     <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
         <input type="hidden" name="action" value="edit" >
-        <input type="hidden" name="id" value="<%= id%>" >
+        <input type="hidden" name="id" value="<%= voucher.getVoucherId() %>" >
         <div class="admin-manage-type voucher-details">
             <fieldset class="mb-4 admin-manage-fieldset">                  
                 <div class="row g-3">

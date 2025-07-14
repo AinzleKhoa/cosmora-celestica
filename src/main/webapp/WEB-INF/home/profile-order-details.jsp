@@ -56,6 +56,7 @@
                         <th>Category</th>
                         <th>Quantity</th>
                         <th>Price</th>
+                        <th>XXX</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,6 +73,13 @@
                         <td><%= orderdetails.getCategoryName()%></td>
                         <td><%= orderdetails.getQuantity()%></td>
                         <td><%= orderdetails.getPrice()%></td>
+                        <% if (orderdetails.getGameKey() != null && !orderdetails.getGameKey().isEmpty() && orderdetails.getGameKey() != "") {
+                        %>                            
+                        <td><%= orderdetails.getGameKey() %></td>
+
+                        <%}
+                        %>
+                        
                     </tr>
                     <%  }%>
                 </tbody>

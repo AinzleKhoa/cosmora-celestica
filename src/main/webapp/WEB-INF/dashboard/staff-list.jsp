@@ -30,6 +30,28 @@
     </section>
 
     <section class="admin-table-wrapper">
+        <% String message = (String) session.getAttribute("sMessage");
+            if (message != null) {%>
+        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= message%>
+        </div>
+        <%
+
+            }
+            session.removeAttribute("errorMessage");
+        %>
+        
+                <% String errorMessage = (String) session.getAttribute("errorMessage");
+            if (errorMessage != null) {%>
+        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage%>
+        </div>
+        <%
+
+            }
+            session.removeAttribute("errorMessage");
+        %>
+
         <div class="table-responsive shadow-sm rounded overflow-hidden">
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">

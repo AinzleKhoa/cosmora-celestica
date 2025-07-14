@@ -276,14 +276,15 @@ public class CustomerDAO extends DBContext {
 
     public int createCustomer(Customer customer) {
         try {
-            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, created_at)\n"
+            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, created_at)\n"
                     + "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
             Object[] params = {
                 customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
                 customer.getPasswordHash(),
-                customer.getAvatarUrl()
+                customer.getAvatarUrl(),
+                customer.getGoogleId(),
             };
             return execQuery(query, params);
         } catch (SQLException ex) {
@@ -295,21 +296,22 @@ public class CustomerDAO extends DBContext {
     public int updateCustomer(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
-                    + "SET full_name = ?,\n"
+                    + "SET "
+                    + "full_name = ?,\n"
                     + "	username = ?,\n"
                     + "	email = ?,\n"
-                    + "	full_name = ?,\n"
                     + "	phone = ?,\n"
                     + "	address = ?,\n"
+                    + "	google_id = ?,\n"
                     + " updated_at = CURRENT_TIMESTAMP\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
                 customer.getFullName(),
                 customer.getUsername(),
                 customer.getEmail(),
-                customer.getFullName(),
                 customer.getPhone(),
                 customer.getAddress(),
+                customer.getGoogleId(),
                 customer.getCustomerId()
             };
             return execQuery(query, params);

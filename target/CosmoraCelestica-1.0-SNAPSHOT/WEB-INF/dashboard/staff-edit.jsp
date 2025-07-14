@@ -18,6 +18,15 @@
             <fieldset class="mb-4 admin-manage-fieldset">
                 <legend class="admin-manage-subtitle">Staff Information</legend>
                 <%
+                    String error = (String) session.getAttribute("errorMessage");
+                    if (error != null) {
+                %>
+                <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 10px; margin-top: 15px; border-radius: 5px;">
+                    <strong>Error:</strong> <%= error%>
+               
+                </div>
+                <%} %>
+                <%
                     Staff s = (Staff) request.getAttribute("s");
                     if (s == null) {
                 %>
@@ -61,7 +70,7 @@
                             <option value="">-- Select Gender --</option>
                             <option value="Male" <%= "Male".equalsIgnoreCase(s.getGender()) ? "selected" : ""%>>Male</option>
                             <option value="Female" <%= "Female".equalsIgnoreCase(s.getGender()) ? "selected" : ""%>>Female</option>
-                           
+
                         </select>
                     </div>
 

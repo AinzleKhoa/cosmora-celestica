@@ -210,7 +210,7 @@
             <div class="col-12">
                 <div class="section__wrap">
                     <!-- section title -->
-                    <h2 class="section__title">Profile</h2>
+                    <h2 class="section__title">Order History</h2>
                     <!-- end section title -->
 
                     <!-- breadcrumb -->
@@ -239,10 +239,10 @@
                             <th>Date</th>
                             <th>Status</th>
                             <th>Review</th>
-                            <th></th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <%  List<Order> order = (List<Order>) request.getAttribute("order"); 
+                    <%  List<Order> order = (List<Order>) request.getAttribute("order");
 
                         for (Order od : order) {
 
@@ -255,25 +255,19 @@
                             <td><span class="profile__price"><%= od.getTotalAmount()%></span></td>
                             <td><%= od.getOrderDate()%></td>
                             <td><span class="profile__status"><%= od.getStatus()%></span></td>
+                                <% if (od.getStatus().equalsIgnoreCase("Shipped") || od.getStatus().equalsIgnoreCase("Delivered")) {%>
                             <td>
                                 <%
                                     Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
-                                    boolean isReviewed = false;
+                               
 
-                                    try {
-                                        ProductDAO pd = new ProductDAO();
-                                        isReviewed = pd.isOrderReviewed(od.getOrderId(), currentCustomer.getCustomerId());
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    if (isReviewed) {
+                                    if (od.isIsReviewed()) {
                                 %>
-                                <p style="color: lightgreen;">Reviewed applied successfully!</p>
+                                <p style="color: lightgreen;">This product has been previously reviewed.</p>
                                 <%
                                 } else {
                                 %>
-                                <form action="profile" method="post">
+                                <form action="profile-order-history" method="post">
                                     <input type="hidden" name="action" value="review">
                                     <input type="hidden" name="orderId" value="<%= od.getOrderId()%>">
                                     <style>
@@ -311,7 +305,9 @@
                                 %>
 
                             </td>
-                            <td><form action="<%= request.getContextPath()%>/profile" method="post" class="table-actions-center" style="display:inline;">
+                            <% }else {%>
+                            <<td>Order is still in transit</td><%}%>
+                            <td><form action="<%= request.getContextPath()%>/profile-order-history" method="post" class="table-actions-center" style="display:inline;">
                                     <input type="hidden" name="action" value="details">
                                     <input type="hidden" name="order_id" value="<%= od.getOrderId()%>">
                                     <button type="submit" class="btn-action btn-details">Details</button>

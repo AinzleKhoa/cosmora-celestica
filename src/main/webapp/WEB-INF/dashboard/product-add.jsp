@@ -1,7 +1,7 @@
 <%--
     Document : product-add
     Created on : Jun 10, 2025, 10:55:00 PM
-    Author : HoangSang
+    Author     : HoangSang
 --%>
 
 <%@page import="shop.model.OperatingSystem"%>
@@ -145,13 +145,13 @@
                         <label class="form-label admin-manage-label">Price ($)</label>
                         <input type="number" step="0.01" class="form-control admin-manage-input" name="price" required>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" id="quantity-field-wrapper">
                         <label class="form-label admin-manage-label">Quantity</label>
-                        <input type="number" class="form-control admin-manage-input" name="quantity" required>
+                        <input type="number" class="form-control admin-manage-input" id="quantity-input" name="quantity" required>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
-                        <textarea class="form-control admin-manage-input" name="description" rows="3"></textarea>
+                        <textarea class="form-control admin-manage-input" name="description" rows="3" required></textarea>
                     </div>
                 </div>
             </div>
@@ -184,15 +184,15 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Developer</label>
-                                <input type="text" name="developer" class="form-control admin-manage-input">
+                                <input type="text" name="developer" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Genre</label>
-                                <input type="text" name="genre" class="form-control admin-manage-input" placeholder="e.g., Action, RPG">
+                                <input type="text" name="genre" class="form-control admin-manage-input" placeholder="e.g., Action, RPG" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Release Date</label>
-                                <input type="date" name="releaseDate" class="form-control admin-manage-input">
+                                <input type="date" name="releaseDate" class="form-control admin-manage-input" required>
                             </div>
                         </div>
                     </div>
@@ -201,21 +201,21 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Store Platform</label>
-                                <select multiple class="custom-select admin-manage-input" name="platformIds" size="4"><% if (allPlatforms != null) {
+                                <select multiple class="custom-select admin-manage-input" name="platformIds" size="4" required><% if (allPlatforms != null) {
                                         for (StorePlatform p : allPlatforms) {%>
                                     <option value="<%= p.getPlatformId()%>"><%= p.getStoreOSName()%></option><% }
                                         } %></select>
                             </div>
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Supported OS</label>
-                                <select multiple class="custom-select admin-manage-input" name="osIds" size="4"><% if (allOS != null) {
+                                <select multiple class="custom-select admin-manage-input" name="osIds" size="4" required><% if (allOS != null) {
                                         for (OperatingSystem os : allOS) {%>
                                     <option value="<%= os.getOsId()%>"><%= os.getOsName()%></option><% }
                                         } %></select>
                             </div>
                             <div class="col-12">
                                 <label for="gameKeys" class="form-label admin-manage-label">Game Keys (one key per line)</label>
-                                <textarea id="gameKeys" name="gameKeys" class="form-control admin-manage-input" rows="8"></textarea>
+                                <textarea id="gameKeys" name="gameKeys" class="form-control admin-manage-input" rows="8" required></textarea>
                             </div>
                         </div>
                     </div>
@@ -228,23 +228,23 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Warranty (months)</label>
-                                <input type="number" name="warrantyMonths" class="form-control admin-manage-input">
+                                <input type="number" name="warrantyMonths" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Weight (grams)</label>
-                                <input type="number" step="0.01" name="weightGrams" class="form-control admin-manage-input">
+                                <input type="number" step="0.01" name="weightGrams" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Connection Type</label>
-                                <input type="text" name="connectionType" class="form-control admin-manage-input" placeholder="e.g., Wireless, USB-C">
+                                <input type="text" name="connectionType" class="form-control admin-manage-input" placeholder="e.g., Wireless, USB-C" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Usage Time (hours)</label>
-                                <input type="number" step="0.1" name="usageTimeHours" class="form-control admin-manage-input">
+                                <input type="number" step="0.1" name="usageTimeHours" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label admin-manage-label">Brand</label>
-                                <select class="custom-select admin-manage-input" name="brandId">
+                                <select class="custom-select admin-manage-input" name="brandId" required>
                                     <option value="">-- Select Brand --</option>
                                     <% if (brandsList != null) {
                                             for (Brand brand : brandsList) {%>
@@ -262,19 +262,19 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Headphone Type</label>
-                                <input type="text" name="headphoneType" class="form-control admin-manage-input" placeholder="e.g., Over-ear, In-ear">
+                                <input type="text" name="headphoneType" class="form-control admin-manage-input" placeholder="e.g., Over-ear, In-ear" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" name="headphoneMaterial" class="form-control admin-manage-input">
+                                <input type="text" name="headphoneMaterial" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Battery Capacity (mAh)</label>
-                                <input type="number" name="headphoneBattery" class="form-control admin-manage-input">
+                                <input type="number" name="headphoneBattery" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Features</label>
-                                <textarea name="headphoneFeatures" class="form-control admin-manage-input" placeholder="e.g., Noise Cancelling"></textarea>
+                                <textarea name="headphoneFeatures" class="form-control admin-manage-input" placeholder="e.g., Noise Cancelling" required></textarea>
                             </div>
                         </div>
                     </div>
@@ -287,15 +287,15 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Size</label>
-                                <input type="text" name="keyboardSize" class="form-control admin-manage-input" placeholder="e.g., Full-size, TKL">
+                                <input type="text" name="keyboardSize" class="form-control admin-manage-input" placeholder="e.g., Full-size, TKL" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" name="keyboardMaterial" class="form-control admin-manage-input">
+                                <input type="text" name="keyboardMaterial" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Keyboard Type</label>
-                                <input type="text" name="keyboardType" class="form-control admin-manage-input" placeholder="e.g., Mechanical, Membrane">
+                                <input type="text" name="keyboardType" class="form-control admin-manage-input" placeholder="e.g., Mechanical, Membrane" required>
                             </div>
                         </div>
                     </div>
@@ -308,7 +308,7 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Mouse Type</label>
-                                <input type="text" name="mouseType" class="form-control admin-manage-input" placeholder="e.g., Gaming, Ergonomic">
+                                <input type="text" name="mouseType" class="form-control admin-manage-input" placeholder="e.g., Gaming, Ergonomic" required>
                             </div>
                         </div>
                     </div>
@@ -321,15 +321,15 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" name="controllerMaterial" class="form-control admin-manage-input">
+                                <input type="text" name="controllerMaterial" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Battery Capacity (mAh)</label>
-                                <input type="number" name="controllerBattery" class="form-control admin-manage-input">
+                                <input type="number" name="controllerBattery" class="form-control admin-manage-input" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Charging Time (hours)</label>
-                                <input type="number" step="0.1" name="controllerChargingTime" class="form-control admin-manage-input">
+                                <input type="number" step="0.1" name="controllerChargingTime" class="form-control admin-manage-input" required>
                             </div>
                         </div>
                     </div>
@@ -345,9 +345,12 @@
     </div>
 </main>
 
+<%-- ======================================================== --%>
+<%--        THAY ĐỔI QUAN TRỌNG NẰM TRONG THẺ SCRIPT NÀY      --%>
+<%-- ======================================================== --%>
 <script>
-    // Javascript không thay đổi
     document.addEventListener('DOMContentLoaded', function () {
+        // Javascript cho image-uploader không thay đổi
         document.querySelectorAll('.image-uploader').forEach(uploader => {
             const input = uploader.querySelector('input[type="file"]');
             const preview = uploader.querySelector('.image-preview');
@@ -376,30 +379,69 @@
                 content.style.display = 'flex';
             });
         });
+
+        // Cập nhật trạng thái form khi trang được tải lần đầu
+        handleProductTypeChange(document.getElementById('categoryId'));
     });
 
+    /**
+     * Hàm này kết hợp cả 2 chức năng:
+     * 1. Xử lý logic cho trường Số lượng (Quantity).
+     * 2. Hiện/ẩn và bật/tắt các trường động để `required` hoạt động đúng.
+     */
     function handleProductTypeChange(selectElement) {
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         const productType = selectedOption.getAttribute('data-normalized-name');
         document.getElementById('productType').value = productType;
-        document.querySelectorAll('.admin-manage-type').forEach(wrapper => {
+
+        // Lấy các phần tử input cần xử lý
+        const quantityInput = document.getElementById('quantity-input');
+
+        // BƯỚC 1: XỬ LÝ TRƯỜNG SỐ LƯỢNG (QUANTITY)
+        if (productType === 'game') {
+            quantityInput.value = 1;        // Đặt giá trị là 1
+            quantityInput.readOnly = true;  // Đặt thành chỉ đọc
+        } else {
+            quantityInput.value = '';       // Xóa giá trị cũ
+            quantityInput.readOnly = false; // Cho phép nhập liệu
+        }
+
+
+        // BƯỚC 2: VÔ HIỆU HÓA và ẩn tất cả các trường động
+        // Thao tác này đảm bảo `required` trên các trường bị ẩn không gây lỗi
+        document.querySelectorAll('#dynamicFieldsContainer .admin-manage-type').forEach(wrapper => {
             wrapper.style.display = 'none';
+            wrapper.querySelectorAll('input, select, textarea').forEach(input => {
+                input.disabled = true;
+            });
         });
+
+        // Nếu chưa chọn loại sản phẩm thì dừng lại
         if (!productType)
             return;
+
+
+        // BƯỚC 3: KÍCH HOẠT và hiện lại các trường cần thiết
+        const sectionsToShow = [];
         if (productType === 'game') {
-            document.querySelector('.game-details').style.display = 'block';
+            sectionsToShow.push('.game-details');
         } else {
             const accessoryTypes = ['mouse', 'keyboard', 'headphone', 'controller'];
             if (accessoryTypes.includes(productType)) {
-                const commonBlock = document.querySelector('.accessory-details');
-                if (commonBlock)
-                    commonBlock.style.display = 'block';
-                const specificBlock = document.querySelector('.' + productType + '-details');
-                if (specificBlock)
-                    specificBlock.style.display = 'block';
+                sectionsToShow.push('.accessory-details');
+                sectionsToShow.push('.' + productType + '-details');
             }
         }
+
+        sectionsToShow.forEach(selector => {
+            const block = document.querySelector(selector);
+            if (block) {
+                block.style.display = 'block';
+                block.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = false; // Kích hoạt lại để `required` có hiệu lực
+                });
+            }
+        });
     }
 </script>
 

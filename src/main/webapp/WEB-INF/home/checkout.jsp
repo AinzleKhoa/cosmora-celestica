@@ -113,10 +113,11 @@
 
                 <!-- checkout -->
                 <form action="checkout" method="post" class="form">
-                    <p style="color: white"><%= customer.getFullName()%></p>
-                    <p style="color: white"><%= customer.getAddress()%></p>
-                    <p style="color: white"><%= customer.getEmail()%></p>
-                    <p style="color: white"><%= customer.getPhone()%></p>
+                    <input type="text" name="customerName" value="<%= customer.getFullName()%>"  readonly class="form__input" style="color: white; background-color: transparent; border: none;" />
+                    <input type="text" name="customerAddress" value="<%= customer.getAddress()%>" required="" class="form__input" style="color: white; background-color: transparent; border: none;" />
+                    <input type="text" name="customerEmail" value="<%= customer.getEmail()%>" readonly class="form__input" style="color: white; background-color: transparent; border: none;" />
+                    <input type="text" name="customerPhone" value="<%= customer.getPhone()%>" readonly class="form__input" style="color: white; background-color: transparent; border: none;" />
+
 
                     <% for (Checkout pro : product) {%>
                     <input type="hidden" name="productId" value="<%= pro.getProductId()%>" />
@@ -124,9 +125,8 @@
                     <input type="hidden" name="price" value="<%= (pro.getSale_price() == 0.0) ? pro.getPrice() : pro.getSale_price()%>" />
                     <% }%>
                     <input type="hidden" name="total" value="<%= total%>" />
-                    <input type="hidden" name="customerId" value="<%= customer.getCustomerId() %>" />
-                    <input type="hidden" name="customerAddress" value="<%= customer.getAddress() %>" />
-                    <input type="hidden" name="vouchercode" value="<%= request.getAttribute("voucherCode") %>" />
+                    <input type="hidden" name="customerId" value="<%= customer.getCustomerId()%>" />
+                    <input type="hidden" name="vouchercode" value="<%= request.getAttribute("voucherCode")%>" />
                     <input type="hidden" name="action" value="order" />
 
                     <% if (i == 1) { %>
@@ -145,7 +145,8 @@
                     <% }%>
 
                     <span class="form__text">There are many variations of passages of Lorem Ipsum...</span>
-                    <button type="submit" class="form__btn">Proceed to checkout</button>
+
+                    <button type="submit" class="form__btn" >Proceed to checkout</button>
                 </form>
 
                 <!-- end checkout -->
