@@ -45,6 +45,7 @@
                     <thead class="table-light text-dark">
 
                         <tr>
+                            <th>ID</th>
                             <th>Code</th>
                             <th>Discount (%)</th>
                             <th>Usage</th>
@@ -65,6 +66,7 @@
                         %>
                         <tr>
 
+                            <td> <%= voucher.getVoucherId()%></td>
                             <td> <%= voucher.getCode()%></td>
                             <td><%= voucher.getValue()%></td>
                             <td><%= voucher.getUsageLimit()%></td>
@@ -73,32 +75,31 @@
                             <td><%= voucher.getDescription()%></td>
                             <td>
                                 <%
-
                                     if (voucher.getActive() == 1) {
                                 %>
-                                Active
+                                <span class="badge-status badge-active">Active</span>
                                 <%
                                 } else if (voucher.getActive() == 0) {
                                 %>
-                                Inactive
+                                <span class="badge-status badge-suspend">Inactive</span>
                                 <%
                                 } else if (voucher.getActive() == 2) {
                                 %>
-                                Not yet started
+                                <span class="badge-status badge-not-started">Not yet started</span>
                                 <%
                                 } else {
                                 %>
-                                Unknown
+                                <span class="badge-status badge-gray">Unknown</span>
                                 <%
                                     }
                                 %>
-                            </td> 
+                            </td>
                             <td> <div class="table-actions-center">                                      
                                     <button class="btn-action btn-edit"
                                             onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
                                         Edit
                                     </button>
-                 
+
                                 </div> </td> <% }
                                 } else {%>
                             <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>

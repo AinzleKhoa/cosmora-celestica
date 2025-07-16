@@ -119,6 +119,8 @@ public class ProfileServlet extends HttpServlet {
                         String hashedPassword = PasswordUtils.hashPassword(newpass);
                         // Update customer password
                         if (cDAO.updateCustomerPassword(new Customer(customer.getEmail(), hashedPassword)) > 0) {
+                            Customer newCustomer = cDAO.getAccountById(id);
+                            session.setAttribute("currentCustomer", newCustomer); // Session updated
                             request.setAttribute("message", "Password update successfully!");
                             request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                         } else {

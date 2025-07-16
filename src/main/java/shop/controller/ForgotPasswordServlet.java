@@ -68,35 +68,42 @@ public class ForgotPasswordServlet extends HttpServlet {
             Customer customer = cDAO.getAccountByEmail(email);
 
             if (customer != null) {
-                // Check if the account is not deactivated
-                if (!customer.isIsDeactivated()) {
-                    String otp = SecurityTokenUtils.generateOTP(6);
-                    Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
+                // Check if the account is a google linked account
+                if (customer.getGoogleId() == null) {
+                    // Check if the account is not deactivated
+                    if (!customer.isIsDeactivated()) {
+                        String otp = SecurityTokenUtils.generateOTP(6);
+                        Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
 
-                    // Attempt to store OTP in the database
-                    if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
-                        String to = email;
-                        String subject = "Your Cosmora Celestica OTP Code";
-                        String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
+                        // Attempt to store OTP in the database
+                        if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
+                            String to = email;
+                            String subject = "Your Cosmora Celestica OTP Code";
+                            String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
 
-                        // Try sending the OTP email
-                        if (EmailUtils.sendEmail(to, subject, content)) {
-                            jsonResponse.addProperty("success", true);
-                            jsonResponse.addProperty("message", "OTP sent successfully!");
+                            // Try sending the OTP email
+                            if (EmailUtils.sendEmail(to, subject, content)) {
+                                jsonResponse.addProperty("success", true);
+                                jsonResponse.addProperty("message", "OTP sent successfully!");
+                            } else {
+                                // If sending OTP email fails
+                                jsonResponse.addProperty("success", false);
+                                jsonResponse.addProperty("message", "Failed to send OTP to the email.");
+                            }
                         } else {
-                            // If sending OTP email fails
+                            // If storing the OTP in the database fails
                             jsonResponse.addProperty("success", false);
-                            jsonResponse.addProperty("message", "Failed to send OTP to the email.");
+                            jsonResponse.addProperty("message", "Failed to store OTP.");
                         }
                     } else {
-                        // If storing the OTP in the database fails
+                        // If the account is deactivated
                         jsonResponse.addProperty("success", false);
-                        jsonResponse.addProperty("message", "Failed to store OTP.");
+                        jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
                     }
                 } else {
-                    // If the account is deactivated
+                    // If account is a Google account already
                     jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
+                    jsonResponse.addProperty("message", "This account is linked to Google. Please log in using your Google account.");
                 }
             } else {
                 // If the email doesn't exist
@@ -112,25 +119,32 @@ public class ForgotPasswordServlet extends HttpServlet {
             Customer customer = cDAO.getAccountByEmail(email);
 
             if (customer != null) {
-                // Check if the account is not deactivated
-                if (!customer.isIsDeactivated()) {
-                    // Check if the OTP matches
-                    if (cDAO.checkOtpForEmail(email, otp)) {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("currentForgotCustomer", customer);
+                // Check if the account is a google linked account
+                if (customer.getGoogleId() == null) {
+                    // Check if the account is not deactivated
+                    if (!customer.isIsDeactivated()) {
+                        // Check if the OTP matches
+                        if (cDAO.checkOtpForEmail(email, otp)) {
+                            HttpSession session = request.getSession();
+                            session.setAttribute("currentForgotCustomer", customer);
 
-                        jsonResponse.addProperty("success", true);
-                        jsonResponse.addProperty("message", "OTP verified successfully! Redirecting...");
-                        jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/reset-password");
+                            jsonResponse.addProperty("success", true);
+                            jsonResponse.addProperty("message", "OTP verified successfully! Redirecting...");
+                            jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/reset-password");
+                        } else {
+                            // If OTP is incorrect
+                            jsonResponse.addProperty("success", false);
+                            jsonResponse.addProperty("message", "The OTP is incorrect or has expired. Please try again.");
+                        }
                     } else {
-                        // If OTP is incorrect
+                        // If the account is deactivated
                         jsonResponse.addProperty("success", false);
-                        jsonResponse.addProperty("message", "The OTP is incorrect or has expired. Please try again.");
+                        jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
                     }
                 } else {
-                    // If the account is deactivated
+                    // If account is a Google account already
                     jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
+                    jsonResponse.addProperty("message", "This account is linked to Google. Please log in using your Google account.");
                 }
             } else {
                 // If the email doesn't exist

@@ -42,7 +42,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Phone</label>
-                        <input type="text" class="form-control admin-manage-input" name="phone" id="phone">
+                        <input type="phone" class="form-control admin-manage-input" name="phone" id="phone" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Gender</label>

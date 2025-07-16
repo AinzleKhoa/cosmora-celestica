@@ -2,7 +2,32 @@
 <%@page import="shop.model.Order"%>
 <%@page import="java.util.ArrayList"%>
 <%@include file="../include/home-header.jsp" %>
-<main class="orderdetailforcus" style="padding: 80px">
+
+<!-- page title -->
+<section id="top-background" class="section--first " data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section__wrap">
+                    <!-- section title -->
+                    <h2 class="section__title">Order Details</h2>
+                    <!-- end section title -->
+
+                    <!-- breadcrumb -->
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
+                        <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/profile">Profile</a></li>
+                        <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/profile">Order History</a></li>
+                        <li class="breadcrumb__item breadcrumb__item--active">Order Details</li>
+                    </ul>
+                    <!-- end breadcrumb -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<main class="orderdetailforcus" style="padding: 10px 80px" id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png">
     <div class="table-header" style="margin-top: 60px">
         <h2 class="table-title">Order Details</h2>
     </div>

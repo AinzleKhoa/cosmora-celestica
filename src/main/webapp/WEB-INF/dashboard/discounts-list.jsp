@@ -42,6 +42,7 @@
                 <thead class="table-light text-dark">
 
                     <tr>
+                        <th>ID</th>
                         <th>Product Name</th>
                         <th>Price</th>
                         <th>Sale Price</th>
@@ -58,19 +59,19 @@
                     %>
                     <tr>
 
+                        <td> <%= product.getProductId()%></td>
                         <td> <%= product.getName()%></td>
                         <td><%= product.getPrice()%></td>
                         <td><%= product.getSalePrice()%></td>
                         <td>
                             <%
-
                                 if (product.getActive() == 1) {
                             %>  
-                            Active
+                            <span class="badge-status badge-active">Active</span>
                             <%
                             } else if (product.getActive() == 0) {
                             %>
-                            Expired
+                            <span class="badge-status badge-suspend">Expired</span>
                             <%
                                 }
                             %>

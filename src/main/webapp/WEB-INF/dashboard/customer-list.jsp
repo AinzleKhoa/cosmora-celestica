@@ -31,19 +31,30 @@
         </div>
     </section>
 
+    <!-- Message Container -->
+    <div id="message" style="color: yellow; margin-bottom: 15px;">
+        <p id="messageText">
+            <c:if test="${not empty message}">
+                ${message}
+            </c:if>
+        </p>
+    </div>
+    <%
+        request.getSession().removeAttribute("message");
+    %>
+
     <c:choose>
         <c:when test="${empty requestScope.paginatedList}">
             <p class="sign__empty">The list is empty</p>
         </c:when>
         <c:otherwise>
-
             <section class="admin-table-wrapper">
                 <div class="table-responsive shadow-sm rounded overflow-hidden">
                     <table class="table table-dark table-bordered table-hover align-middle mb-0">
                         <thead class="table-light text-dark">
                             <tr>
-                                <th></th>
                                 <th>ID</th>
+                                <th>Avatar</th>
                                 <th>Fullname</th>
                                 <th>Username</th>
                                 <th>Email</th>
@@ -55,8 +66,8 @@
                         <tbody>
                             <c:forEach var="customer" items="${requestScope.paginatedList}">
                                 <tr>
-                                    <td><img src="${customer.avatarUrl}" alt="Avatar" class="avatar-img"></td>
                                     <td>${customer.customerId}</td>
+                                    <td><img src="${customer.avatarUrl}" alt="Avatar" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;"></td>
                                     <td>${customer.fullName}</td>
                                     <td>${customer.username}</td>
                                     <td>${customer.email}</td>

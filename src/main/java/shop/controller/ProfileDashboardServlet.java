@@ -114,6 +114,8 @@ public class ProfileDashboardServlet extends HttpServlet {
                         String hashedPassword = PasswordUtils.hashPassword(newpass);
                         // Update customer password
                         if (sDAO.updateAdminPassword(new Staff(currentEmployee.getEmail(), hashedPassword)) > 0) {
+                            Staff newAdmin = sDAO.getOneById(id);
+                            session.setAttribute("currentEmployee", newAdmin); // Session updated
                             request.setAttribute("message", "Password update successfully!");
                             request.getRequestDispatcher("/WEB-INF/dashboard/profile-dashboard.jsp").forward(request, response);
                         } else {
