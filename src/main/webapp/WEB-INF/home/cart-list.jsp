@@ -173,7 +173,7 @@
                                                         <% if (canIncrease) {%>
                                                         <form method="post" action="cart" style="display:inline;">
                                                             <input type="hidden" name="page" value="cart">
-                                                            <input type="hidden" name="action" value="add">
+                                                            <input type="hidden" name="action" value="increase">
                                                             <input type="hidden" name="productId" value="<%= item.getProductId()%>">
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">+</button>

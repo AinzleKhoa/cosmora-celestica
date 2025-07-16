@@ -100,7 +100,7 @@ public class CartServlet extends HttpServlet {
                         // Nếu đã có -> Cập nhật số lượng
                         existingCart.setQuantity(existingCart.getQuantity() + quantity);
                         cartDAO.updateCart(existingCart);
-                        session.setAttribute("sMessage", "Added quantity successfully.");
+
                     } else {
                         // Nếu chưa có -> Thêm mới
                         Cart newCart = new Cart();
@@ -121,10 +121,43 @@ public class CartServlet extends HttpServlet {
                 }
 
                 break;
+                case "increase":
+                try ( PrintWriter out = response.getWriter()) {
+                 
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
+
+                    HttpSession session = request.getSession(false);
+                    Customer customer = (Customer) session.getAttribute("currentCustomer");
+                    int customerId = customer.getCustomerId();
+
+                    CartDAO cartDAO = new CartDAO();
+                    Cart existingCart = cartDAO.findCartItem(customerId, productId);
+
+                    if (existingCart != null) {
+                        int currentQuantity = existingCart.getQuantity();
+
+                        existingCart.setQuantity(currentQuantity + quantityToDecrease);
+                        cartDAO.updateCart(existingCart);
+                        session.setAttribute("sMessage", "Increased product quantity successfully.");
+
+                    } else {
+                        session.setAttribute("errorMessage", "Product not found in cart.");
+                    }
+
+                    int cartCount = cartDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    request.getSession().setAttribute("errorMessage", "Failed to increase product quantity.");
+                    response.sendRedirect(request.getContextPath() + "/error.jsp");
+                }
+                break;
 
                 case "decrease":
                 try ( PrintWriter out = response.getWriter()) {
-                    String username = request.getParameter("username");
+                 
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
 
