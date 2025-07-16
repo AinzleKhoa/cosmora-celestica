@@ -3,12 +3,6 @@
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
 
-<button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">? Menu</button>
-
-<aside class="admin-sidebar">
-    <%-- Sidebar content--%>
-</aside>
-
 <%
     Voucher voucher = (Voucher) request.getAttribute("voucher");
 
@@ -18,15 +12,14 @@
     <div class="table-header">
 
         <h2 class="table-title">Edit Voucher</h2>
-        <%
-            if (voucher == null) {
+        <%            if (voucher == null) {
         %>
         <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 15px; border-radius: 5px;">
             <strong>Error:</strong> Voucher not found.
         </div>
-       <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
-    <i class="fas fa-arrow-left mr-2" style="font-size: 1.1rem; color: #333;"></i> Back
-</a>
+        <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
+            <i class="fas fa-arrow-left mr-2" style="font-size: 1.1rem; color: #333;"></i> Back
+        </a>
         <%
         } else {
         %>
@@ -44,7 +37,7 @@
     %>
     <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
         <input type="hidden" name="action" value="edit" >
-        <input type="hidden" name="id" value="<%= voucher.getVoucherId() %>" >
+        <input type="hidden" name="id" value="<%= voucher.getVoucherId()%>" >
         <div class="admin-manage-type voucher-details">
             <fieldset class="mb-4 admin-manage-fieldset">                  
                 <div class="row g-3">

@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
         <!-- Favicons -->
         <link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">
@@ -26,7 +27,7 @@
 
         <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
         <meta name="keywords" content="">
-        <title>Cosmora Celestica – Games and Accessories</title>
+        <title>Cosmora Celestica</title>
 
     </head>
 
@@ -62,6 +63,8 @@
                                 <div class="sign__group">
                                     <input type="password" class="sign__input" name="password" id="password" value="${requestScope.password}" placeholder="Password"
                                            autocomplete="new-password" required>
+                                    <!-- Eye Icon for toggling password visibility -->
+                                    <i class="fa-solid fa-eye" id="eyeIcon" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <button class="sign__btn" type="submit">Sign in</button>
@@ -224,6 +227,23 @@
                 document.getElementById('messageText').textContent = "";
                 document.getElementById('messageText').textContent = msg;
             }
+        </script>
+        <script>
+            const eyeIcon = document.getElementById('eyeIcon');
+            const passwordInput = document.getElementById('password');
+
+            eyeIcon.addEventListener('click', function () {
+                // Toggle the type attribute between 'password' and 'text'
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';  // Show password
+                    eyeIcon.classList.remove('fa-eye');  // Remove eye icon
+                    eyeIcon.classList.add('fa-eye-slash');  // Show eye-slash icon (indicates password is visible)
+                } else {
+                    passwordInput.type = 'password';  // Hide password
+                    eyeIcon.classList.remove('fa-eye-slash');  // Remove eye-slash icon
+                    eyeIcon.classList.add('fa-eye');  // Show eye icon (indicates password is hidden)
+                }
+            });
         </script>
     </body>
 

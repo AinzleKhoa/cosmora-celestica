@@ -237,7 +237,9 @@ body::-webkit-scrollbar-thumb {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #1b222e;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 99;
     transition: 0.5s, margin 0s;
 }
@@ -1121,6 +1123,10 @@ body::-webkit-scrollbar-thumb {
 /*==============================
         Section
 ==============================*/
+.section_banner {
+    position: relative;
+}
+
 .section {
     position: relative;
     padding-top: 60px;
@@ -5642,11 +5648,13 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 ==============================*/
 .footer {
     position: relative;
+    bottom: 0;
     display: block;
     width: 100%;
     height: auto;
-    border-top: 1px solid rgba(167, 130, 233, 0.06);
-    padding-top: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer__wrap {
@@ -5657,7 +5665,6 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     align-items: center;
     height: 90px;
     width: 100%;
-    margin-top: 60px;
 }
 
 .footer__logo {
@@ -5852,24 +5859,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
     fill: #4aa2dd;
 }
 
-@media (min-width: 576px) {
-    .footer {
-        padding-top: 5px;
-    }
-
-    .footer__wrap {
-        margin-top: 70px;
-    }
-}
-
 @media (min-width: 768px) {
-    .footer {
-        padding-top: 10px;
-    }
-
-    .footer__wrap {
-        margin-top: 80px;
-    }
 
     .footer__navs {
         display: flex;
@@ -5917,13 +5907,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 @media (min-width: 1200px) {
-    .footer {
-        padding-top: 15px;
-    }
 
-    .footer__wrap {
-        margin-top: 90px;
-    }
 
     .footer__nav {
         margin-bottom: 0;
@@ -7008,6 +6992,16 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 /* Suspended Status */
 .badge-suspend {
     background-color: #ef4444;  /* red */
+}
+
+/* Gray Status */
+.badge-gray {
+    background-color: #9ca3af;  /* gray */
+}
+
+/* Not Yet Started Status */
+.badge-not-started {
+    background-color: #3b82f6;  /* blue */
 }
 
 .avatar-img {

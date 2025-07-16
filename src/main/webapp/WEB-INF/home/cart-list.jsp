@@ -10,19 +10,19 @@
 
 
     <!-- page title -->
-    <section class="section section--first section--last section--head" data-bg="img/bg3.png">
+    <section id="top-background" class="section--first " data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <div class="section__wrap">
                         <!-- section title -->
-                        <h2 class="section__title">Checkout</h2>
+                        <h2 class="section__title">Cart</h2>
                         <!-- end section title -->
 
                         <!-- breadcrumb -->
                         <ul class="breadcrumb">
-                            <li class="breadcrumb__item"><a href="index.jsp">Home</a></li>
-                            <li class="breadcrumb__item breadcrumb__item--active">Checkout</li>
+                            <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
+                            <li class="breadcrumb__item breadcrumb__item--active">Cart</li>
                         </ul>
                         <!-- end breadcrumb -->
                     </div>
@@ -32,20 +32,61 @@
     </section>
     <!-- end page title -->
 
-    <!-- section -->
-    <div class="section">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 col-lg-8">
-                    <!-- cart -->
-                    <div class="cart">
-                        <div style="padding: 20px;">
-                            <div class="table-responsive">
+    <main id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png" style="padding-bottom: 80px">
+
+        <!-- section -->
+        <div class="section">
+            <div class="container">
+                <div class="mb-4">
+                    <a href="${pageContext.servletContext.contextPath}/home" class="admin-manage-back mb-5">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+
+                        <% String message = (String) session.getAttribute("sMessage");
+                            if (message != null) {%>
+                        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                            <%= message%>
+                        </div>
+                        <%
+
+                            }
+                            session.removeAttribute("sMessage");
+                        %>
+
+                        <% String errorMessage = (String) session.getAttribute("errorMessage");
+                            if (errorMessage != null) {%>
+                        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                            <%= errorMessage%>
+                        </div>
+                        <%
+
+                            }
+                            session.removeAttribute("errorMessage");
+                        %>
+                        <!-- Cart -->
+                        <div style="
+                             position: relative;
+                             display: flex;
+                             flex-direction: column;
+                             justify-content: flex-start;
+                             align-items: stretch;
+                             background-color: #1f2634;
+                             padding: 30px 20px;
+                             border: 1px solid rgba(167, 130, 233, 0.1);
+                             border-radius: 8px;
+                             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                             color: #fff;
+                             min-height: 400px;
+                             overflow: hidden;
+                             ">
                                 <%                                    List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
 
                                     if (cartItems == null || cartItems.isEmpty()) {
                                 %>
-                                <!-- Gi? h?ng r?ng -->
+
                                 <h2 style="color: white">Your cart is empty.</h2>
                                 <%
                                 } else {
@@ -65,19 +106,31 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+
                                             <%
                                                 for (CartItem item : cartItems) {
+                                                    int cartQuantity = item.getCartQuantity();
+                                                    int productQuantity = item.getProductQuantity();
+
+                                                    if (cartQuantity > productQuantity) {
+                                                        cartQuantity = productQuantity;
+                                                    }
+
+                                                    boolean canIncrease = cartQuantity < productQuantity;
+
                                                     double unitPrice = item.getSalePrice() != null ? item.getSalePrice() : item.getPrice();
-                                                    double totalPrice = unitPrice * item.getQuantity();
+                                                    double totalPrice = unitPrice * cartQuantity;
                                             %>
+
+
                                             <tr>
                                                 <!-- Checkbox -->
                                                 <td>
                                                     <input type="checkbox"
                                                            class="product-check"
-                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getQuantity())%>"
+                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getCartQuantity())%>"
                                                            data-product-id="<%= item.getProductId()%>"
-                                                           data-quantity="<%= item.getQuantity()%>"
+                                                           data-quantity="<%= cartQuantity%>"
                                                            onclick="updateTotalPrice()"
                                                            style="transform: scale(1.5); appearance: auto; margin-right: 10px;" />
                                                 </td>
@@ -90,7 +143,7 @@
                                                 </td>
 
                                                 <!-- Product Name -->
-                                                <td><a href="#"> <%= item.getProductName()%> </a></td>
+                                                <td><%= item.getProductName()%></td>
 
                                                 <!-- Category -->
                                                 <td><%= item.getCategoryName()%></td>
@@ -113,8 +166,11 @@
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">-</button>
                                                         </form>
-                                                        <span class="cart__price"><%= item.getQuantity()%></span>
+
+                                                        <span class="cart__price"><%= cartQuantity%></span>
+
                                                         <!-- Increase -->
+                                                        <% if (canIncrease) {%>
                                                         <form method="post" action="cart" style="display:inline;">
                                                             <input type="hidden" name="page" value="cart">
                                                             <input type="hidden" name="action" value="add">
@@ -122,8 +178,10 @@
                                                             <input type="hidden" name="quantity" value="1">
                                                             <button type="submit" style="color: white;">+</button>
                                                         </form>
+                                                        <% }%>
                                                     </div>
                                                 </td>
+
 
                                                 <!-- Delete -->
                                                 <td>
@@ -170,177 +228,92 @@
 
 
                                 <!-- end cart -->
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </main>
 
+    <script>
+        function updateTotalPrice() {
+            let total = 0;
+            const checkboxes = document.querySelectorAll('.product-check:checked');
 
-            <script>
-                function updateTotalPrice() {
-                    let total = 0;
-                    const checkboxes = document.querySelectorAll('.product-check:checked');
+            checkboxes.forEach(cb => {
+                const rawPrice = cb.getAttribute('data-price');
+                console.log("? Checkbox selected - data-price:", rawPrice); // <-- DEBUG
 
-                    checkboxes.forEach(cb => {
-                        const rawPrice = cb.getAttribute('data-price');
-                        console.log("? Checkbox selected - data-price:", rawPrice); // <-- DEBUG
-
-                        const price = parseFloat(rawPrice);
-                        if (!isNaN(price)) {
-                            total += price;
-                        } else {
-                            console.warn("? Invalid price encountered:", rawPrice); // <-- DEBUG
-                        }
-                    });
-
-
-
-                    const totalSpan = document.getElementById("totalNumber").textContent = total.toFixed(2);
-                    totalSpan.textContent = `$${total.toFixed(2)}`;
-                    console.log("? Total updated:", total.toFixed(2)); // <-- DEBUG
+                const price = parseFloat(rawPrice);
+                if (!isNaN(price)) {
+                    total += price;
+                } else {
+                    console.warn("? Invalid price encountered:", rawPrice); // <-- DEBUG
                 }
-
-
-            </script>
-            <script>
-                document.querySelectorAll('.product-check').forEach(cb => {
-                    cb.addEventListener("change", function () {
-                        const anyChecked = document.querySelectorAll('.product-check:checked').length > 0;
-                        document.getElementById("checkoutBtn").disabled = !anyChecked;
-                    });
-                });
-            </script>
-            <script>
-                function prepareAndSubmitForm() {
-                    const form = document.getElementById("checkoutForm");
-
-                    document.querySelectorAll(".dynamic-input").forEach(input => input.remove());
-
-                    const checkboxes = document.querySelectorAll('.product-check:checked');
-                    let total = 0;
-
-                    checkboxes.forEach(cb => {
-                        const productId = cb.getAttribute("data-product-id");
-                        const quantity = cb.getAttribute("data-quantity");
-                        const price = parseFloat(cb.getAttribute("data-price"));
-                        total += isNaN(price) ? 0 : price;
-
-                        const idInput = document.createElement("input");
-                        idInput.type = "hidden";
-                        idInput.name = "productIds";
-                        idInput.value = productId;
-                        idInput.classList.add("dynamic-input");
-                        form.appendChild(idInput);
-
-                        const quantityInput = document.createElement("input");
-                        quantityInput.type = "hidden";
-                        quantityInput.name = "quantities";
-                        quantityInput.value = quantity;
-                        quantityInput.classList.add("dynamic-input");
-                        form.appendChild(quantityInput);
-                    });
-
-                    document.getElementById("hiddenTotalAmount").value = total.toFixed(2);
-                    const actionInput = document.createElement("input");
-                    actionInput.type = "hidden";
-                    actionInput.name = "action";
-                    actionInput.value = "fromcart";
-                    form.appendChild(actionInput);
-
-                    form.submit();
-                }
-
-            </script>
+            });
 
 
 
-            </body>
+            const totalSpan = document.getElementById("totalNumber").textContent = total.toFixed(2);
+            totalSpan.textContent = `$${total.toFixed(2)}`;
+            console.log("? Total updated:", total.toFixed(2)); // <-- DEBUG
+        }
 
-            </html>
 
-            <!-- Facebook Button -->
-            <a href="https://www.facebook.com/YourPage" 
-               style="position: fixed;
-               bottom: 20px;
-               right: 20px;
-               background-color: #4267B2;
-               color: white;
-               padding: 15px 20px;
-               border-radius: 50%;
-               font-size: 24px;
-               display: flex;
-               align-items: center;
-               justify-content: center;
-               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-               transition: background-color 0.3s, transform 0.3s;
-               text-decoration: none;
-               cursor: pointer;
-               z-index: 100;">
-                <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
-            </a>
+    </script>
+    <script>
+        document.querySelectorAll('.product-check').forEach(cb => {
+            cb.addEventListener("change", function () {
+                const anyChecked = document.querySelectorAll('.product-check:checked').length > 0;
+                document.getElementById("checkoutBtn").disabled = !anyChecked;
+            });
+        });
+    </script>
+    <script>
+        function prepareAndSubmitForm() {
+            const form = document.getElementById("checkoutForm");
 
-            <!-- Phone Button -->
-            <a href="tel:+1234567890" 
-               id="phoneButton"
-               style="position: fixed;
-               bottom: 80px;
-               right: 20px;
-               background-color: #34b7f1;
-               color: white;
-               padding: 15px;
-               border-radius: 50%;
-               font-size: 24px;
-               display: flex;
-               align-items: center;
-               justify-content: center;
-               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-               transition: background-color 0.3s, transform 0.3s;
-               text-decoration: none;
-               cursor: pointer;
-               z-index: 100;">
-                <i class="fas fa-phone-alt"></i>
-                <span id="phoneText" style="display: none;
-                      position: absolute;
-                      top: -30px;
-                      left: 0%;
-                      transform: translateX(-50%);
-                      background-color: #34b7f1;
-                      color: white;
-                      padding: 5px 10px;
-                      border-radius: 5px;
-                      font-size: 14px;">+1234567890</span>
-            </a>
+            document.querySelectorAll(".dynamic-input").forEach(input => input.remove());
 
-            <script>
-                // Hover effect to show phone number
-                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
-                    document.getElementById('phoneText').style.display = 'block';
-                });
+            const checkboxes = document.querySelectorAll('.product-check:checked');
+            let total = 0;
 
-                document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
-                    document.getElementById('phoneText').style.display = 'none';
-                });
+            checkboxes.forEach(cb => {
+                const productId = cb.getAttribute("data-product-id");
+                const quantity = cb.getAttribute("data-quantity");
+                const price = parseFloat(cb.getAttribute("data-price"));
+                total += isNaN(price) ? 0 : price;
 
-                // Click-to-copy phone number functionality
-                document.getElementById('phoneButton').addEventListener('click', function (e) {
-                    e.preventDefault(); // Prevent the default action (making a call)
+                const idInput = document.createElement("input");
+                idInput.type = "hidden";
+                idInput.name = "productIds";
+                idInput.value = productId;
+                idInput.classList.add("dynamic-input");
+                form.appendChild(idInput);
 
-                    // Create a temporary input element to copy the phone number
-                    const tempInput = document.createElement('input');
-                    tempInput.value = "+1234567890"; // Phone number to copy
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    tempInput.setSelectionRange(0, 99999); // For mobile devices
+                const quantityInput = document.createElement("input");
+                quantityInput.type = "hidden";
+                quantityInput.name = "quantities";
+                quantityInput.value = quantity;
+                quantityInput.classList.add("dynamic-input");
+                form.appendChild(quantityInput);
+            });
 
-                    // Copy the text to the clipboard
-                    document.execCommand('copy');
+            document.getElementById("hiddenTotalAmount").value = total.toFixed(2);
+            const actionInput = document.createElement("input");
+            actionInput.type = "hidden";
+            actionInput.name = "action";
+            actionInput.value = "fromcart";
+            form.appendChild(actionInput);
 
-                    // Remove the temporary input element
-                    document.body.removeChild(tempInput);
+            form.submit();
+        }
 
-                    // Display a message or change button style to indicate success
-                    alert('Phone number copied to clipboard!');
-                });
-            </script>
-            <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>
+    </script>
+
+
+
+</body>
+
+</html>
+<%@include file="/WEB-INF/include/home-footer.jsp" %>

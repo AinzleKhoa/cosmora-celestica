@@ -20,7 +20,16 @@
         <!-- General Information -->
 
 
+            <% String errorMessage = (String) session.getAttribute("errorMessage");
+            if (errorMessage != null) {%>
+        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage%>
+        </div>
+        <%
 
+            }
+            session.removeAttribute("errorMessage");
+        %>
         <fieldset class="mb-4 admin-manage-fieldset">
             <legend class="admin-manage-subtitle">Staff Information</legend>
             <%

@@ -32,7 +32,7 @@
 
         <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
         <meta name="keywords" content="">
-        <title>Cosmora Celestica – Games and Accessories</title>
+        <title>Cosmora Celestica</title>
 
     </head>
 

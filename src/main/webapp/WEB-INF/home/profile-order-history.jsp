@@ -204,7 +204,7 @@
 </c:choose>
 
 <!-- page title -->
-<section class="section section--first section--last section--head" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
+<section id="top-background" class="section--first " data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -216,149 +216,152 @@
                     <!-- breadcrumb -->
                     <ul class="breadcrumb">
                         <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
-                        <li class="breadcrumb__item breadcrumb__item--active">Profile</li>
+                        <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/profile">Profile</a></li>
+                        <li class="breadcrumb__item breadcrumb__item--active">Order History</li>
                     </ul>
                     <!-- end breadcrumb -->
                 </div>
             </div>
         </div>
     </div>
-
-
 </section>
-<section class="section section--last">
 
-    <div class="row" style="padding: 80px">
-        <div class="col-12">
-            <div class="mb-4">
-                <a href="${pageContext.servletContext.contextPath}/profile" class="admin-manage-back mb-5">
-                    <i class="fas fa-arrow-left mr-1"></i> Back
-                </a>
+<main id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png">
+
+    <section class="section section--last">
+
+        <div class="row" style="padding: 80px">
+            <div class="col-12">
+                <div class="mb-4">
+                    <a href="${pageContext.servletContext.contextPath}/profile" class="admin-manage-back mb-5">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
+                <div class="table-responsive table-responsive--border">
+                    <table class="profile__table">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>Total Price</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Review</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <%  List<Order> order = (List<Order>) request.getAttribute("order");
+
+                            for (Order od : order) {
+
+
+                        %>
+                        <tbody>
+
+                            <tr>
+                                <td><a href="#modal-info" class="open-modal"><%= od.getOrderId()%></a></td>
+                                <td><span class="profile__price"><%= od.getTotalAmount()%></span></td>
+                                <td><%= od.getOrderDate()%></td>
+                                <td><span class="profile__status"><%= od.getStatus()%></span></td>
+                                    <% if (od.getStatus().equalsIgnoreCase("Shipped") || od.getStatus().equalsIgnoreCase("Delivered")) {%>
+                                <td>
+                                    <%
+                                        Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
+
+                                        if (od.isIsReviewed()) {
+                                    %>
+                                    <p style="color: lightgreen;">This product has been previously reviewed.</p>
+                                    <%
+                                    } else {
+                                    %>
+                                    <form action="profile-order-history" method="post">
+                                        <input type="hidden" name="action" value="review">
+                                        <input type="hidden" name="orderId" value="<%= od.getOrderId()%>">
+                                        <style>
+                                            .star-rating input[type="radio"] {
+                                                display: none;
+                                            }
+
+                                            .star-rating label {
+                                                font-size: 20px;
+                                                color: #ccc;
+                                                cursor: pointer;
+                                            }
+
+                                            .star-rating input[type="radio"]:checked ~ label {
+                                                color: gold;
+                                            }
+
+                                            .star-rating label:hover,
+                                            .star-rating label:hover ~ label {
+                                                color: gold;
+                                            }
+                                        </style>
+
+                                        <div class="star-rating" style="direction: rtl;">
+                                            <% for (int i = 5; i >= 1; i--) {%>
+                                            <input type="radio" id="star<%= od.getOrderId()%>_<%= i%>" name="rating" value="<%= i%>">
+                                            <label for="star<%= od.getOrderId()%>_<%= i%>">&#9733;</label>
+                                            <% } %>
+                                        </div>
+
+                                        <button style="color: white" type="submit">Submit</button>
+                                    </form>
+                                    <%
+                                        }
+                                    %>
+
+                                </td>
+                                <% } else {%>
+                                <<td>Order is still in transit</td><%}%>
+                                <td><form action="<%= request.getContextPath()%>/profile-order-history" method="post" class="table-actions-center" style="display:inline;">
+                                        <input type="hidden" name="action" value="details">
+                                        <input type="hidden" name="order_id" value="<%= od.getOrderId()%>">
+                                        <button type="submit" class="btn-action btn-details">Details</button>
+                                    </form>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                        <%}%>
+                    </table>
+                </div>
             </div>
-            <div class="table-responsive table-responsive--border">
-                <table class="profile__table">
-                    <thead>
-                        <tr>
-                            <th>№</th>
-                            <th>Total Price</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Review</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <%  List<Order> order = (List<Order>) request.getAttribute("order");
 
-                        for (Order od : order) {
+            <!-- paginator -->
+            <!-- FORM PHÂN TRANG -->
+            <form id="paginationForm" method="GET" action="<%= request.getContextPath()%>/profile-order-history">
+                <input type="hidden" name="action" value="search" />
+                <input type="hidden" name="customer_name" value="${param.customer_name}" />
+                <input type="hidden" name="page" id="pageInput" value="${currentPage}" />
+            </form>
 
-
-                    %>
-                    <tbody>
-
-                        <tr>
-                            <td><a href="#modal-info" class="open-modal"><%= od.getOrderId()%></a></td>
-                            <td><span class="profile__price"><%= od.getTotalAmount()%></span></td>
-                            <td><%= od.getOrderDate()%></td>
-                            <td><span class="profile__status"><%= od.getStatus()%></span></td>
-                                <% if (od.getStatus().equalsIgnoreCase("Shipped") || od.getStatus().equalsIgnoreCase("Delivered")) {%>
-                            <td>
-                                <%
-                                    Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
-
-                                    if (od.isIsReviewed()) {
-                                %>
-                                <p style="color: lightgreen;">This product has been previously reviewed.</p>
-                                <%
-                                } else {
-                                %>
-                                <form action="profile-order-history" method="post">
-                                    <input type="hidden" name="action" value="review">
-                                    <input type="hidden" name="orderId" value="<%= od.getOrderId()%>">
-                                    <style>
-                                        .star-rating input[type="radio"] {
-                                            display: none;
-                                        }
-
-                                        .star-rating label {
-                                            font-size: 20px;
-                                            color: #ccc;
-                                            cursor: pointer;
-                                        }
-
-                                        .star-rating input[type="radio"]:checked ~ label {
-                                            color: gold;
-                                        }
-
-                                        .star-rating label:hover,
-                                        .star-rating label:hover ~ label {
-                                            color: gold;
-                                        }
-                                    </style>
-
-                                    <div class="star-rating" style="direction: rtl;">
-                                        <% for (int i = 5; i >= 1; i--) {%>
-                                        <input type="radio" id="star<%= od.getOrderId()%>_<%= i%>" name="rating" value="<%= i%>">
-                                        <label for="star<%= od.getOrderId()%>_<%= i%>">&#9733;</label>
-                                        <% } %>
-                                    </div>
-
-                                    <button style="color: white" type="submit">Submit</button>
-                                </form>
-                                <%
-                                    }
-                                %>
-
-                            </td>
-                            <% } else {%>
-                            <<td>Order is still in transit</td><%}%>
-                            <td><form action="<%= request.getContextPath()%>/profile-order-history" method="post" class="table-actions-center" style="display:inline;">
-                                    <input type="hidden" name="action" value="details">
-                                    <input type="hidden" name="order_id" value="<%= od.getOrderId()%>">
-                                    <button type="submit" class="btn-action btn-details">Details</button>
-                                </form>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-                    <%}%>
-                </table>
-            </div>
-        </div>
-
-        <!-- paginator -->
-        <!-- FORM PHÂN TRANG -->
-        <form id="paginationForm" method="GET" action="<%= request.getContextPath()%>/profile-order-history">
-            <input type="hidden" name="action" value="search" />
-            <input type="hidden" name="customer_name" value="${param.customer_name}" />
-            <input type="hidden" name="page" id="pageInput" value="${currentPage}" />
-        </form>
-
-        <nav class="admin-pagination">
-            <ul class="pagination">
-                <!-- Nút Previous -->
-                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                    <a href="#" class="page-link" onclick="submitPage(${currentPage - 1})">«</a>
-                </li>
-
-                <!-- Các nút số trang -->
-                <c:forEach var="i" begin="1" end="${totalPages}">
-                    <li class="page-item ${i == currentPage ? 'active' : ''}">
-                        <a href="#" class="page-link" onclick="submitPage(${i})">${i}</a>
+            <nav class="admin-pagination">
+                <ul class="pagination">
+                    <!-- Nút Previous -->
+                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                        <a href="#" class="page-link" onclick="submitPage(${currentPage - 1})">«</a>
                     </li>
-                </c:forEach>
 
-                <!-- Nút Next -->
-                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                    <a href="#" class="page-link" onclick="submitPage(${currentPage + 1})">»</a>
-                </li>
-            </ul>
-        </nav>
+                    <!-- Các nút số trang -->
+                    <c:forEach var="i" begin="1" end="${totalPages}">
+                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                            <a href="#" class="page-link" onclick="submitPage(${i})">${i}</a>
+                        </li>
+                    </c:forEach>
+
+                    <!-- Nút Next -->
+                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                        <a href="#" class="page-link" onclick="submitPage(${currentPage + 1})">»</a>
+                    </li>
+                </ul>
+            </nav>
 
 
-        <!-- end paginator -->
-    </div>
-</section>
+            <!-- end paginator -->
+        </div>
+    </section>
+</main>
 
 <!-- Facebook Button -->
 <a href="https://www.facebook.com/YourPage" 

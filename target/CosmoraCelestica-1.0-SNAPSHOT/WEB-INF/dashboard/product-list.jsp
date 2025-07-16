@@ -62,7 +62,7 @@
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">
                     <tr>
-                        <th>No.</th>
+                        <th>ID</th>
                         <th>Product Image</th>
                         <th>Product Name</th>
                         <th>Price</th>
@@ -77,7 +77,7 @@
                             for (Product p : productList) {
                     %>
                     <tr>
-                        <td><%= rowNumber++%></td> 
+                        <td><%= p.getProductId() %></td> 
                         <td>
                             <% if (p.getImageUrls() != null && !p.getImageUrls().isEmpty()) {%>
                             <img src="<%= contextPath%>/assets/img/<%= p.getImageUrls().get(0)%>" alt="<%= p.getName()%>" class="table-product-img">

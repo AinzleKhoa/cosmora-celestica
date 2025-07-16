@@ -100,7 +100,8 @@ public class StaffServlet extends HttpServlet {
             String idParam = request.getParameter("id");
 
             if (idParam == null || idParam.trim().isEmpty() || !idParam.matches("\\d+")) {
-                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
+                request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
+               
                 return;
             }
 
@@ -109,7 +110,7 @@ public class StaffServlet extends HttpServlet {
             Staff oneStaff = sDAO.getOneById(id);
 
             if (oneStaff == null) {
-                response.sendRedirect("/WEB-INF/dashboard/staff-list.jsp");
+               request.getRequestDispatcher("/WEB-INF/error/not-found.jsp").forward(request, response);
                 return;
             }
 
@@ -176,7 +177,7 @@ public class StaffServlet extends HttpServlet {
                         dateOfBirth = Date.valueOf(dobStr);
                     }
 
-                    // Check email existence before uploading image and inserting
+                 
                     if (sDAO.isEmailExist(email)) {
                         request.setAttribute("errorMessage", "Email already exists. Please use another email.");
                         request.getRequestDispatcher("/WEB-INF/dashboard/staff-create.jsp").forward(request, response);
@@ -212,7 +213,8 @@ public class StaffServlet extends HttpServlet {
                         response.sendRedirect(request.getContextPath() + "/manage-staffs");
 
                     } else {
-                        out.println("<h2>Error: Can't add staff into database.</h2>");
+                        request.getSession().setAttribute("errorMessage", "Staff added failed.");
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs?view=create");
                     }
 
                 } catch (Exception e) {
@@ -281,11 +283,11 @@ public class StaffServlet extends HttpServlet {
                     int isUpdate = sDAO.update(updatedStaff);
                     if (isUpdate == 1) {
                         // Thành công
-                        request.getSession().setAttribute("sMessage", "Staff updated successfully.");
+                        request.getSession().setAttribute("sMessage", "Updated successfully.");
                         response.sendRedirect(request.getContextPath() + "/manage-staffs");
                     } else {
                         // Thất bại
-                        request.getSession().setAttribute("errorMessage", "Email already exists. Please use another email.");
+                        request.getSession().setAttribute("errorMessage", "Updated failed");
                         response.sendRedirect(request.getContextPath() + "/manage-staffs?view=edit&id=" + id);
                     }
 
@@ -301,7 +303,12 @@ public class StaffServlet extends HttpServlet {
                     int id = Integer.parseInt(idParam);
 
                     if (sDAO.delete(id) == 1) {
+                        request.getSession().setAttribute("sMessage", "Delete successfully.");
                         response.sendRedirect(request.getContextPath() + "/manage-staffs");
+                    }else {
+                        
+                        request.getSession().setAttribute("errorMessage", "Delete failed.");
+                        response.sendRedirect(request.getContextPath() + "/manage-staffs?view=delete&id=" + id);
                     }
                     break;
 
@@ -313,7 +320,7 @@ public class StaffServlet extends HttpServlet {
                     try {
                         sList = sDAO.searchByName(keyWord);
                         request.setAttribute("s", sList);
-
+                         
                         request.getRequestDispatcher("/WEB-INF/dashboard/staff-list.jsp").forward(request, response);
                     } catch (SQLException ex) {
                         Logger.getLogger(StaffServlet.class.getName()).log(Level.SEVERE, null, ex);

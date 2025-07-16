@@ -24,7 +24,7 @@
         <div class="admin-header-top">
             <form action="<%= request.getContextPath()%>/manage-orders" method="POST" style="display: flex; margin-left: auto;" class="search-filter-wrapper">
                 <input type="hidden" name="action" value="search" />
-                <input type="text" name="customer_name" class="search-input" placeholder="Enter customer name...">
+                <input type="text" name="customer_name" class="search-input" placeholder="Enter customer full name...">
                 <button type="submit" class="search-btn">Search</button>
                 <a href="manage-orders" class="clear-search-btn" 
                    style="background-color: #ef4444;

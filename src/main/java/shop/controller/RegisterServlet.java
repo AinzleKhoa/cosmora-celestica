@@ -63,8 +63,6 @@ public class RegisterServlet extends HttpServlet {
             // Register the customer
             if (cDAO.createCustomer(new Customer(fullName, username, email, hashedPassword, avatarUrl)) > 0) {
                 // Success: redirect to login with success message in session (flash-style)
-                request.setAttribute("fullName", fullName);
-                request.setAttribute("username", username);
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
                 request.setAttribute("confirmPassword", confirmPassword);

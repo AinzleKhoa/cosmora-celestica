@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
         <!-- Favicons -->
         <link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">
@@ -66,10 +67,14 @@
 
                                 <div class="sign__group">
                                     <input type="password" class="sign__input" placeholder="Password" id="password" name="password" value="${requestScope.password}" autocomplete="new-password" required>
+                                    <!-- Eye Icon for toggling password visibility -->
+                                    <i class="fa-solid fa-eye" id="eyeIcon" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <div class="sign__group">
                                     <input type="password" class="sign__input" placeholder="Confirm Password" id="confirmPassword" value="${requestScope.confirmPassword}" name="confirmPassword" autocomplete="new-password" required>
+                                    <!-- Eye Icon for toggling confirm password visibility -->
+                                    <i class="fa-solid fa-eye" id="confirmEyeIcon" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <button class="sign__btn" type="submit">Sign up</button>
@@ -246,6 +251,38 @@
                 document.getElementById('messageText').textContent = "";
                 document.getElementById('messageText').textContent = msg;
             }
+        </script>
+        <script>
+            // Function to toggle password visibility for the first password input
+            const passwordEyeIcon = document.getElementById('eyeIcon');
+            const passwordInput = document.getElementById('password');
+
+            passwordEyeIcon.addEventListener('click', function () {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';  // Show password
+                    passwordEyeIcon.classList.remove('fa-eye');  // Open eye
+                    passwordEyeIcon.classList.add('fa-eye-slash');  // Eye-slash icon
+                } else {
+                    passwordInput.type = 'password';  // Hide password
+                    passwordEyeIcon.classList.remove('fa-eye-slash');  // Close eye
+                    passwordEyeIcon.classList.add('fa-eye');  // Eye icon
+                }
+            });
+            // Function to toggle password visibility for the confirm password input
+            const confirmPasswordEyeIcon = document.getElementById('confirmEyeIcon');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+
+            confirmPasswordEyeIcon.addEventListener('click', function () {
+                if (confirmPasswordInput.type === 'password') {
+                    confirmPasswordInput.type = 'text';  // Show confirm password
+                    confirmPasswordEyeIcon.classList.remove('fa-eye');  // Open eye
+                    confirmPasswordEyeIcon.classList.add('fa-eye-slash');  // Eye-slash icon
+                } else {
+                    confirmPasswordInput.type = 'password';  // Hide confirm password
+                    confirmPasswordEyeIcon.classList.remove('fa-eye-slash');  // Close eye
+                    confirmPasswordEyeIcon.classList.add('fa-eye');  // Eye icon
+                }
+            });
         </script>
     </body>
 

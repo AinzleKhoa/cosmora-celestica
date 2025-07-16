@@ -19,18 +19,16 @@
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
         </div>
-        <!-- Success Message Container -->
-        <div id="successMessage" style="color: green; margin-bottom: 15px;">
-            <c:if test="${not empty successMessage}">
-                <p>${successMessage}</p>
-            </c:if>
+                
+        <!-- Message Container -->
+        <div id="message" style="color: yellow; margin-bottom: 15px;">
+            <p id="messageText">
+                <c:if test="${not empty message}">
+                    ${message}
+                </c:if>
+            </p>
         </div>
-        <!-- Error Message Container -->
-        <div id="errorMessage" style="color: red; margin-bottom: 15px;">
-            <c:if test="${not empty requestScope.errorMessage}">
-                <p>${requestScope.errorMessage}</p>
-            </c:if>
-        </div>
+        
         <c:choose>
             <c:when test="${empty thisCustomer}">
                 <p class="sign__empty">This Id does not exists.</p>

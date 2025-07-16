@@ -186,20 +186,20 @@ public class CustomerServlet extends HttpServlet {
                     if (cDAO.updateCustomer(new Customer(id, username, email, fullName, phone, address)) > 0) {
                         Customer newCustomer = cDAO.getAccountById(id);
                         request.setAttribute("thisCustomer", newCustomer);
-                        request.setAttribute("successMessage", "Update customer successfully!");
+                        request.setAttribute("message", "Update customer successfully!");
                         request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
                     } else {
                         request.setAttribute("thisCustomer", thisCustomer);
-                        request.setAttribute("errorMessage", "Update Customer to the database failed");
+                        request.setAttribute("message", "Update Customer to the database failed");
                         request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("thisCustomer", thisCustomer);
-                    request.setAttribute("errorMessage", "Username or Email already exists.");
+                    request.setAttribute("message", "Username or Email already exists.");
                     request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
                 }
             } else {
-                request.setAttribute("errorMessage", "This Customer Id does not exist.");
+                request.setAttribute("message", "This Customer Id does not exist.");
                 request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
             }
         } else if (action.equals("delete")) {
@@ -211,14 +211,15 @@ public class CustomerServlet extends HttpServlet {
 
             if (thisCustomer != null) {
                 if (cDAO.deleteCustomer(id) > 0) {
+                    request.getSession().setAttribute("message", "The customer have been deleted successfully");
                     response.sendRedirect(request.getContextPath() + "/manage-customers");
                 } else {
                     request.setAttribute("thisCustomer", thisCustomer);
-                    request.setAttribute("errorMessage", "Failed to delete customer: This customer is linked to other records (e.g., orders, cart). A soft delete (by changing their status) is recommended.");
+                    request.setAttribute("message", "Failed to delete customer: This customer is linked to other records (e.g., orders, cart). A soft delete (by changing their status) is recommended.");
                     request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
                 }
             } else {
-                request.setAttribute("errorMessage", "This Customer Id does not exist.");
+                request.setAttribute("message", "This Customer Id does not exist.");
                 request.getRequestDispatcher("/WEB-INF/dashboard/customer-delete.jsp").forward(request, response);
             }
         } else if (action.equals("statusUpdate")) {

@@ -20,7 +20,19 @@
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-list.css">
 
-<section class="section section--bg section__ad--bg section--first" style="height: 300px" data-bg="<%= request.getContextPath()%>/assets/img/bg3.png"></section>
+<section class="section_banner section--bg section__ad--bg section--first" data-bg="<%= request.getContextPath()%>/assets/img/banner.png">
+    <h1 style="
+        text-align: center;
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+        margin-top: 100px;">
+        Explore Top Games & Gaming Accessories
+    </h1>
+</section>
 
 <%
     String successMsg = (String) session.getAttribute("buysucces");
@@ -65,93 +77,174 @@
     .star-icon.empty {
         color: #e0e0e0; /* Màu xám nhạt cho sao rỗng */
     </style>
-    <section class="custom-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-12"> 
-                    <form action="<%= request.getContextPath()%>/home" method="get">
-                        <input type="hidden" name="action" value="search">
-                        <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
-                        <button class="search-btn">Search</button>
-                        <a href="home" class="clear-search-btn" 
-                           style="background-color: #ef4444;
-                           color: #fff;
-                           padding: 8px;
-                           border-radius: 13px;">
-                            <i class="fas fa-times"></i> Clear
-                        </a>
-                    </form>
+    <main id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png">
+        <section class="custom-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12"> 
+                        <form action="<%= request.getContextPath()%>/home" method="get">
+                            <input type="hidden" name="action" value="search">
+                            <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
+                            <button class="search-btn">Search</button>
+                            <a href="home" class="clear-search-btn" 
+                               style="background-color: #ef4444;
+                               color: #fff;
+                               padding: 8px;
+                               border-radius: 13px;">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </form>
+                    </div>
+                    <div class="col-12 mt-3 text-center">
+                        <h2>Category:</h2>
+                        <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword='">All</button>
+                        <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=game'">Game</button>
+                        <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=headset'">Headset</button>
+                        <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=keyboard'">KeyBoard</button>
+                        <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=mouse'">Mouse</button>
+                        <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=controller'">Controller</button>
+                    </div>
                 </div>
-                <div class="col-12 mt-3 text-center">
-                    <h2>Category:</h2>
-                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword='">All</button>
-                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=game'">Game</button>
-                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=headset'">Headset</button>
-                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=keyboard'">KeyBoard</button>
-                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=mouse'">Mouse</button>
-                    <button class="btn custom-category-btn" onclick="location.href = '<%= request.getContextPath()%>/home?action=filter&keyword=controller'">Controller</button>
-                </div>
-            </div>
 
-            <div class="row mt-5"><div class="col-12"><h2 class="section__title">Featured Accessories</h2></div></div>
-            <div class="slider-wrapper">
-                <div class="slider-viewport" id="accessory-viewport">
-                    <div class="slider-track" id="accessory-track">
-                        <%
-                            List<Product> accessoryList = (List<Product>) request.getAttribute("accessoryList");
-                            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
-                            if (accessoryList != null && !accessoryList.isEmpty()) {
-                                for (Product product : accessoryList) {
-                        %>
-                        <div class="slider-item">
-                            <div class="card card--catalog card--uniform">
-                                <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= product.getProductId()%>" class="card__cover">
-                                    <img src="<%= request.getContextPath()%>/assets/img/<%= (product.getImageUrls() != null && !product.getImageUrls().isEmpty() ? product.getImageUrls().get(0) : "default-product.png")%>" alt="<%= product.getName()%>" />
-                                    <span class="card__new">NEW</span>
-                                </a>
-                                <div class="card__title">
-                                    <h3 class="card__brand"><%= (product.getBrandName() != null && !product.getBrandName().isEmpty() ? product.getBrandName() : "N/A")%></h3>
-                                    <h3><a href="<%= request.getContextPath()%>/home?action=details&productId=<%= product.getProductId()%>"><%= product.getName()%></a></h3>
-                                        <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
-                                    <div class="card__rating">
-                                        <%
-                                            long roundedStarsGame = Math.round(product.getAverageStars());
-                                            for (int i = 1; i <= 5; i++) {
-                                                if (i <= roundedStarsGame) {
-                                        %>
-                                        <span class="star-icon full">&#9733;</span>
-                                        <%
-                                        } else {
-                                        %>
-                                        <span class="star-icon empty">&#9733;</span>
-                                        <%
+                <div class="row mt-5"><div class="col-12"><h2 class="section__title">Featured Accessories</h2></div></div>
+                <div class="slider-wrapper">
+                    <div class="slider-viewport" id="accessory-viewport">
+                        <div class="slider-track" id="accessory-track">
+                            <%
+                                List<Product> accessoryList = (List<Product>) request.getAttribute("accessoryList");
+                                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
+                                if (accessoryList != null && !accessoryList.isEmpty()) {
+                                    for (Product product : accessoryList) {
+                            %>
+                            <div class="slider-item">
+                                <div class="card card--catalog card--uniform">
+                                    <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= product.getProductId()%>" class="card__cover">
+                                        <img src="<%= request.getContextPath()%>/assets/img/<%= (product.getImageUrls() != null && !product.getImageUrls().isEmpty() ? product.getImageUrls().get(0) : "default-product.png")%>" alt="<%= product.getName()%>" />
+                                        <span class="card__new">NEW</span>
+                                    </a>
+                                    <div class="card__title">
+                                        <h3 class="card__brand"><%= (product.getBrandName() != null && !product.getBrandName().isEmpty() ? product.getBrandName() : "N/A")%></h3>
+                                        <h3><a href="<%= request.getContextPath()%>/home?action=details&productId=<%= product.getProductId()%>"><%= product.getName()%></a></h3>
+                                            <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
+                                        <div class="card__rating">
+                                            <%
+                                                long roundedStarsGame = Math.round(product.getAverageStars());
+                                                for (int i = 1; i <= 5; i++) {
+                                                    if (i <= roundedStarsGame) {
+                                            %>
+                                            <span class="star-icon full">&#9733;</span>
+                                            <%
+                                            } else {
+                                            %>
+                                            <span class="star-icon empty">&#9733;</span>
+                                            <%
+                                                    }
                                                 }
-                                            }
-                                        %>
+                                            %>
+                                        </div>
+                                        <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
+                                        <span>
+                                            <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
+                                            <span style="color: red;"><%= currencyFormatter.format(product.getSalePrice())%></span>
+                                            <s><%= currencyFormatter.format(product.getPrice())%></s>
+                                                <% } else {%>
+                                                <%= currencyFormatter.format(product.getPrice())%>
+                                                <% }%>
+                                        </span>
                                     </div>
-                                    <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
-                                    <span>
-                                        <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
-                                        <span style="color: red;"><%= currencyFormatter.format(product.getSalePrice())%></span>
-                                        <s><%= currencyFormatter.format(product.getPrice())%></s>
-                                            <% } else {%>
-                                            <%= currencyFormatter.format(product.getPrice())%>
-                                            <% }%>
-                                    </span>
+                                    <div class="card__actions">
+                                        <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
+
+                                        <form action="<%= request.getContextPath()%>/cart" method="POST">
+                                            <input type="hidden" name="action" value="add">
+                                            <input type="hidden" name="page" value="home">
+                                            <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
+                                            <input type="hidden" name="productId" value="<%= product.getProductId()%>">
+                                            <input type="hidden" name="quantity" value="1">
+
+                                            <button class="card__addtocart" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                                <circle cx="176" cy="416" r="16" style="fill:none;
+                                                        stroke-linecap:round;
+                                                        stroke-linejoin:round;
+                                                        stroke-width:32px"/>
+                                                        <circle cx="400" cy="416" r="16" style="fill:none;
+                                                        stroke-linecap:round;
+                                                        stroke-linejoin:round;
+                                                        stroke-width:32px"/>
+                                                        <polyline points="48 80 112 80 160 352 416 352" style="fill:none;
+                                                        stroke-linecap:round;
+                                                        stroke-linejoin:round;
+                                                        stroke-width:32px"/>
+                                                        <path d="M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128" style="fill:none;
+                                                        stroke-linecap:round;
+                                                        stroke-linejoin:round;
+                                                        stroke-width:32px"/>
+                                                        </svg>
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card__actions">
-                                    <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
+                                <% }
+                                    } %>
+                            </div>
+                        </div>
+                        <button id="prevAccessory" class="slider-nav prev-nav">&#x2039;</button>
+                        <button id="nextAccessory" class="slider-nav next-nav">&#x203A;</button>
+                    </div>
 
-                                    <form action="<%= request.getContextPath()%>/cart" method="POST">
-                                        <input type="hidden" name="action" value="add">
-                                        <input type="hidden" name="page" value="home">
-                                        <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
-                                        <input type="hidden" name="productId" value="<%= product.getProductId()%>">
-                                        <input type="hidden" name="quantity" value="1">
+                    <div class="row mt-5"><div class="col-12"><h2 class="section__title section__title--margin">Featured Games</h2></div></div>
+                    <div class="slider-wrapper">
+                        <div class="slider-viewport" id="game-viewport">
+                            <div class="slider-track" id="game-track">
+                                <%
+                                    List<Product> gameList = (List<Product>) request.getAttribute("gameList");
+                                    if (gameList != null && !gameList.isEmpty()) {
+                                        for (Product game : gameList) {
+                                %>
+                                <div class="slider-item">
+                                    <div class="card card--catalog card--uniform">
+                                        <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= game.getProductId()%>" class="card__cover">
+                                            <img src="<%= request.getContextPath()%>/assets/img/<%= (game.getImageUrls() != null && !game.getImageUrls().isEmpty() ? game.getImageUrls().get(0) : "default-product.png")%>" alt="<%= game.getName()%>" />
+                                            <span class="card__new">New</span>
+                                        </a>
+                                        <div class="card__title">
+                                            <h3 class="card__brand"><%= (game.getBrandName() != null && !game.getBrandName().isEmpty() ? game.getBrandName() : "N/A")%></h3>
+                                            <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
+                                            <div class="card__rating">
+                                                <%
+                                                    long roundedStarsGame = Math.round(game.getAverageStars());
+                                                    for (int i = 1; i <= 5; i++) {
+                                                        if (i <= roundedStarsGame) {
+                                                %>
+                                                <span class="star-icon full">&#9733;</span>
+                                                <%
+                                                } else {
+                                                %>
+                                                <span class="star-icon empty">&#9733;</span>
+                                                <%
+                                                        }
+                                                    }
+                                                %>
+                                            </div>
+                                            <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
+                                            <h3><a href="<%= request.getContextPath()%>/home?action=details&productId=<%= game.getProductId()%>"><%= game.getName()%></a></h3>
+                                            <span><%= currencyFormatter.format(game.getPrice())%></span>
+                                        </div>
+                                        <div class="card__actions">
+                                            <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= game.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
+                                            <form action="<%= request.getContextPath()%>/cart" method="POST">
+                                                <input type="hidden" name="action" value="add">
+                                                <input type="hidden" name="page" value="home">
+                                                <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
+                                                <input type="hidden" name="productId" value="<%= game.getProductId()%>">
+                                                <input type="hidden" name="quantity" value="1">
 
-                                        <button class="card__addtocart" type="submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-                                            <circle cx="176" cy="416" r="16" style="fill:none;
+                                                <button class="card__addtocart" type="submit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                                    <circle cx="176" cy="416" r="16" style="fill:none;
                                                     stroke-linecap:round;
                                                     stroke-linejoin:round;
                                                     stroke-width:32px"/>
@@ -168,103 +261,23 @@
                                                     stroke-linejoin:round;
                                                     stroke-width:32px"/>
                                                     </svg>
-                                            </button>
-                                        </form>
+                                                </button>
+                                            </form>
 
-                                    </div>
-                                </div>
-                            </div>
-                            <% }
-                                } %>
-                        </div>
-                    </div>
-                    <button id="prevAccessory" class="slider-nav prev-nav">&#x2039;</button>
-                    <button id="nextAccessory" class="slider-nav next-nav">&#x203A;</button>
-                </div>
 
-                <div class="row mt-5"><div class="col-12"><h2 class="section__title section__title--margin">Featured Games</h2></div></div>
-                <div class="slider-wrapper">
-                    <div class="slider-viewport" id="game-viewport">
-                        <div class="slider-track" id="game-track">
-                            <%
-                                List<Product> gameList = (List<Product>) request.getAttribute("gameList");
-                                if (gameList != null && !gameList.isEmpty()) {
-                                    for (Product game : gameList) {
-                            %>
-                            <div class="slider-item">
-                                <div class="card card--catalog card--uniform">
-                                    <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= game.getProductId()%>" class="card__cover">
-                                        <img src="<%= request.getContextPath()%>/assets/img/<%= (game.getImageUrls() != null && !game.getImageUrls().isEmpty() ? game.getImageUrls().get(0) : "default-product.png")%>" alt="<%= game.getName()%>" />
-                                        <span class="card__new">New</span>
-                                    </a>
-                                    <div class="card__title">
-                                        <h3 class="card__brand"><%= (game.getBrandName() != null && !game.getBrandName().isEmpty() ? game.getBrandName() : "N/A")%></h3>
-                                        <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
-                                        <div class="card__rating">
-                                            <%
-                                                long roundedStarsGame = Math.round(game.getAverageStars());
-                                                for (int i = 1; i <= 5; i++) {
-                                                    if (i <= roundedStarsGame) {
-                                            %>
-                                            <span class="star-icon full">&#9733;</span>
-                                            <%
-                                            } else {
-                                            %>
-                                            <span class="star-icon empty">&#9733;</span>
-                                            <%
-                                                    }
-                                                }
-                                            %>
                                         </div>
-                                        <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
-                                        <h3><a href="<%= request.getContextPath()%>/home?action=details&productId=<%= game.getProductId()%>"><%= game.getName()%></a></h3>
-                                        <span><%= currencyFormatter.format(game.getPrice())%></span>
-                                    </div>
-                                    <div class="card__actions">
-                                        <button type="button" class="btn btn-buy" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= game.getProductId()%>&quantity=<%= 1%>'" >Buy Now</button>
-                                        <form action="<%= request.getContextPath()%>/cart" method="POST">
-                                            <input type="hidden" name="action" value="add">
-                                            <input type="hidden" name="page" value="home">
-                                            <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
-                                            <input type="hidden" name="productId" value="<%= game.getProductId()%>">
-                                            <input type="hidden" name="quantity" value="1">
-
-                                            <button class="card__addtocart" type="submit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-                                                <circle cx="176" cy="416" r="16" style="fill:none;
-                                                stroke-linecap:round;
-                                                stroke-linejoin:round;
-                                                stroke-width:32px"/>
-                                                <circle cx="400" cy="416" r="16" style="fill:none;
-                                                stroke-linecap:round;
-                                                stroke-linejoin:round;
-                                                stroke-width:32px"/>
-                                                <polyline points="48 80 112 80 160 352 416 352" style="fill:none;
-                                                stroke-linecap:round;
-                                                stroke-linejoin:round;
-                                                stroke-width:32px"/>
-                                                <path d="M160,288H409.44a8,8,0,0,0,7.85-6.43l28.8-144a8,8,0,0,0-7.85-9.57H128" style="fill:none;
-                                                stroke-linecap:round;
-                                                stroke-linejoin:round;
-                                                stroke-width:32px"/>
-                                                </svg>
-                                            </button>
-                                        </form>
-
-
                                     </div>
                                 </div>
+                                <% }
+                                    }%>
                             </div>
-                            <% }
-                                }%>
                         </div>
+                        <button id="prevGame" class="slider-nav prev-nav">&#x2039;</button>
+                        <button id="nextGame" class="slider-nav next-nav">&#x203A;</button>
                     </div>
-                    <button id="prevGame" class="slider-nav prev-nav">&#x2039;</button>
-                    <button id="nextGame" class="slider-nav next-nav">&#x203A;</button>
                 </div>
-            </div>
-        </section>
-
+            </section>
+        </main>
         <!-- Facebook Button -->
         <a href="https://www.facebook.com/YourPage" 
            style="position: fixed;
