@@ -25,7 +25,7 @@
 
         <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
         <meta name="keywords" content="">
-        <title>Cosmora Celestica – Games and Accessories</title>
+        <title>Cosmora Celestica 404</title>
 
     </head>
 
@@ -39,7 +39,7 @@
 						<div class="page-404__content">
 							<h1 class="page-404__title">404</h1>
 							<p class="page-404__text">The page you are looking for not available!</p>
-							<a href="${pageContext.servletContext.contextPath}/home" class="page-404__btn">go back</a>
+							<a href="javascript:history.back()" class="page-404__btn">go back</a>
 						</div>
 					</div>
 				</div>

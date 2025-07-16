@@ -308,7 +308,8 @@
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="phone">Phone Number</label>
                                     <input id="phone" type="text" name="phone" class="form__input"
-                                           value="${user.phone}" placeholder="${user.phone}">
+                                           value="${user.phone != null && !user.phone.equals('0') ? user.phone : ''}" 
+                                           placeholder="${user.phone != null && !user.phone.equals('0') ? user.phone : ''}">
                                 </div>
 
                                 <!-- Gender -->
@@ -416,12 +417,16 @@
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="newpass">New Password</label>
                                     <input id="newpass" type="password" name="newpass" class="form__input" required>
+                                        <!-- Eye Icon for toggling new password visibility -->
+                                        <i class="fa-solid fa-eye" id="newpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <!-- Confirm New Password -->
                                 <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                     <label class="form__label" for="confirmpass">Confirm New Password</label>
                                     <input id="confirmpass" type="password" name="confirmnewpass" class="form__input" required>
+                                        <!-- Eye Icon for toggling confirm new password visibility -->
+                                        <i class="fa-solid fa-eye" id="confirmpassEyeIcon" style="position: absolute; right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <div class="col-12">
@@ -432,6 +437,8 @@
                                 <div class="col-12">
                                     <label class="form__label" for="oldpass">Old Password</label>
                                     <input id="oldpass" type="password" name="oldpass" class="form__input" required>
+                                        <!-- Eye Icon for toggling old password visibility -->
+                                        <i class="fa-solid fa-eye" id="oldpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <!-- Save Button -->
@@ -624,5 +631,51 @@
         // showMessage('Processing...');
     });
 
+</script>
+<script>
+    // Function to toggle password visibility for New Password
+    const newpassEyeIcon = document.getElementById('newpassEyeIcon');
+    const newpassInput = document.getElementById('newpass');
+    newpassEyeIcon.addEventListener('click', function () {
+        if (newpassInput.type === 'password') {
+            newpassInput.type = 'text';  // Show new password
+            newpassEyeIcon.classList.remove('fa-eye');  // Change to open eye
+            newpassEyeIcon.classList.add('fa-eye-slash');  // Change to eye-slash
+        } else {
+            newpassInput.type = 'password';  // Hide new password
+            newpassEyeIcon.classList.remove('fa-eye-slash');  // Change to closed eye
+            newpassEyeIcon.classList.add('fa-eye');  // Change to eye
+        }
+    });
+
+    // Function to toggle password visibility for Confirm New Password
+    const confirmpassEyeIcon = document.getElementById('confirmpassEyeIcon');
+    const confirmpassInput = document.getElementById('confirmpass');
+    confirmpassEyeIcon.addEventListener('click', function () {
+        if (confirmpassInput.type === 'password') {
+            confirmpassInput.type = 'text';  // Show confirm new password
+            confirmpassEyeIcon.classList.remove('fa-eye');  // Change to open eye
+            confirmpassEyeIcon.classList.add('fa-eye-slash');  // Change to eye-slash
+        } else {
+            confirmpassInput.type = 'password';  // Hide confirm new password
+            confirmpassEyeIcon.classList.remove('fa-eye-slash');  // Change to closed eye
+            confirmpassEyeIcon.classList.add('fa-eye');  // Change to eye
+        }
+    });
+
+    // Function to toggle password visibility for Old Password
+    const oldpassEyeIcon = document.getElementById('oldpassEyeIcon');
+    const oldpassInput = document.getElementById('oldpass');
+    oldpassEyeIcon.addEventListener('click', function () {
+        if (oldpassInput.type === 'password') {
+            oldpassInput.type = 'text';  // Show old password
+            oldpassEyeIcon.classList.remove('fa-eye');  // Change to open eye
+            oldpassEyeIcon.classList.add('fa-eye-slash');  // Change to eye-slash
+        } else {
+            oldpassInput.type = 'password';  // Hide old password
+            oldpassEyeIcon.classList.remove('fa-eye-slash');  // Change to closed eye
+            oldpassEyeIcon.classList.add('fa-eye');  // Change to eye
+        }
+    });
 </script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

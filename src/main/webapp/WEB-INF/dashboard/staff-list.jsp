@@ -45,7 +45,7 @@
         <%
 
             }
-            session.removeAttribute("errorMessage");
+            session.removeAttribute("sMessage");
         %>
 
         <% String errorMessage = (String) session.getAttribute("errorMessage");
@@ -64,7 +64,7 @@
                 <thead class="table-light text-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Image Staff</th>
+                        <th>Avatar</th>
                         <th>Full Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -89,8 +89,7 @@
                         <td>
                             <img src="<%= s.getAvatarUrl()%>" 
                                  alt="Avatar" 
-                                 style="width: 150px; height: 140px; border: 50px;">
-
+                                 style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;">
                         </td>
                         <td><%= s.getFullName()%></td>
                         <td><%= s.getEmail()%></td>

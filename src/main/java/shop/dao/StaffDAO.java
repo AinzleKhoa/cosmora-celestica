@@ -119,6 +119,7 @@ public class StaffDAO extends DBContext {
         }
         return null;
     }
+    
 
     public int update(Staff staff) {
         String sql = "UPDATE staff SET full_name = ?, email = ?, password_hash = ?, gender = ?, phone = ?, role = ?, date_of_birth = ?, avatar_url = ? WHERE staff_id = ?";

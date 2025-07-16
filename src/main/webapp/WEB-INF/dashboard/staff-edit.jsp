@@ -54,13 +54,13 @@
                     <!-- Password -->
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Password</label>
-                        <input type="text" class="form-control admin-manage-input" name="password" placeholder="*******" id="password">
+                        <input type="password" required class="form-control admin-manage-input" name="password"id="password">
                     </div>
 
                     <!-- Phone -->
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Phone</label>
-                        <input type="text" class="form-control admin-manage-input" value="<%=s.getPhone()%>" name="phone" id="phone">
+                        <input type="phone" required class="form-control admin-manage-input" value="<%=s.getPhone()%>" name="phone" id="phone">
                     </div>
 
                     <!-- Gender -->
