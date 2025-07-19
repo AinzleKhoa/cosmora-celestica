@@ -19,20 +19,36 @@ import shop.util.SessionUtil;
  *
  * @author Le Anh Khoa - CE190449
  */
-//@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {"/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers", "/manage-discounts"})
+//@WebFilter(filterName = "EmployeeAuthFilter", urlPatterns = {
+//    "/manage-products", "/manage-staffs", "/manage-customers", "/manage-orders", "/manage-vouchers",
+//    "/manage-discounts", "/profile-dashboard", "/dashboard"})
 public class EmployeeAuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // Kiem tra session co hop le hay khong (dang nhap chua)
         HttpServletRequest req = (HttpServletRequest) request;
 
-        if (SessionUtil.isEmployeeLoggedIn(req)) {
+        if (SessionUtil.isStaffLoggedIn(req)) {
+            // Staff can only access specific pages
+            String requestedUrl = req.getRequestURI();
+            if (requestedUrl.contains("/manage-discounts") || 
+                    requestedUrl.contains("/profile-dashboard") || 
+                    requestedUrl.contains("/dashboard") || 
+                    requestedUrl.contains("/manage-vouchers") ||
+                    requestedUrl.contains("/manage-products")) {
+                ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/404");
+                System.out.println("Staff tried to access a restricted page! Redirecting to 404.");
+            } else {
+                chain.doFilter(req, response);
+                System.out.println("Staff has logged in and is accessing allowed pages.");
+            }
+        } else if (SessionUtil.isAdminLoggedIn(req)) {
+            // Admin can access all pages
             chain.doFilter(req, response);
-            System.out.println("Staff/Admin has logged in!");
+            System.out.println("Admin has logged in and is accessing allowed pages.");
         } else {
             ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/404");
-            System.out.println("Staff/Admin not logged in! Redirecting to 404");
+            System.out.println("Admin not logged in! Redirecting to 404.");
         }
     }
 }

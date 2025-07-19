@@ -20,6 +20,7 @@
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <style>
 
         </style>
@@ -31,7 +32,7 @@
 
         <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
         <meta name="keywords" content="">
-        <title>Cosmora Celestica – Games and Accessories</title>
+        <title>Cosmora Celestica</title>
 
     </head>
 

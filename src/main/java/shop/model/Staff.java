@@ -46,6 +46,21 @@ public class Staff {
         this.avatarUrl = avatarUrl;
     }
 
+    public Staff(int Id, String fullName, String email, String gender, String phone, Date dateOfBirth, String avatarUrl) {
+        this.Id = Id;
+        this.fullName = fullName;
+        this.email = email;
+        this.gender = gender;
+        this.phone = phone;
+        this.dateOfBirth = dateOfBirth;
+        this.avatarUrl = avatarUrl;
+    }
+
+    public Staff(String email, String passwordHash) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
     public int getId() {
         return Id;
     }

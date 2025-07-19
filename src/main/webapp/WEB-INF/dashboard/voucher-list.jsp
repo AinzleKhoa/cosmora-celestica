@@ -1,12 +1,49 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="shop.model.Voucher"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<%@page import="java.text.SimpleDateFormat"%>
 
 <main class="admin-main">
 
     <div class="table-header">
         <h2 class="table-title">Manage Vouchers</h2>
     </div>
+    <style>
+        .status-select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 140px;
+        }
+
+        .status-select-wrapper select {
+            width: 100%;
+            padding: 4px 26px 4px 8px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #343a40; /* n?n t?i */
+            color: #fff;                /* ch? tr?ng */
+        }
+
+        .status-select-wrapper::after {
+            content: '\25BC'; /* M?i tên xu?ng d?ng unicode */
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .status-select-wrapper select:focus {
+            outline: none;
+            border-color: #666;
+        }
+    </style>
 
     <section class="admin-header">
         <div class="admin-header-top">
@@ -16,7 +53,14 @@
                 <form action="<%= request.getContextPath()%>/manage-vouchers" method="get">
                     <input type="hidden" name="view" value="search" />
                     <input type="text" name="keyword" class="search-input" placeholder="Enter voucher name..." value="<%= request.getAttribute("keyword") != null ? request.getAttribute("keyword") : ""%>">
-                    <button class="search-btn">Search</button>                    
+                    <button class="search-btn">Search</button>
+                    <a href="manage-vouchers" class="clear-search-btn" 
+                       style="background-color: #ef4444;
+                       color: #fff;
+                       padding: 8px;
+                       border-radius: 13px;">
+                        <i class="fas fa-times "></i> Clear
+                    </a>                    
                 </form>
 
             </div>
@@ -38,12 +82,11 @@
                     <thead class="table-light text-dark">
 
                         <tr>
+                            <th>ID</th>
                             <th>Code</th>
-                            <th>Discount (%)</th>
                             <th>Usage</th>
-                            <th>Valid From</th>
-                            <th>Valid Until</th>
-                            <th>Description</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
                             <th>Status</th>
                             <th style="text-align: center;">Action</th>
                         </tr>
@@ -54,44 +97,52 @@
                             if (voucherlist != null && !voucherlist.isEmpty()) {
                                 for (Voucher voucher : voucherlist) {
 
-
                         %>
                         <tr>
 
-                            <td> <%= voucher.getCode()%></td>
-                            <td><%= voucher.getValue()%></td>
+                            <td> <%= voucher.getVoucherId()%></td>
+                            <td> <%= voucher.getCode()%></td>                          
                             <td><%= voucher.getUsageLimit()%></td>
-                            <td><%= voucher.getStartDate()%></td>
-                            <td><%= voucher.getEndDate()%></td>
-                            <td><%= voucher.getDescription()%></td>
+                            <td><%= voucher.getFormattedStartDate()%></td>
+                            <td><%= voucher.getFormattedEndDate()%></td>
                             <td>
-                                <%
+                                <form action="<%= request.getContextPath()%>/manage-vouchers" method="post">
 
-                                    if (voucher.getActive() == 1) {
-                                %>
-                                Active
-                                <%
-                                } else if (voucher.getActive() == 0) {
-                                %>
-                                Inactive
-                                <%
-                                } else if (voucher.getActive() == 2) {
-                                %>
-                                Not yet started
-                                <%
-                                } else {
-                                %>
-                                Unknown
-                                <%
-                                    }
-                                %>
-                            </td> 
+
+                                    <%
+                                        java.time.LocalDate today = java.time.LocalDate.now();
+                                        java.time.LocalDate startDate = voucher.getStartDate();
+                                        java.time.LocalDate endDate = voucher.getEndDate();
+                                        int currentStatus = voucher.getActive();
+
+                                    %>
+                                    <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId()%>">
+                                    <input type="hidden" name="action" value="edit-active">
+                                    <div class="status-select-wrapper">
+                                        <select name="active" class="form-select auto-submit">
+                                            <% if (startDate.isAfter(today)) { %>
+                                            <option value="2" selected>Not yet started</option>
+                                            <% } else if (endDate.isBefore(today) || voucher.getUsageLimit() <= 0) { %>
+                                            <option value="0" selected>Inactive</option>
+                                            <% } else {%>
+                                            <option value="1" <%= currentStatus == 1 ? "selected" : ""%>>Active</option>
+                                            <option value="0" <%= currentStatus == 0 ? "selected" : ""%>>Inactive</option>
+                                            <% }%>
+                                        </select>
+                                    </div>
+                                </form>
+                            </td>
+
                             <td> <div class="table-actions-center">                                      
                                     <button class="btn-action btn-edit"
                                             onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=edit&id=<%= voucher.getVoucherId()%>'">
                                         Edit
                                     </button>
-                 
+                                    <button class="btn-action btn-details"
+                                            onclick="location.href = '<%= request.getContextPath()%>/manage-vouchers?view=detail&id=<%= voucher.getVoucherId()%>'">
+                                        Detail
+                                    </button>
+
                                 </div> </td> <% }
                                 } else {%>
                             <td style="color: orange; margin-bottom: 10px;">No vouchers found.</td>
@@ -106,4 +157,24 @@
             </div>
         </section>
 </main>
+<script>
+// Khi thay ??i dropdown ? submit form
+    document.querySelectorAll('.auto-submit').forEach(select => {
+        select.addEventListener('change', function () {
+            this.closest('form').submit();
+        });
+    });
+
+// Khi trang v?a load, n?u dropdown là "Not yet started" ho?c "Inactive" ? t? ??ng g?i form ?? c?p nh?t DB
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.status-form').forEach(form => {
+            const select = form.querySelector('select');
+            const value = select.value;
+            if (value === "2" || value === "0") {
+                form.submit();
+            }
+        });
+    });
+</script>
+
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

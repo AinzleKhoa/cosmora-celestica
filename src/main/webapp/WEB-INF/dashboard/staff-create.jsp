@@ -6,6 +6,12 @@
     </div>
 
     <div class="admin-manage-wrapper container py-4">
+        <% String errorMessage = (String) request.getAttribute("errorMessage");
+            if (errorMessage != null) {%>
+        <div class="alert alert-danger" role="alert"  style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <%= errorMessage%>
+        </div>
+        <% }%>
 
 
 
@@ -36,7 +42,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Phone</label>
-                        <input type="text" class="form-control admin-manage-input" name="phone" id="phone">
+                        <input type="phone" class="form-control admin-manage-input" name="phone" id="phone" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Gender</label>
@@ -44,7 +50,7 @@
                             <option value="">-- Select Gender --</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
-                            
+
                         </select>
                     </div>
                     <div class="col-md-6">

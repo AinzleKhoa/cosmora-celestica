@@ -3,29 +3,22 @@
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
 
-<button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">? Menu</button>
-
-<aside class="admin-sidebar">
-    <%-- Sidebar content--%>
-</aside>
-
 <%
     Voucher voucher = (Voucher) request.getAttribute("voucher");
-    int id = voucher.getVoucherId();
+
 %>
 
 <main class="admin-main">
     <div class="table-header">
 
         <h2 class="table-title">Edit Voucher</h2>
-        <%
-            if (voucher == null) {
+        <%            if (voucher == null) {
         %>
         <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 15px; border-radius: 5px;">
             <strong>Error:</strong> Voucher not found.
         </div>
-        <a href="<%= request.getContextPath()%>/manage-vouchers" class="btn btn-secondary mt-3">
-            ? Back to Voucher List
+        <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
+            <i class="fas fa-arrow-left mr-2" style="font-size: 1.1rem; color: #333;"></i> Back
         </a>
         <%
         } else {
@@ -41,10 +34,11 @@
 
     <%
         }
+    
     %>
     <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
         <input type="hidden" name="action" value="edit" >
-        <input type="hidden" name="id" value="<%= id%>" >
+        <input type="hidden" name="id" value="<%= voucher.getVoucherId()%>" >
         <div class="admin-manage-type voucher-details">
             <fieldset class="mb-4 admin-manage-fieldset">                  
                 <div class="row g-3">
@@ -56,7 +50,7 @@
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="value" value="<%= voucher.getValue()%>" min="0" required>
+                               name="value" value="<%= voucher.getValue()%>" min="0" step="0.01"required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
@@ -66,7 +60,7 @@
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Minimum Order Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="min_order_value" value="<%= voucher.getMinOrderValue()%>"  min="0" required>
+                               name="min_order_value" value="<%= voucher.getMinOrderValue()%>"  min="0" step="0.01" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Start Date</label>
@@ -81,15 +75,8 @@
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
                         <textarea class="form-control admin-manage-input"
-                                  required      name="description" value="<%= voucher.getDescription()%>"> </textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label admin-manage-label">Active</label>
-                        <select class="form-control admin-manage-input" name="active" required>
-                            <option value="1" <%= voucher.getActive() == 1 ? "selected" : ""%>>Active</option>
-                            <option value="0" <%= voucher.getActive() == 0 ? "selected" : ""%>>Inactive</option>
-                            <option value="2" <%= voucher.getActive() == 2 ? "selected" : ""%>>Not yet started</option>
-                        </select>
+                                  required name="description"><%= voucher.getDescription() != null ? voucher.getDescription().replaceAll("<", "&lt;").replaceAll(">", "&gt;") : ""%></textarea>
+
                     </div>
                 </div>
             </fieldset>
@@ -113,41 +100,35 @@
         function validateDateRange(changedField) {
             const startInput = document.getElementById("start_date");
             const endInput = document.getElementById("end_date");
-            const notYetOption = document.querySelector('select[name="active"] option[value="2"]');
             const select = document.querySelector('select[name="active"]');
 
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
+            today.setHours(0, 0, 0, 0);
 
-            if (startInput.value) {
-                const startDate = new Date(startInput.value);
-                startDate.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
+            if (startDate > today) {
+                // N?u ngày b?t ??u > hôm nay ? ch? cho ch?n Not yet started
+                select.innerHTML = `<option value="2" selected>Not yet started</option>`;
+            } else {
+                // Ng??c l?i ? hi?n th? Active và Inactive
+                let activeSelected = currentValue === "1" ? "selected" : "";
+                let inactiveSelected = currentValue === "0" ? "selected" : "";
 
-                if (startDate.getTime() > today.getTime()) {
-                    // N?u startDate > h?m nay ? cho ph?p "Not yet started"
-                    notYetOption.disabled = false;
-                } else {
-                    // N?u startDate ? h?m nay ? KH?NG cho ch?n "Not yet started"
-                    notYetOption.disabled = true;
-
-                    // N?u ?ang ch?n "Not yet started" th? reset l?i v? "Inactive"
-                    if (select.value === "2") {
-                        select.value = "0";
-                    }
-                }
+                select.innerHTML = `
+        <option value="1" ${activeSelected}>Active</option>
+        <option value="0" ${inactiveSelected}>Inactive</option>
+    `;
             }
 
-            // Ki?m tra ng?y b?t ??u < ng?y k?t th?c
+            // Ki?m tra ngày b?t ??u < ngày k?t thúc
             if (startInput.value && endInput.value) {
                 const startDate = new Date(startInput.value);
                 const endDate = new Date(endInput.value);
-
                 if (startDate >= endDate) {
                     alert("Start date must be earlier than end date.");
                     if (changedField === "start") {
                         startInput.value = "";
                         startInput.focus();
-                    } else if (changedField === "end") {
+                    } else {
                         endInput.value = "";
                         endInput.focus();
                     }
@@ -164,6 +145,15 @@
 
             // G?i l?n ??u khi trang v?a load (n?u ?? c? ng?y start ???c prefill)
             validateDateRange("start");
+        });
+        document.querySelector("form").addEventListener("submit", function (event) {
+            const value = parseFloat(document.querySelector('input[name="value"]').value);
+            const minOrderValue = parseFloat(document.querySelector('input[name="min_order_value"]').value);
+
+            if (value >= minOrderValue / 2) {
+                alert("Voucher value must be less than half of the minimum order value.");
+                event.preventDefault(); // ch?n form submit
+            }
         });
 
     </script>

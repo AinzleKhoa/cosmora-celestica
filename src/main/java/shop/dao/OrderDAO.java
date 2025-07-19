@@ -4,7 +4,6 @@
  */
 package shop.dao;
 
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import shop.db.DBContext;
@@ -34,7 +34,8 @@ public class OrderDAO extends DBContext {
                 + "FROM \n"
                 + "    [order] o\n"
                 + "JOIN \n"
-                + "    customer c ON o.customer_id = c.customer_id;";
+                + "    customer c ON o.customer_id = c.customer_id \n"
+                + "ORDER BY o.order_date DESC;";
         ResultSet rs = execSelectQuery(query);
         while (rs.next()) {
             order.add(new Order(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getBigDecimal(4), rs.getString(5), rs.getString(6), rs.getObject("order_date", LocalDateTime.class),
@@ -72,21 +73,31 @@ public class OrderDAO extends DBContext {
                 + "    od.price,\n"
                 + "    p.name AS product_name,\n"
                 + "    img.image_URL,\n"
-                + "    c.name AS category_name\n"
+                + "    c.name AS category_name,\n"
+                + "    od.game_key -- Lấy trực tiếp key từ order_detail\n"
                 + "FROM order_detail od\n"
                 + "JOIN product p ON od.product_id = p.product_id\n"
+                + "\n"
+                + "-- Lấy 1 ảnh đại diện cho sản phẩm\n"
                 + "OUTER APPLY (\n"
                 + "    SELECT TOP 1 image_URL\n"
                 + "    FROM image\n"
                 + "    WHERE image.product_id = p.product_id\n"
-                + "    ORDER BY image_id -- hoặc created_at nếu có\n"
+                + "    ORDER BY image_id\n"
                 + ") AS img\n"
+                + "\n"
+                + "-- Lấy tên danh mục sản phẩm\n"
                 + "LEFT JOIN category c ON p.category_id = c.category_id\n"
-                + "WHERE od.order_id = ?;";
+                + "\n"
+                + "WHERE od.order_id = ?";
         Object[] params = {orderId};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
-            temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getBigDecimal(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+            if (rs.getString(6).equalsIgnoreCase("game")) {
+                temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getBigDecimal(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+            } else {
+                temp.add(new OrderDetails(rs.getInt(1), rs.getInt(2), rs.getBigDecimal(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+            }
         }
         return temp;
 
@@ -97,11 +108,14 @@ public class OrderDAO extends DBContext {
         String query = "SELECT \n"
                 + "    o.*, \n"
                 + "    c.full_name, \n"
-                + "    c.email\n"
+                + "    c.email,\n"
+                + "    ISNULL(v.value, 0.00) AS voucher_value\n"
                 + "FROM \n"
                 + "    [Order] o\n"
                 + "JOIN \n"
                 + "    Customer c ON o.customer_id = c.customer_id\n"
+                + "LEFT JOIN \n"
+                + "    Voucher v ON o.voucher_id = v.voucher_id\n"
                 + "WHERE \n"
                 + "    o.order_id = ?;";
         Object[] params = {orderId};
@@ -109,11 +123,13 @@ public class OrderDAO extends DBContext {
         while (rs.next()) {
             temp.setOrderId(rs.getInt(1));
             temp.setTotalAmount(rs.getBigDecimal(4));
+            temp.setPaymentMethod(rs.getString(5));
             temp.setOrderDate(rs.getObject("order_date", LocalDateTime.class));
             temp.setStatus(rs.getString(8));
             temp.setShippingAddress(rs.getString(6));
             temp.setCustomerName(rs.getString(10));
             temp.setCustomerEmail(rs.getString(11));
+            temp.setVoucherValue(rs.getBigDecimal(12));
         }
         return temp;
     }
@@ -131,7 +147,8 @@ public class OrderDAO extends DBContext {
         String query = "SELECT o.*, c.full_name\n"
                 + "FROM [Order] o\n"
                 + "JOIN Customer c ON o.customer_id = c.customer_id\n"
-                + "WHERE c.full_name LIKE ?;";
+                + "WHERE c.full_name LIKE ? \n"
+                + "ORDER BY o.order_date DESC;";
         Object[] params = {"%" + customer_name + "%"};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
@@ -151,7 +168,8 @@ public class OrderDAO extends DBContext {
                 + "    [order] o\n"
                 + "JOIN \n"
                 + "    customer c ON o.customer_id = c.customer_id \n" // thêm khoảng trắng hoặc xuống dòng
-                + "WHERE o.customer_id = ?;";
+                + "WHERE o.customer_id = ? \n"
+                + "ORDER BY o.order_date DESC;";
 
         Object[] params = {customerId};
         ResultSet rs = execSelectQuery(query, params);
@@ -375,25 +393,31 @@ public class OrderDAO extends DBContext {
         return result;
     }
 
-    public Map<String, List<?>> getStockByCategory() {
-        Map<String, List<?>> chartData = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Integer> data = new ArrayList<>();
+    public Map<String, Integer> getStockByCategory() {
+        // Sử dụng LinkedHashMap để giữ đúng thứ tự các danh mục như trong câu lệnh SQL
+        Map<String, Integer> stockMap = new LinkedHashMap<>();
+
+        // Câu lệnh SQL của bạn đã đúng, ta sẽ giữ nguyên
         String sql = "SELECT c.name, SUM(p.quantity) AS total_stock "
                 + "FROM product p JOIN category c ON p.category_id = c.category_id "
                 + "GROUP BY c.name HAVING SUM(p.quantity) > 0 ORDER BY total_stock DESC";
 
-        try (
-                 PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        try {
+            // Giả sử 'conn' là đối tượng Connection của bạn
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            // Lặp qua kết quả và đưa trực tiếp vào Map
             while (rs.next()) {
-                labels.add(rs.getString("name"));
-                data.add(rs.getInt("total_stock"));
+                String categoryName = rs.getString("name");
+                int totalStock = rs.getInt("total_stock");
+                stockMap.put(categoryName, totalStock);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // In lỗi ra console để dễ dàng gỡ rối
         }
-        chartData.put("labels", labels);
-        chartData.put("data", data);
-        return chartData;
+
+        // Trả về Map đã hoàn chỉnh
+        return stockMap;
     }
 }

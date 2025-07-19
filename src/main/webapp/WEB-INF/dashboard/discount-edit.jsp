@@ -3,13 +3,6 @@
 
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
-
-<button class="admin-sidebar-toggle" onclick="$('.admin-sidebar').toggleClass('open')">? Menu</button>
-
-<aside class="admin-sidebar">
-    <%-- Sidebar content--%>
-</aside>
-
 <%
     Product product = (Product) request.getAttribute("product");
     int id = (int) request.getAttribute("id");

@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/jquery.mCustomScrollbar.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/paymentfont.min.css">
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/main.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
         <!-- Favicons -->
         <link rel="icon" type="image/png" href="${pageContext.servletContext.contextPath}/assets/icon/logo.png" sizes="32x32">
@@ -66,10 +67,14 @@
 
                                 <div class="sign__group">
                                     <input type="password" class="sign__input" placeholder="Password" id="password" name="password" value="${requestScope.password}" autocomplete="new-password" required>
+                                    <!-- Eye Icon for toggling password visibility -->
+                                    <i class="fa-solid fa-eye" id="eyeIcon" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <div class="sign__group">
                                     <input type="password" class="sign__input" placeholder="Confirm Password" id="confirmPassword" value="${requestScope.confirmPassword}" name="confirmPassword" autocomplete="new-password" required>
+                                    <!-- Eye Icon for toggling confirm password visibility -->
+                                    <i class="fa-solid fa-eye" id="confirmEyeIcon" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <button class="sign__btn" type="submit">Sign up</button>
@@ -93,6 +98,91 @@
                 </div>
             </div>
         </div>
+
+        <!-- Facebook Button -->
+        <a href="https://www.facebook.com/YourPage" 
+           style="position: fixed;
+           bottom: 20px;
+           right: 20px;
+           background-color: #4267B2;
+           color: white;
+           padding: 15px 20px;
+           border-radius: 50%;
+           font-size: 24px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+           transition: background-color 0.3s, transform 0.3s;
+           text-decoration: none;
+           cursor: pointer;
+           z-index: 100;">
+            <i class="fab fa-facebook-f" style="font-size: 24px;"></i>
+        </a>
+
+        <!-- Phone Button -->
+        <a href="tel:+1234567890" 
+           id="phoneButton"
+           style="position: fixed;
+           bottom: 80px;
+           right: 20px;
+           background-color: #34b7f1;
+           color: white;
+           padding: 15px;
+           border-radius: 50%;
+           font-size: 24px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+           transition: background-color 0.3s, transform 0.3s;
+           text-decoration: none;
+           cursor: pointer;
+           z-index: 100;">
+            <i class="fas fa-phone-alt"></i>
+            <span id="phoneText" style="display: none;
+                  position: absolute;
+                  top: -30px;
+                  left: 0%;
+                  transform: translateX(-50%);
+                  background-color: #34b7f1;
+                  color: white;
+                  padding: 5px 10px;
+                  border-radius: 5px;
+                  font-size: 14px;">+1234567890</span>
+        </a>
+
+        <script>
+            // Hover effect to show phone number
+            document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseover', function () {
+                document.getElementById('phoneText').style.display = 'block';
+            });
+
+            document.querySelector('a[href="tel:+1234567890"]').addEventListener('mouseout', function () {
+                document.getElementById('phoneText').style.display = 'none';
+            });
+
+            // Click-to-copy phone number functionality
+            document.getElementById('phoneButton').addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the default action (making a call)
+
+                // Create a temporary input element to copy the phone number
+                const tempInput = document.createElement('input');
+                tempInput.value = "+1234567890"; // Phone number to copy
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+                // Copy the text to the clipboard
+                document.execCommand('copy');
+
+                // Remove the temporary input element
+                document.body.removeChild(tempInput);
+
+                // Display a message or change button style to indicate success
+                alert('Phone number copied to clipboard!');
+            });
+        </script>
         <!-- end sign in -->
         <!-- JS -->
         <script src="${pageContext.servletContext.contextPath}/assets/js/jquery-3.5.1.min.js"></script>
@@ -149,9 +239,9 @@
                     return "Passwords do not match.";
                 }
 
-                const nameRegex = /^[a-zA-Z\s]+$/;
+                const nameRegex = /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/;
                 if (!nameRegex.test(fullName)) {
-                    return "Full Name can only contain letters and spaces.";
+                    return "Full Name can only contain letters and single spaces (no multiple spaces).";
                 }
 
                 return null;
@@ -161,6 +251,38 @@
                 document.getElementById('messageText').textContent = "";
                 document.getElementById('messageText').textContent = msg;
             }
+        </script>
+        <script>
+            // Function to toggle password visibility for the first password input
+            const passwordEyeIcon = document.getElementById('eyeIcon');
+            const passwordInput = document.getElementById('password');
+
+            passwordEyeIcon.addEventListener('click', function () {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';  // Show password
+                    passwordEyeIcon.classList.remove('fa-eye');  // Open eye
+                    passwordEyeIcon.classList.add('fa-eye-slash');  // Eye-slash icon
+                } else {
+                    passwordInput.type = 'password';  // Hide password
+                    passwordEyeIcon.classList.remove('fa-eye-slash');  // Close eye
+                    passwordEyeIcon.classList.add('fa-eye');  // Eye icon
+                }
+            });
+            // Function to toggle password visibility for the confirm password input
+            const confirmPasswordEyeIcon = document.getElementById('confirmEyeIcon');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+
+            confirmPasswordEyeIcon.addEventListener('click', function () {
+                if (confirmPasswordInput.type === 'password') {
+                    confirmPasswordInput.type = 'text';  // Show confirm password
+                    confirmPasswordEyeIcon.classList.remove('fa-eye');  // Open eye
+                    confirmPasswordEyeIcon.classList.add('fa-eye-slash');  // Eye-slash icon
+                } else {
+                    confirmPasswordInput.type = 'password';  // Hide confirm password
+                    confirmPasswordEyeIcon.classList.remove('fa-eye-slash');  // Close eye
+                    confirmPasswordEyeIcon.classList.add('fa-eye');  // Eye icon
+                }
+            });
         </script>
     </body>
 

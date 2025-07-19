@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Value</label>
-                        <input type="number" class="form-control admin-manage-input" name="value" max="100" min="0" required>
+                        <input type="number" class="form-control admin-manage-input" name="value" min="0" step="0.01" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
@@ -76,50 +76,59 @@
 
 
     <script>
-        function validateDateRange(changedField) {
-            const startInput = document.getElementById("start_date");
-            const endInput = document.getElementById("end_date");
-            const notYetOption = document.querySelector('select[name="active"] option[value="2"]');
-            const select = document.querySelector('select[name="active"]');
+    function validateDateRange(changedField) {
+    const startInput = document.getElementById("start_date");
+    const endInput = document.getElementById("end_date");
+    const select = document.querySelector('select[name="active"]');
+    const options = {
+        active: select.querySelector('option[value="1"]'),
+        inactive: select.querySelector('option[value="0"]'),
+        notYet: select.querySelector('option[value="2"]')
+    };
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
-            if (startInput.value) {
-                const startDate = new Date(startInput.value);
-                startDate.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
+    const startDate = startInput.value ? new Date(startInput.value) : null;
+    const endDate = endInput.value ? new Date(endInput.value) : null;
 
-                if (startDate.getTime() > today.getTime()) {
-                    // N?u startDate > h?m nay ? cho ph?p "Not yet started"
-                    notYetOption.disabled = false;
-                } else {
-                    // N?u startDate ? h?m nay ? KH?NG cho ch?n "Not yet started"
-                    notYetOption.disabled = true;
+    if (startDate) startDate.setHours(0, 0, 0, 0);
+    if (endDate) endDate.setHours(0, 0, 0, 0);
 
-                    // N?u ?ang ch?n "Not yet started" th? reset l?i v? "Inactive"
-                    if (select.value === "2") {
-                        select.value = "0";
-                    }
-                }
-            }
+    // Reset t?t c? option
+    options.active.hidden = false;
+    options.inactive.hidden = false;
+    options.notYet.hidden = false;
 
-            // Ki?m tra ng?y b?t ??u < ng?y k?t th?c
-            if (startInput.value && endInput.value) {
-                const startDate = new Date(startInput.value);
-                const endDate = new Date(endInput.value);
+    if (endDate && endDate < today) {
+        // Ch? cho ch?n Inactive
+        options.active.hidden = true;
+        options.notYet.hidden = true;
+        if (select.value !== "0") select.value = "0";
+    } else if (startDate && startDate > today) {
+        // Ch? cho ch?n Not yet started
+        options.active.hidden = true;
+        options.inactive.hidden = true;
+        if (select.value !== "2") select.value = "2";
+    } else {
+        // Bình th??ng: ch? không cho ch?n "Not yet started"
+        options.notYet.hidden = true;
+        if (select.value === "2") select.value = "0"; // reset n?u ?ang ch?n "Not yet"
+    }
 
-                if (startDate >= endDate) {
-                    alert("Start date must be earlier than end date.");
-                    if (changedField === "start") {
-                        startInput.value = "";
-                        startInput.focus();
-                    } else if (changedField === "end") {
-                        endInput.value = "";
-                        endInput.focus();
-                    }
-                }
-            }
+    // Ki?m tra ngày start < end
+    if (startDate && endDate && startDate >= endDate) {
+        alert("Start date must be earlier than end date.");
+        if (changedField === "start") {
+            startInput.value = "";
+            startInput.focus();
+        } else if (changedField === "end") {
+            endInput.value = "";
+            endInput.focus();
         }
+    }
+}
+
         window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("start_date").addEventListener("change", function () {
                 validateDateRange("start");

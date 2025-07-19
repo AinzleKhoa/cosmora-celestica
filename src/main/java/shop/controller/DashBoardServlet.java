@@ -61,18 +61,18 @@ public class DashBoardServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-         String period = request.getParameter("period");
+            throws ServletException, IOException {
+        String period = request.getParameter("period");
         if (period == null || period.trim().isEmpty()) {
             period = "year";
         }
         OrderDAO dao = new OrderDAO();
         Gson gson = new Gson();
-        
+
         // 1. Lấy các số liệu thống kê động theo period
         Map<String, Object> summaryStats = dao.getSummaryStats(period);
         request.setAttribute("summaryStats", summaryStats);
-        
+
         // 2. Lấy các số liệu thống kê cố định
         request.setAttribute("totalStock", dao.getTotalProductsInStock());
         request.setAttribute("totalCustomers", dao.getTotalCustomers());
@@ -81,19 +81,20 @@ public class DashBoardServlet extends HttpServlet {
         Map<String, Object> trendData = dao.getRevenueTrend(period);
         request.setAttribute("trendLabelsJson", gson.toJson(trendData.get("labels")));
         request.setAttribute("trendDataJson", gson.toJson(trendData.get("data")));
-        
-        // 4. Lấy dữ liệu cho biểu đồ tồn kho
-        Map<String, List<?>> stockByCategoryData = dao.getStockByCategory();
-        request.setAttribute("stockLabelsJson", gson.toJson(stockByCategoryData.get("labels")));
-        request.setAttribute("stockDataJson", gson.toJson(stockByCategoryData.get("data")));
-        
+
+        // 4. LẤY DỮ LIỆU CHO BẢNG TỒN KHO (ĐÃ SỬA)
+        // LƯU Ý: Bạn cũng cần phải sửa phương thức getStockByCategory() trong file OrderDAO
+        // để nó trả về Map<String, Integer> thay vì Map<String, List<?>>
+        Map<String, Integer> stockByCategory = dao.getStockByCategory();
+        request.setAttribute("stockByCategory", stockByCategory);
+
         // 5. Lấy danh sách Top 5 sản phẩm bán chạy
         List<Product> topSellingProducts = dao.getTopSellingProductsDetails(5);
         request.setAttribute("topSellingProducts", topSellingProducts);
-        
+
         request.setAttribute("currentPeriod", period);
         request.getRequestDispatcher("/WEB-INF/dashboard/dashboard-list.jsp").forward(request, response);
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.

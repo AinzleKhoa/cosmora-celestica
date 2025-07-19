@@ -199,7 +199,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Quantity</label>
-                        <input type="number" class="form-control admin-manage-input" name="quantity" value="<%= product.getQuantity()%>" required>
+                        <input type="number" class="form-control admin-manage-input" name="quantity" value="<%= product.getQuantity()%>" required <%= isGameProduct ? "readonly" : ""%>>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>

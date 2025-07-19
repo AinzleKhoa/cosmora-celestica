@@ -16,9 +16,6 @@
 
 <!DOCTYPE html>
 <html lang="vi">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><%= (product != null ? product.getName() : "Product Details")%></title>
 
 
@@ -59,7 +56,7 @@
                 grid-template-columns: repeat(6, 1fr);
                 gap: 0.75rem;
                 padding-top: 1rem;
-                width: 100%; 
+                width: 100%;
             }
             .thumbnail-container .thumb {
                 width: 100%;
@@ -92,7 +89,7 @@
                 font-weight: bold;
                 color: #10b981;
             }
-.old-price {
+            .old-price {
                 font-size: 1.1rem;
                 color: #dc3545;
                 font-weight: normal;
@@ -143,129 +140,153 @@
     </head>
 
     <body>
-        <section class="section details-section">
-            <div class="container-fluid px-4">
-                <% if (product != null) { %>
+        <!-- page title -->
+        <section id="top-background" class="section--first" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section__wrap">
+                            <!-- section title -->
+                            <h2 class="section__title">Product Details</h2>
+                            <!-- end section title -->
 
-                <div class="row g-4">
-
-                    <div class="col-lg-7">
-                        <div class="product-card h-100">
-                            <%-- Thư viện ảnh --%>
-                            <%
-                                List<String> imageUrls = product.getImageUrls();
-                                if (imageUrls != null && !imageUrls.isEmpty()) {
-                            %>
-                            <div class="main-image-container mb-3">
-                                <img src="<%= request.getContextPath()%>/assets/img/<%= imageUrls.get(0)%>" alt="<%= product.getName()%>" id="mainProductImage">
-                            </div>
-
-                            <% if (imageUrls.size() > 1) { %>
-                            <div class="thumbnail-scroller">
-                                <div class="thumbnail-container" id="thumbnailContainer">
-                                    <% for (int i = 0; i < imageUrls.size(); i++) {%>
-                                    <img src="<%= request.getContextPath()%>/assets/img/<%= imageUrls.get(i)%>"
-                                         class="thumb <%= (i == 0) ? "active" : ""%>"
-                                         onclick="changeMainImage(this)">
-                                    <% } %>
-                                </div>
-                            </div>
-                            <% } %>
-                            <% } else {%>
-                            <div class="main-image-container mb-3">
-<img src="<%= request.getContextPath()%>/assets/img/default-product.png" alt="No Image" id="mainProductImage">
-                            </div>
-                            <% }%>
-
-                            <%-- Mô tả sản phẩm --%>
-                            <hr class="my-4">
-                            <h3 class="info-section-title">Description</h3>
-                            <div class="description-content">
-                                <p><%= (product.getDescription() != null && !product.getDescription().isEmpty()) ? product.getDescription().replace("\n", "<br>") : "No description available."%></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-5">
-                        <div class="purchase-info-sticky">
-                            <%-- Thông tin mua hàng --%>
-                            <div class="product-card">
-                                <div class="product-brand"><%= (product.getBrandName() != null ? product.getBrandName() : "N/A")%></div>
-                                <h1 class="product-title"><%= product.getName()%></h1>
-
-                                <div class="product-price my-3">
-                                    <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
-                                    <%= currencyFormatter.format(product.getSalePrice())%> <span class="old-price"><s><%= currencyFormatter.format(product.getPrice())%></s></span>
-                                            <% } else {%>
-                                            <%= currencyFormatter.format(product.getPrice())%>
-                                            <% }%>
-                                </div>
-                                <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
-                                <div class="product-rating">
-                                    <%
-                                        long roundedStars = Math.round(product.getAverageStars());
-                                        for (int i = 1; i <= 5; i++) {
-                                            if (i <= roundedStars) {
-                                    %>
-                                    <span class="star-icon full">&#9733;</span>
-                                    <%
-                                    } else {
-                                    %>
-                                    <span class="star-icon empty">&#9733;</span>
-                                    <%
-                                            }
-                                        }
-                                    %>
-                                </div>
-                                <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
-
-                                <%-- FORM MỚI VỚI LOGIC CỦA BẠN --%>
-<form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons d-grid gap-2">
-                                    <input type="hidden" name="action" value="add">
-                                    <input type="hidden" name="page" value="cart">
-                                    <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
-                                    <input type="hidden" name="productId" value="<%= product.getProductId()%>">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn_1 btn btn-danger btn-lg">Add to Cart</button>
-                                    <button type="button" class="btn_1 btn btn-primary btn-lg" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=1'">Buy Now</button>
-                                </form>
-                            </div>
-
-                            <%-- Thông số kỹ thuật --%>
-                            <div class="product-card mt-4">
-                                <h3 class="info-section-title">Specifications</h3>
-                                <dl class="info-accessory row">
-                                    <dt class="col-sm-4">Category</dt><dd class="col-sm-8"><%= product.getCategoryName()%></dd>
-                                    <dt class="col-sm-4">In Stock</dt><dd class="col-sm-8"><%= product.getQuantity()%></dd>
-                                    <% if (product.getGameDetails() != null) {
-                                            GameDetails details = product.getGameDetails();%>
-                                    <dt class="col-sm-4">Developer</dt><dd class="col-sm-8"><%= details.getDeveloper()%></dd>
-                                    <dt class="col-sm-4">Genre</dt><dd class="col-sm-8"><%= details.getGenre()%></dd>
-                                    <dt class="col-sm-4">Release Date</dt><dd class="col-sm-8"><%= new SimpleDateFormat("dd MMM, yyyy").format(details.getReleaseDate())%></dd>
-                                    <% } %>
-                                    <% if (product.getAttributes() != null && !product.getAttributes().isEmpty()) {%>
-                                    <% if (product.getBrandName() != null && !product.getBrandName().isEmpty()) {%>
-                                    <dt class="col-sm-4">Brand</dt><dd class="col-sm-8"><%= product.getBrandName()%></dd>
-                                    <% } %>
-                                    <% for (ProductAttribute attr : product.getAttributes()) {%>
-                                    <dt class="col-sm-4"><%= attr.getAttributeName()%></dt><dd class="col-sm-8"><%= attr.getValue()%></dd>
-                                        <% }
-                                            }%>
-                                </dl>
-</div>
+                            <!-- breadcrumb -->
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
+                                <li class="breadcrumb__item breadcrumb__item--active">Product Details</li>
+                            </ul>
+                            <!-- end breadcrumb -->
                         </div>
                     </div>
                 </div>
-
-                <% } else {%>
-                <div class="text-center py-5">
-                    <h1>Product Not Found</h1>
-                    <p class="lead">The product you are looking for does not exist or has been removed.</p>
-                    <a href="<%= request.getContextPath()%>/home" class="btn btn-primary">Back to Homepage</a>
-                </div>
-                <% }%>
             </div>
         </section>
+                                
+        <main class="orderdetailforcus" style="padding: 10px 80px" id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png">
+            <section class="section details-section">
+                <div class="container-fluid px-4">
+                    <% if (product != null) { %>
+
+                    <div class="row g-4">
+
+                        <div class="col-lg-7">
+                            <div class="product-card h-100">
+                                <%-- Thư viện ảnh --%>
+                                <%
+                                    List<String> imageUrls = product.getImageUrls();
+                                    if (imageUrls != null && !imageUrls.isEmpty()) {
+                                %>
+                                <div class="main-image-container mb-3">
+                                    <img src="<%= request.getContextPath()%>/assets/img/<%= imageUrls.get(0)%>" alt="<%= product.getName()%>" id="mainProductImage">
+                                </div>
+
+                                <% if (imageUrls.size() > 1) { %>
+                                <div class="thumbnail-scroller">
+                                    <div class="thumbnail-container" id="thumbnailContainer">
+                                        <% for (int i = 0; i < imageUrls.size(); i++) {%>
+                                        <img src="<%= request.getContextPath()%>/assets/img/<%= imageUrls.get(i)%>"
+                                             class="thumb <%= (i == 0) ? "active" : ""%>"
+                                             onclick="changeMainImage(this)">
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <% } %>
+                                <% } else {%>
+                                <div class="main-image-container mb-3">
+                                    <img src="<%= request.getContextPath()%>/assets/img/default-product.png" alt="No Image" id="mainProductImage">
+                                </div>
+                                <% }%>
+
+                                <%-- Mô tả sản phẩm --%>
+                                <hr class="my-4">
+                                <h3 class="info-section-title">Description</h3>
+                                <div class="description-content">
+                                    <p><%= (product.getDescription() != null && !product.getDescription().isEmpty()) ? product.getDescription().replace("\n", "<br>") : "No description available."%></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="purchase-info-sticky">
+                                <%-- Thông tin mua hàng --%>
+                                <div class="product-card">
+                                    <div class="product-brand"><%= (product.getBrandName() != null ? product.getBrandName() : "N/A")%></div>
+                                    <h1 class="product-title"><%= product.getName()%></h1>
+
+                                    <div class="product-price my-3">
+                                        <% if (product.getSalePrice() != null && product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {%>
+                                        <%= currencyFormatter.format(product.getSalePrice())%> <span class="old-price"><s><%= currencyFormatter.format(product.getPrice())%></s></span>
+                                                <% } else {%>
+                                                <%= currencyFormatter.format(product.getPrice())%>
+                                                <% }%>
+                                    </div>
+                                    <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
+                                    <div class="product-rating">
+                                        <%
+                                            long roundedStars = Math.round(product.getAverageStars());
+                                            for (int i = 1; i <= 5; i++) {
+                                                if (i <= roundedStars) {
+                                        %>
+                                        <span class="star-icon full">&#9733;</span>
+                                        <%
+                                        } else {
+                                        %>
+                                        <span class="star-icon empty">&#9733;</span>
+                                        <%
+                                                }
+                                            }
+                                        %>
+                                    </div>
+                                    <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
+
+                                    <%-- FORM MỚI VỚI LOGIC CỦA BẠN --%>
+                                    <form action="${pageContext.servletContext.contextPath}/cart" method="POST" class="mt-4 product-buttons d-grid gap-2">
+                                        <input type="hidden" name="action" value="add">
+                                        <input type="hidden" name="page" value="cart">
+                                        <input type="hidden" name="username" value="<%= currentCustomer != null ? currentCustomer.getUsername() : ""%>">
+                                        <input type="hidden" name="productId" value="<%= product.getProductId()%>">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn_1 btn btn-danger btn-lg">Add to Cart</button>
+                                        <button type="button" class="btn_1 btn btn-primary btn-lg" onclick="location.href = '<%= request.getContextPath()%>/checkout?view=single&id=<%= product.getProductId()%>&quantity=1'">Buy Now</button>
+                                    </form>
+                                </div>
+
+                                <%-- Thông số kỹ thuật --%>
+                                <div class="product-card mt-4">
+                                    <h3 class="info-section-title">Specifications</h3>
+                                    <dl class="info-accessory row">
+                                        <dt class="col-sm-4">Category</dt><dd class="col-sm-8"><%= product.getCategoryName()%></dd>
+                                        <dt class="col-sm-4">In Stock</dt><dd class="col-sm-8"><%= product.getQuantity()%></dd>
+                                        <% if (product.getGameDetails() != null) {
+                                                GameDetails details = product.getGameDetails();%>
+                                        <dt class="col-sm-4">Developer</dt><dd class="col-sm-8"><%= details.getDeveloper()%></dd>
+                                        <dt class="col-sm-4">Genre</dt><dd class="col-sm-8"><%= details.getGenre()%></dd>
+                                        <dt class="col-sm-4">Release Date</dt><dd class="col-sm-8"><%= new SimpleDateFormat("dd MMM, yyyy").format(details.getReleaseDate())%></dd>
+                                        <% } %>
+                                        <% if (product.getAttributes() != null && !product.getAttributes().isEmpty()) {%>
+                                        <% if (product.getBrandName() != null && !product.getBrandName().isEmpty()) {%>
+                                        <dt class="col-sm-4">Brand</dt><dd class="col-sm-8"><%= product.getBrandName()%></dd>
+                                        <% } %>
+                                        <% for (ProductAttribute attr : product.getAttributes()) {%>
+                                        <dt class="col-sm-4"><%= attr.getAttributeName()%></dt><dd class="col-sm-8"><%= attr.getValue()%></dd>
+                                            <% }
+                                                }%>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% } else {%>
+                    <div class="text-center py-5">
+                        <h1>Product Not Found</h1>
+                        <p class="lead">The product you are looking for does not exist or has been removed.</p>
+                        <a href="<%= request.getContextPath()%>/home" class="btn btn-primary">Back to Homepage</a>
+                    </div>
+                    <% }%>
+                </div>
+            </section>
+        </main>
 
         <script>
             function changeMainImage(thumbnail) {

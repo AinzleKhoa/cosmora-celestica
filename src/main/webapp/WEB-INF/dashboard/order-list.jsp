@@ -24,8 +24,15 @@
         <div class="admin-header-top">
             <form action="<%= request.getContextPath()%>/manage-orders" method="POST" style="display: flex; margin-left: auto;" class="search-filter-wrapper">
                 <input type="hidden" name="action" value="search" />
-                <input type="text" name="customer_name" class="search-input" placeholder="Enter customer name...">
+                <input type="text" name="customer_name" class="search-input" placeholder="Enter customer full name...">
                 <button type="submit" class="search-btn">Search</button>
+                <a href="manage-orders" class="clear-search-btn" 
+                   style="background-color: #ef4444;
+                   color: #fff;
+                   padding: 8px;
+                   border-radius: 13px;">
+                    <i class="fas fa-times "></i> Clear
+                </a>
             </form>
         </div>
 
@@ -65,16 +72,47 @@
                                 statusLevel = 1;
                             else if (status.equals("Confirmed"))
                                 statusLevel = 2;
-                            else if (status.equals("Shipped"))
+                            else if (status.equals("Shipping"))
                                 statusLevel = 3;
-                            else if (status.equals("Delivered"))
+                            else if (status.equals("Shipped"))
                                 statusLevel = 4;
+                            else if (status.equals("Order Completed"))
+                                statusLevel = 5;
+                            else if (status.equals("Cancel"))
+                                statusLevel = 6;
                             %>
 
+                            <%
+                                String borderColor;
+                                switch (status) {
+                                    case "Pending":
+                                        borderColor = "#FFC107"; // amber
+                                        break;
+                                    case "Confirmed":
+                                        borderColor = "#2196F3"; // blue
+                                        break;
+                                    case "Shipping":
+                                        borderColor = "#3F51B5"; // indigo
+                                        break;
+                                    case "Shipped":
+                                        borderColor = "#4CAF50"; // green
+                                        break;
+                                    case "Order Completed":
+                                        borderColor = "#9C27B0"; // purple
+                                        break;
+                                    case "Cancel":
+                                        borderColor = "#F44336"; // red
+                                        break;
+                                    default:
+                                        borderColor = "#9E9E9E"; // grey
+                                }
+                            %>
                             <form action="manage-orders" method="post">
                                 <input type="hidden" name="action" value="update" />
                                 <input type="hidden" name="orderId" value="<%= order.getOrderId()%>" />
-                                <select name="status" class="admin-filter-select" onchange="this.form.submit()">
+                                <select name="status" class="admin-filter-select" 
+                                        style="border: 2px solid <%= borderColor%>; border-radius: 4px; padding: 2px;"
+                                        onchange="confirmAndSubmit(this)">
                                     <option value="Pending"
                                             <%= status.equals("Pending") ? "selected" : ""%>
                                             <%= statusLevel > 1 ? "disabled" : ""%>>Pending</option>
@@ -83,32 +121,46 @@
                                             <%= status.equals("Confirmed") ? "selected" : ""%>
                                             <%= statusLevel > 2 ? "disabled" : ""%>>Confirmed</option>
 
+                                    <option value="Shipping"
+                                            <%= status.equals("Shipping") ? "selected" : ""%>
+                                            <%= statusLevel > 3 ? "disabled" : ""%>>Shipping</option>
+
                                     <option value="Shipped"
                                             <%= status.equals("Shipped") ? "selected" : ""%>
-                                            <%= statusLevel > 3 ? "disabled" : ""%>>Shipped</option>
+                                            <%= statusLevel > 4 ? "disabled" : ""%>>Shipped</option>
 
-                                    <option value="Delivered"
-                                            <%= status.equals("Delivered") ? "selected" : ""%>
-                                            <%= statusLevel > 4 ? "disabled" : ""%>>Delivered</option>
+                                    <option value="Order Completed"
+                                            <%= status.equals("Order Completed") ? "selected" : ""%>
+                                            <%= statusLevel > 5 ? "disabled" : ""%>>Order Completed</option>
+
+                                    <option value="Cancel"
+                                            <%= status.equals("Cancel") ? "selected" : ""%>
+                                            <%= statusLevel > 6 ? "disabled" : ""%>>Cancel</option>
                                 </select>
                             </form>
-
-
-
-
                         </td>
-                        <td>
-                            <div class="table-actions-center">
-                                <button class="btn-action btn-details"
-                                        onclick="location.href = '<%= request.getContextPath()%>/manage-orders?view=details&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
-                                    Details
-                                </button>
-                                <button class="btn-action btn-history" onclick="location.href = '<%= request.getContextPath()%>/manage-customers?view=details&id=<%= order.getCustomerId()%>'">
-                                    Customer Details</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <%}%>
+                <script>
+                    function confirmAndSubmit(selectElement) {
+                        const confirmed = confirm("Are you sure you want to change the order status?");
+                        if (confirmed) {
+                            selectElement.form.submit(); 
+                        }
+                    }
+                </script>
+
+
+                <td>
+                    <div class="table-actions-center">
+                        <button class="btn-action btn-details"
+                                onclick="location.href = '<%= request.getContextPath()%>/manage-orders?view=details&customer_id=<%= order.getCustomerId()%>&order_id=<%= order.getOrderId()%>'">
+                            Details
+                        </button>
+                        <button class="btn-action btn-history" onclick="location.href = '<%= request.getContextPath()%>/manage-customers?view=details&id=<%= order.getCustomerId()%>'">
+                            Customer Details</button>
+                    </div>
+                </td>
+                </tr>
+                <%}%>
                 </tbody>
             </table>
         </div>

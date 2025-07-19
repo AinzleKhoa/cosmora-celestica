@@ -1,4 +1,4 @@
-    /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import java.util.List;
 import shop.dao.CartDAO;
 import shop.model.Cart;
+import shop.model.CartItem;
 import shop.model.Customer;
-import shop.model.cartItem;
 
 /**
  *
@@ -25,32 +25,6 @@ import shop.model.cartItem;
  */
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
 public class CartServlet extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet CartServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet CartServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -80,10 +54,10 @@ public class CartServlet extends HttpServlet {
 
             try {
                 CartDAO cartDAO = new CartDAO();
-                List<cartItem> cartItems = cartDAO.getCartItemsByCustomerId(customerId);
+                List<CartItem> cartItems = cartDAO.getCartItemsByCustomerId(customerId);
 
                 request.setAttribute("cartItems", cartItems);
-                request.getRequestDispatcher("/WEB-INF/manageCartForCus/cart-list.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/home/cart-list.jsp").forward(request, response);
 
             } catch (SQLException e) {
                 throw new ServletException("Lỗi khi lấy danh sách giỏ hàng", e);
@@ -118,7 +92,7 @@ public class CartServlet extends HttpServlet {
                     Customer customer = (Customer) session.getAttribute("currentCustomer");
                     int customerId = customer.getCustomerId();
 
-                    // 2. Kiểm tra sản phẩm đã tồn tại trong giỏ chưa
+                    // Kiểm tra sản phẩm đã tồn tại trong giỏ chưa
                     CartDAO cartDAO = new CartDAO();
                     Cart existingCart = cartDAO.findCartItem(customerId, productId);
 
@@ -126,6 +100,7 @@ public class CartServlet extends HttpServlet {
                         // Nếu đã có -> Cập nhật số lượng
                         existingCart.setQuantity(existingCart.getQuantity() + quantity);
                         cartDAO.updateCart(existingCart);
+
                     } else {
                         // Nếu chưa có -> Thêm mới
                         Cart newCart = new Cart();
@@ -146,10 +121,43 @@ public class CartServlet extends HttpServlet {
                 }
 
                 break;
+                case "increase":
+                try ( PrintWriter out = response.getWriter()) {
+
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
+
+                    HttpSession session = request.getSession(false);
+                    Customer customer = (Customer) session.getAttribute("currentCustomer");
+                    int customerId = customer.getCustomerId();
+
+                    CartDAO cartDAO = new CartDAO();
+                    Cart existingCart = cartDAO.findCartItem(customerId, productId);
+
+                    if (existingCart != null) {
+                        int currentQuantity = existingCart.getQuantity();
+
+                        existingCart.setQuantity(currentQuantity + quantityToDecrease);
+                        cartDAO.updateCart(existingCart);
+                        session.setAttribute("sMessage", "Increased product quantity successfully.");
+
+                    } else {
+                        session.setAttribute("errorMessage", "Product not found in cart.");
+                    }
+
+                    int cartCount = cartDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    request.getSession().setAttribute("errorMessage", "Failed to increase product quantity.");
+                    response.sendRedirect(request.getContextPath() + "/error.jsp");
+                }
+                break;
 
                 case "decrease":
                 try ( PrintWriter out = response.getWriter()) {
-                    String username = request.getParameter("username");
+
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
 
@@ -166,20 +174,29 @@ public class CartServlet extends HttpServlet {
                         if (currentQuantity <= quantityToDecrease || currentQuantity == 1) {
                             // Nếu quantity hiện tại <= quantity cần giảm, hoặc = 1 -> Xóa luôn
                             cartDAO.delete(productId, customerId);
+                            session.setAttribute("sMessage", "Removed product from cart.");
                         } else {
                             // Nếu quantity > 1 -> giảm số lượng
                             existingCart.setQuantity(currentQuantity - quantityToDecrease);
                             cartDAO.updateCart(existingCart);
+                            session.setAttribute("sMessage", "Decreased product quantity successfully.");
                         }
+                    } else {
+                        session.setAttribute("errorMessage", "Product not found in cart.");
                     }
+
                     int cartCount = cartDAO.countCartItems(customerId);
                     session.setAttribute("cartCount", cartCount);
                     response.sendRedirect(request.getContextPath() + "/cart");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    request.getSession().setAttribute("errorMessage", "Failed to decrease product quantity.");
+                    response.sendRedirect(request.getContextPath() + "/error.jsp");
                 }
                 break;
 
                 case "delete":
-    try ( PrintWriter out = response.getWriter()) {
+        try {
                     int productId = Integer.parseInt(request.getParameter("productId"));
 
                     HttpSession session = request.getSession(false);
@@ -187,14 +204,22 @@ public class CartServlet extends HttpServlet {
                     int customerId = customer.getCustomerId();
 
                     CartDAO cDAO = new CartDAO();
-
                     int rowsDeleted = cDAO.delete(productId, customerId);
 
                     if (rowsDeleted == 1) {
-                        int cartCount = cDAO.countCartItems(customerId);
-                        session.setAttribute("cartCount", cartCount);
-                        response.sendRedirect(request.getContextPath() + "/cart");
+                        session.setAttribute("sMessage", "Deleted product from cart successfully.");
+                    } else {
+                        session.setAttribute("errorMessage", "Product not found or could not be deleted.");
                     }
+
+                    int cartCount = cDAO.countCartItems(customerId);
+                    session.setAttribute("cartCount", cartCount);
+
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    request.getSession().setAttribute("errorMessage", "Failed to delete product from cart.");
+                    response.sendRedirect(request.getContextPath() + "/error.jsp");
                 }
                 break;
 

@@ -89,7 +89,7 @@ public class OrderServlet extends HttpServlet {
             String o_id = request.getParameter("order_id");
             int order_id = Integer.parseInt(o_id);
             try {
-                ArrayList<OrderDetails> orderDetails = OD.getOrderDetail(order_id);
+                ArrayList<OrderDetails> orderDetails = OD.getOrderDetailForCus(order_id);
                 Order order = OD.getOneOrder(order_id);
                 request.setAttribute("order", order);
                 request.setAttribute("orderdetails", orderDetails);

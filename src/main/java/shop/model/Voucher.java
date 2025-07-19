@@ -6,6 +6,7 @@ package shop.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -30,6 +31,22 @@ public class Voucher {
         this.startDate = startDate;
         this.endDate = endDate;
         this.active = active;
+        this.description = description;
+        this.minOrderValue = minOrderValue;
+    }
+
+    public Voucher(int voucherId, int active) {
+        this.voucherId = voucherId;
+        this.active = active;
+    }
+
+    public Voucher(int voucherId, String code, BigDecimal value, int usageLimit, LocalDate startDate, LocalDate endDate, String description, BigDecimal minOrderValue) {
+        this.voucherId = voucherId;
+        this.code = code;
+        this.value = value;
+        this.usageLimit = usageLimit;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.description = description;
         this.minOrderValue = minOrderValue;
     }
@@ -112,7 +129,13 @@ public class Voucher {
         this.endDate = endDate;
     }
 
-  
+    public String getFormattedStartDate() {
+        return startDate != null ? startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
+    }
+
+    public String getFormattedEndDate() {
+        return endDate != null ? endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
+    }
 
     public String getDescription() {
         return description;

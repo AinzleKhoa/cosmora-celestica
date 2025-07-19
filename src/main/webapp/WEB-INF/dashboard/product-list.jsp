@@ -62,12 +62,13 @@
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">
                     <tr>
-                        <th>No.</th>
+                        <th>ID</th>
                         <th>Product Image</th>
                         <th>Product Name</th>
                         <th>Price</th>
                         <th>Sale Price</th>
                         <th>Category</th>
+                        <th style="text-align: center;">Status</th>
                         <th style="text-align: center;">Action</th>
                     </tr>
                 </thead>
@@ -76,7 +77,7 @@
                             for (Product p : productList) {
                     %>
                     <tr>
-                        <td><%= rowNumber++%></td> 
+                        <td><%= p.getProductId()%></td> 
                         <td>
                             <% if (p.getImageUrls() != null && !p.getImageUrls().isEmpty()) {%>
                             <img src="<%= contextPath%>/assets/img/<%= p.getImageUrls().get(0)%>" alt="<%= p.getName()%>" class="table-product-img">
@@ -94,6 +95,26 @@
                             <% }%>
                         </td>
                         <td><%= p.getCategoryName() != null ? p.getCategoryName() : "N/A"%></td>
+                        <td style="text-align: center;">
+                            <%-- Form sẽ tự động gửi khi người dùng thay đổi lựa chọn trong select --%>
+                            <form action="manage-products" method="POST" style="margin: 0;">
+                                <input type="hidden" name="action" value="updateVisibility">
+                                <input type="hidden" name="id" value="<%= p.getProductId()%>">
+                                <input type="hidden" name="page" value="<%= currentPage%>">
+
+                                <%-- Thẻ select với sự kiện onchange --%>
+                                <select name="newStatus" class="admin-filter-select" 
+                                        style="border: 1px solid <%= (p.getActiveProduct() == 0) ? "F44336" : "#4CAF50"%>; border-radius: 4px; padding: 2px;"
+                                        onchange="this.form.submit()">
+                                    <option value="1" <%= (p.getActiveProduct() == 1) ? "selected" : ""%>>
+                                        Enabled
+                                    </option>
+                                    <option value="0" <%= (p.getActiveProduct() == 0) ? "selected" : ""%>>
+                                        Disabled
+                                    </option>
+                                </select>
+                            </form>
+                        </td>
                         <td>
                             <div class="table-actions-center">
                                 <a class="btn-action btn-details" href="manage-products?action=details&id=<%= p.getProductId()%>">Details</a>

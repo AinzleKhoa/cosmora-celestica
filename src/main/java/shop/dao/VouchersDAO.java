@@ -72,10 +72,38 @@ public class VouchersDAO extends DBContext {
         return null;
     }
 
-    public boolean isDuplicateCodeForOtherVoucher(String code, int id) {
+    public boolean isDuplicateCodeForOtherVoucher(String  code, int id) {
         try {
             String query = "SELECT COUNT(*) FROM voucher WHERE code = ? AND voucher_id != ?";
             Object[] params = {code, id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public int updateStatus(int voucherId, int status) {
+        try {
+            String query
+                    = "UPDATE voucher\n"
+                    + "SET active = ?"
+                    + "WHERE voucher_id = ?;";
+            Object[] params = {status, voucherId};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public boolean isDuplicateIdForOtherVoucher(int id) {
+        try {
+            String query = "SELECT COUNT(*) FROM voucher WHERE voucher_id = ?";
+            Object[] params = {id};
             ResultSet rs = execSelectQuery(query, params);
             if (rs.next()) {
                 return rs.getInt(1) > 0;
@@ -100,6 +128,20 @@ public class VouchersDAO extends DBContext {
         return false;
     }
 
+    public int editActiveForVoucher(Voucher code) {
+        try {
+            String query
+                    = "UPDATE voucher\n"
+                    + "SET active = ?"
+                    + "WHERE voucher_id = ?;";
+            Object[] params = {code.getActive(), code.getVoucherId()};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
     public int editVoucherCode(Voucher code) {
         try {
             String query
@@ -109,11 +151,10 @@ public class VouchersDAO extends DBContext {
                     + "    usage_limit = ?,\n"
                     + "    start_date = ?,\n"
                     + "    end_date = ?,\n"
-                    + "    active = ?,\n"
                     + "    description = ?,\n"
                     + "    min_order_value = ?\n"
                     + "WHERE voucher_id = ?;";
-            Object[] params = {code.getCode(), code.getValue(), code.getUsageLimit(), code.getStartDate(), code.getEndDate(), code.getActive(), code.getDescription(), code.getMinOrderValue(), code.getVoucherId()};
+            Object[] params = {code.getCode(), code.getValue(), code.getUsageLimit(), code.getStartDate(), code.getEndDate(), code.getDescription(), code.getMinOrderValue(), code.getVoucherId()};
             return execQuery(query, params);
         } catch (SQLException ex) {
             Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);

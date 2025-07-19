@@ -78,7 +78,7 @@
                 </table>
                 <!-- Pagination -->
                 <!-- FORM PHÂN TRANG -->
-                <form id="paginationForm" method="GET" action="${pageContext.request.contextPath}/manage-orders">
+                <form id="paginationForm" method="GET" action="${pageContext.request.contextPath}/manage-customers">
                     <input type="hidden" name="view" value="history" />
                     <input type="hidden" name="id" value="${id}" />
                     <input type="hidden" name="page" id="pageInput" value="${currentPage}" />

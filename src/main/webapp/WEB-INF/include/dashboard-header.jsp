@@ -31,7 +31,7 @@
 
         <meta name="description" content="Cosmora Celestica - Selling games and gaming accessories website">
         <meta name="keywords" content="">
-        <title>Cosmora Celestica – Games and Accessories</title>
+        <title>Cosmora Celestica Dashboard</title>
 
     </head>
 
@@ -53,12 +53,11 @@
                                             <div class="admin-profile">
                                                 <img src="${user.avatarUrl}" alt="Avatar" class="admin-avatar">
                                                 <div>
-                                                    <p class="admin-name">${user.username}</p>
+                                                    <p class="admin-name">${user.fullName}</p>
                                                     <span class="admin-role">
                                                         <c:choose>
                                                             <c:when test="${user.role == 'staff'}">Staff</c:when>
-                                                            <c:when test="${user.role == 'admin'}">Admin</c:when>
-                                                            <c:otherwise>Customer</c:otherwise>
+                                                            <c:otherwise>Admin</c:otherwise>
                                                         </c:choose>
                                                     </span>
                                                 </div>
@@ -66,10 +65,18 @@
 
                                             <div class="admin-menu" id="adminDropdown">
                                                 <div class="admin-user">
-                                                    <span class="admin-role">Customer</span>
-                                                    <p class="admin-name">${user.username}</p>
+                                                    <span class="admin-role">
+                                                        <c:choose>
+                                                            <c:when test="${user.role == 'staff'}">Staff</c:when>
+                                                            <c:otherwise>Admin</c:otherwise>
+                                                        </c:choose>
+                                                    </span>
+                                                    <p class="admin-name">${user.fullName}</p>
                                                 </div>
                                                 <ul class="admin-links">
+                                                    <c:if test="${user.role == 'admin'}">
+                                                        <li><a href="${pageContext.servletContext.contextPath}/profile-dashboard">My Profile</a></li>
+                                                        </c:if>
                                                     <li><a href="${pageContext.servletContext.contextPath}/logout">Logout</a></li>
                                                 </ul>
                                             </div>
@@ -106,21 +113,29 @@
             <div class="admin-sidebar__logo">Dashboard</div>
 
             <ul class="admin-sidebar__nav">
-                <li class="admin-sidebar__item">
-                    <a href="${pageContext.servletContext.contextPath}/dashboard" class="admin-sidebar__link">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                </li>
-                <li class="admin-sidebar__item">
-                    <a href="${pageContext.servletContext.contextPath}/manage-products" class="admin-sidebar__link">
-                        <i class="fas fa-box"></i> Manage Products
-                    </a>
-                </li>
-                <li class="admin-sidebar__item">
-                    <a href="${pageContext.servletContext.contextPath}/manage-staffs" class="admin-sidebar__link">
-                        <i class="fas fa-briefcase"></i> Manage Staffs
-                    </a>
-                </li>
+                <!-- Check if the user role is admin -->
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                    <li class="admin-sidebar__item">
+                        <a href="${pageContext.servletContext.contextPath}/dashboard" class="admin-sidebar__link">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                </c:if>
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                    <li class="admin-sidebar__item">
+                        <a href="${pageContext.servletContext.contextPath}/manage-products" class="admin-sidebar__link">
+                            <i class="fas fa-box"></i> Manage Products
+                        </a>
+                    </li>
+                </c:if>
+                <!-- Check if the user role is admin -->
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                    <li class="admin-sidebar__item">
+                        <a href="${pageContext.servletContext.contextPath}/manage-staffs" class="admin-sidebar__link">
+                            <i class="fas fa-briefcase"></i> Manage Staffs
+                        </a>
+                    </li>
+                </c:if>
                 <li class="admin-sidebar__item">
                     <a href="${pageContext.servletContext.contextPath}/manage-customers" class="admin-sidebar__link">
                         <i class="fas fa-users"></i> Manage Customers
@@ -131,15 +146,21 @@
                         <i class="fas fa-clipboard-list"></i> Manage Orders
                     </a>
                 </li>
-                <li class="admin-sidebar__item">
-                    <a href="${pageContext.servletContext.contextPath}/manage-vouchers" class="admin-sidebar__link">
-                        <i class="fas fa-tag"></i> Manage Vouchers
-                    </a>
-                </li>
-                <li class="admin-sidebar__item">
-                    <a href="${pageContext.servletContext.contextPath}/manage-discounts" class="admin-sidebar__link">
-                        <i class="fas fa-percent"></i> Manage Discounts
-                    </a>
-                </li>
+                <!-- Check if the user role is admin -->
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                    <li class="admin-sidebar__item">
+                        <a href="${pageContext.servletContext.contextPath}/manage-vouchers" class="admin-sidebar__link">
+                            <i class="fas fa-tag"></i> Manage Vouchers
+                        </a>
+                    </li>
+                </c:if>
+                <!-- Check if the user role is admin -->
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                    <li class="admin-sidebar__item">
+                        <a href="${pageContext.servletContext.contextPath}/manage-discounts" class="admin-sidebar__link">
+                            <i class="fas fa-percentage"></i> Manage Discounts
+                        </a>
+                    </li>
+                </c:if>
             </ul>
         </aside>

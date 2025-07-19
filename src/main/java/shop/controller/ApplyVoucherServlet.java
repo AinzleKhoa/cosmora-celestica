@@ -89,12 +89,12 @@ public class ApplyVoucherServlet extends HttpServlet {
                 int voucherID = VD.getVoucherIdByCode(voucher);
                 VD.decreaseLimit(voucherID);
                 ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
-                double totallist = total - vouchervalue;
+                
 
                 session.setAttribute("checkout", product);
                 request.setAttribute("voucherApplied", true);
                 request.setAttribute("voucherCode", voucher);
-                session.setAttribute("totalAmount", totallist);
+                session.setAttribute("voucherValue", vouchervalue);
                 request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
 
             } else {

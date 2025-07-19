@@ -19,14 +19,26 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%= request.getContextPath()%>/assets/css/product-style.css">
 <style>
-    .container-fluid{
-        width: 85%;
+    body {
+        width: 86%;
         margin-left: 13%;
-
-    }
-    body{
+        background-color: #161922;
         margin-top: 3%;
     }
+    /* === CSS CHO SAO === */
+    .product-rating {
+        display: flex;
+        gap: 3px;
+        margin: 0.75rem 0;
+        font-size: 1.5rem;
+    }
+    .star-icon.full {
+        color: #ffc107;
+    }
+    .star-icon.empty {
+        color: #4b5563;
+    }
+    /* === KẾT THÚC CSS CHO SAO === */
 
 </style>
 
@@ -46,7 +58,12 @@
     <div class="page-header">
         <h1 class="h2 fw-bold">
             <i class="fas fa-box-open me-2 text-primary" style="color: var(--accent-blue) !important;"></i>
-            Product Details
+            Product Details:
+            <% if (product.getActiveProduct() == 1) { %>
+            Enabled
+            <% } else { %>
+            Disabled
+            <% }%>
         </h1>
         <div class="d-flex gap-2">
             <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary">
@@ -62,7 +79,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-info-circle me-2"></i>General Information
+                    <i class="fas fa-info-circle me-2"></i>General Information             
                 </div>
                 <div class="card-body p-4">
                     <h2 class="card-title h1 fw-bolder"><%= product.getName()%></h2>
@@ -110,7 +127,6 @@
             <div class="card mt-4">
                 <div class="card-header"><i class="fas fa-cogs me-2"></i>Specifications</div>
                 <div class="card-body p-0">
-                    <% if ("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetails() != null) {%>
                     <table class="table table-hover mb-0">
                         <tbody>
                             <tr>
@@ -140,12 +156,12 @@
                                     <% } %>
                                     <% } else { %>
                                     N/A
-                                    <% } %>
+                                    <% }%>
                                 </td>
                             </tr>
 
                             <tr>
-                                <th><i class="fas fa-key fa-fw me-2 text-secondary"></i>Available Keys</th>
+                                <th><i class="fas fa-key fa-fw me-2 text-secondary"></i>Available Keys (<%= (gameKeys != null ? gameKeys.size() : 0)%>)</th>
                                 <td>
                                     <div class="key-list-scroller">
                                         <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
@@ -160,11 +176,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
-                    <% } else if (product.getAttributes() != null && !product.getAttributes().isEmpty()) { %>
-                    <table class="table table-hover mb-0">
-                        <tbody>
+
                             <% for (ProductAttribute attr : product.getAttributes()) {%>
                             <tr>
                                 <th style="width: 30%; text-transform: capitalize;"><i class="fas fa-sliders-h fa-fw me-2 text-secondary"></i><%= attr.getAttributeName().replace('_', ' ')%></th>
@@ -173,9 +185,6 @@
                             <% } %>
                         </tbody>
                     </table>
-                    <% } else { %>
-                    <p class="text-secondary p-3">No specific attributes for this product.</p>
-                    <% } %>
                 </div>
             </div>
         </div>
@@ -210,6 +219,25 @@
                     <% }%>
                 </div>
             </div>
+
+            <%-- BẮT ĐẦU: Hiển thị đánh giá sao --%>
+            <div class="product-rating">
+                <%
+                    long roundedStars = Math.round(product.getAverageStars());
+                    for (int i = 1; i <= 5; i++) {
+                        if (i <= roundedStars) {
+                %>
+                <span class="star-icon full">&#9733;</span>
+                <%
+                } else {
+                %>
+                <span class="star-icon empty">&#9733;</span>
+                <%
+                        }
+                    }
+                %>
+            </div>
+            <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
 
             <div class="card">
                 <div class="card-header"><i class="fas fa-database me-2"></i>Metadata</div>

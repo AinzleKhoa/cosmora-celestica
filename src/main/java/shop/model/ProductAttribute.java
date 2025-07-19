@@ -51,7 +51,10 @@ public class ProductAttribute {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("Attribute value cannot be null or empty.");
+        }
+        this.value = value.trim();
     }
 
     public String getAttributeName() {
@@ -59,8 +62,10 @@ public class ProductAttribute {
     }
 
     public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
+        if (attributeName == null || attributeName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Attribute name cannot be null or empty.");
+        }
+        this.attributeName = attributeName.trim();
     }
 
-    
 }
