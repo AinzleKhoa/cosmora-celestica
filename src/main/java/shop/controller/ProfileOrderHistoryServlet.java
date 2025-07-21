@@ -155,7 +155,7 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
             int value = 0;
             String ratingStr = request.getParameter("rating");
             if (ratingStr == null || ratingStr.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/profile");
+                response.sendRedirect(request.getContextPath() + "/profile-order-history");
                 return;
             }
             value = Integer.parseInt(ratingStr);
@@ -167,7 +167,7 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
             try {
                 int[] productId = OD.getProIdByOrderId(orderId);
                 if (PD.writeReviewIntoDb(productId, temp.getCustomerId(), value, orderId) != 0) {
-                    response.sendRedirect(request.getContextPath() + "/profile");
+                    response.sendRedirect(request.getContextPath() + "/profile-order-history");
 
                 }
             } catch (SQLException ex) {

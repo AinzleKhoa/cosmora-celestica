@@ -56,11 +56,11 @@ public class RegisterServlet extends HttpServlet {
         String avatarUrl = request.getContextPath() + "/assets/img/avatar/avatar1.png";
 
         CustomerDAO cDAO = new CustomerDAO();
-        String hashedPassword = PasswordUtils.hashPassword(password);
 
         // If email already exists
         if (!cDAO.isUsernameOrEmailTaken(username, email)) {
             // Register the customer
+            String hashedPassword = PasswordUtils.hashPassword(password);
             if (cDAO.createCustomer(new Customer(fullName, username, email, hashedPassword, avatarUrl)) > 0) {
                 // Success: redirect to login with success message in session (flash-style)
                 request.setAttribute("email", email);

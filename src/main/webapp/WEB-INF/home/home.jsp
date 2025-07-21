@@ -203,6 +203,7 @@
                                     List<Product> gameList = (List<Product>) request.getAttribute("gameList");
                                     if (gameList != null && !gameList.isEmpty()) {
                                         for (Product game : gameList) {
+                                            if (game.getQuantity() > 0) {
                                 %>
                                 <div class="slider-item">
                                     <div class="card card--catalog card--uniform">
@@ -269,6 +270,7 @@
                                     </div>
                                 </div>
                                 <% }
+                                        }
                                     }%>
                             </div>
                         </div>

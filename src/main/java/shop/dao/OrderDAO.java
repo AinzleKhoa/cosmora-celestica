@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import shop.db.DBContext;
@@ -395,25 +396,31 @@ public class OrderDAO extends DBContext {
         return result;
     }
 
-    public Map<String, List<?>> getStockByCategory() {
-        Map<String, List<?>> chartData = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Integer> data = new ArrayList<>();
+    public Map<String, Integer> getStockByCategory() {
+        // Sử dụng LinkedHashMap để giữ đúng thứ tự các danh mục như trong câu lệnh SQL
+        Map<String, Integer> stockMap = new LinkedHashMap<>();
+
+        // Câu lệnh SQL của bạn đã đúng, ta sẽ giữ nguyên
         String sql = "SELECT c.name, SUM(p.quantity) AS total_stock "
                 + "FROM product p JOIN category c ON p.category_id = c.category_id "
                 + "GROUP BY c.name HAVING SUM(p.quantity) > 0 ORDER BY total_stock DESC";
 
-        try (
-                 PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        try {
+            // Giả sử 'conn' là đối tượng Connection của bạn
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            // Lặp qua kết quả và đưa trực tiếp vào Map
             while (rs.next()) {
-                labels.add(rs.getString("name"));
-                data.add(rs.getInt("total_stock"));
+                String categoryName = rs.getString("name");
+                int totalStock = rs.getInt("total_stock");
+                stockMap.put(categoryName, totalStock);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // In lỗi ra console để dễ dàng gỡ rối
         }
-        chartData.put("labels", labels);
-        chartData.put("data", data);
-        return chartData;
+
+        // Trả về Map đã hoàn chỉnh
+        return stockMap;
     }
 }

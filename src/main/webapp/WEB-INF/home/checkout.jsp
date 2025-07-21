@@ -85,6 +85,11 @@
                                 </tbody>
                             </table>
                         </div>
+                                <%
+                                    double vouchervalue=0.0;
+                        Boolean voucherApplied = (Boolean) request.getAttribute("voucherApplied");
+                        if (voucherApplied == null || !voucherApplied) {
+                    %>
                         <div class="cart__info">
                             <div class="cart__total">
                                 <p>Total:</p>
@@ -103,15 +108,38 @@
 
                 <div class="col-12 col-lg-4">
                     <!-- checkout -->
-                    <%
-                        Boolean voucherApplied = (Boolean) request.getAttribute("voucherApplied");
-                        if (voucherApplied == null || !voucherApplied) {
-                    %>
+                    
                     <form action="ApplyVoucherServlet" method="post" class="form form--first form--coupon">
                         <input type="text" name="voucher" class="form__input" placeholder="Coupon code">
                         <button type="submit" class="form__btn">Apply</button>
                     </form>
-                    <% } else { %>
+                    <% } else {
+                     vouchervalue= (double) session.getAttribute("voucherValue");
+
+
+                        %>
+                    <div class="cart__info">
+                            <div class="cart__total">
+                                <p>Total:</p>
+                                <span>$<%= total%></span>
+                                <span>-$<%= vouchervalue %></span>
+                                <span>=$<%= total-vouchervalue %></span>
+                            </div>
+
+                            <div class="cart__systems">
+                                <i class="pf pf-visa"></i>
+                                <i class="pf pf-mastercard"></i>
+                                <i class="pf pf-paypal"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end cart -->
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <!-- checkout -->
+                    
+               
                     <p style="color: lightgreen;">Voucher applied successfully!</p>
                     <% }%>
 
@@ -130,7 +158,7 @@
                         <input type="hidden" name="quantity" value="<%= pro.getQuantity()%>" />
                         <input type="hidden" name="price" value="<%= (pro.getSale_price() == 0.0) ? pro.getPrice() : pro.getSale_price()%>" />
                         <% }%>
-                        <input type="hidden" name="total" value="<%= total%>" />
+                        <input type="hidden" name="total" value="<%= total-vouchervalue  %>" />
                         <input type="hidden" name="customerId" value="<%= customer.getCustomerId()%>" />
                         <input type="hidden" name="vouchercode" value="<%= request.getAttribute("voucherCode")%>" />
                         <input type="hidden" name="action" value="order" />

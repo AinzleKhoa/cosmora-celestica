@@ -123,7 +123,7 @@ public class CartServlet extends HttpServlet {
                 break;
                 case "increase":
                 try ( PrintWriter out = response.getWriter()) {
-                 
+
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
 
@@ -157,7 +157,7 @@ public class CartServlet extends HttpServlet {
 
                 case "decrease":
                 try ( PrintWriter out = response.getWriter()) {
-                 
+
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     int quantityToDecrease = Integer.parseInt(request.getParameter("quantity"));
 

@@ -276,8 +276,8 @@ public class CustomerDAO extends DBContext {
 
     public int createCustomer(Customer customer) {
         try {
-            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, created_at)\n"
-                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);";
+            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, last_login, created_at)\n"
+                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);";
             Object[] params = {
                 customer.getFullName(),
                 customer.getUsername(),
@@ -310,6 +310,26 @@ public class CustomerDAO extends DBContext {
                 customer.getEmail(),
                 customer.getPhone(),
                 customer.getAddress(),
+                customer.getGoogleId(),
+                customer.getCustomerId()
+            };
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+    
+    public int updateLastLoginAndGoogleRelated(Customer customer) {
+        try {
+            String query = "UPDATE Customer\n"
+                    + "SET "
+                    + "	password_hash = ?,\n"
+                    + "	google_id = ?,\n"
+                    + " last_login = CURRENT_TIMESTAMP\n"
+                    + "WHERE customer_id = ?";
+            Object[] params = {
+                customer.getPasswordHash(),
                 customer.getGoogleId(),
                 customer.getCustomerId()
             };

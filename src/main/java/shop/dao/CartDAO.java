@@ -38,41 +38,54 @@ public class CartDAO extends DBContext {
         return null;
     }
 
-    public List<CartItem> getCartItemsByCustomerId(int customerId) throws SQLException {
-        List<CartItem> cartItems = new ArrayList<>();
 
-        String sql = "SELECT c.cart_id, c.customer_id, c.product_id, c.quantity AS cart_quantity, "
-                + "p.name AS product_name, p.price, p.sale_price, p.quantity AS product_quantity, "
-                + "i.image_id, i.image_URL AS image_url, "
-                + "cat.name AS category_name "
-                + "FROM cart c "
-                + "JOIN product p ON c.product_id = p.product_id "
-                + "LEFT JOIN category cat ON p.category_id = cat.category_id "
-                + "LEFT JOIN image i ON i.image_id = ( "
-                + "    SELECT MIN(image_id) FROM image WHERE product_id = p.product_id "
-                + ") "
-                + "WHERE c.customer_id = ?";
+   public List<CartItem> getCartItemsByCustomerId(int customerId) throws SQLException {
+    List<CartItem> cartItems = new ArrayList<>();
 
-        Object[] params = {customerId};
-        ResultSet rs = execSelectQuery(sql, params);
+    String sql = "SELECT c.cart_id, c.customer_id, c.product_id, c.quantity AS cart_quantity, "
+               + "p.name AS product_name, p.price, p.sale_price, p.quantity AS product_quantity, "
+               + "i.image_id, i.image_URL AS image_url, "
+               + "cat.name AS category_name "
+               + "FROM cart c "
+               + "JOIN product p ON c.product_id = p.product_id "
+               + "LEFT JOIN category cat ON p.category_id = cat.category_id "
+               + "LEFT JOIN image i ON i.image_id = ( "
+               + "    SELECT MIN(image_id) FROM image WHERE product_id = p.product_id "
+               + ") "
+               + "WHERE c.customer_id = ?";
 
+    try (ResultSet rs = this.execSelectQuery(sql, new Object[]{customerId})) {
         while (rs.next()) {
+            int cartQuantity = rs.getInt("cart_quantity");
+            int productQuantity = rs.getInt("product_quantity");
+            int cartId = rs.getInt("cart_id");
+
+            // cartQuantity > productQuantity
+            if (cartQuantity > productQuantity) {
+                cartQuantity = productQuantity;
+                String updateSql = "UPDATE cart SET quantity = ? WHERE cart_id = ?";
+                this.execQuery(updateSql, new Object[]{cartQuantity, cartId});
+            }
+
             CartItem item = new CartItem();
-            item.setCartId(rs.getInt("cart_id"));
+            item.setCartId(cartId);
             item.setCustomerId(rs.getInt("customer_id"));
             item.setProductId(rs.getInt("product_id"));
-            item.setCartQuantity(rs.getInt("cart_quantity")); // tên mới
-            item.setProductQuantity(rs.getInt("product_quantity")); // thêm mới
+            item.setCartQuantity(cartQuantity);
             item.setProductName(rs.getString("product_name"));
-            item.setPrice(rs.getDouble("price"));
+item.setPrice(rs.getDouble("price"));
             item.setSalePrice(rs.getObject("sale_price") != null ? rs.getDouble("sale_price") : null);
+            item.setProductQuantity(productQuantity);
             item.setImageUrl(rs.getString("image_url"));
             item.setCategoryName(rs.getString("category_name"));
+
             cartItems.add(item);
         }
-
-        return cartItems;
     }
+
+    return cartItems;
+}
+
 
     // Thêm sản phẩm mới vào giỏ
     public void insertCart(Cart cart) {

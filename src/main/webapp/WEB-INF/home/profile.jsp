@@ -225,6 +225,20 @@
         </div>
     </div>
 </section>
+<%
+    String successMsg = (String) session.getAttribute("NotInfo");
+    if (successMsg != null) {
+        session.removeAttribute("NotInfo"); // Xóa sau khi hiển thị
+%>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        alert("<%= successMsg%>");
+    });
+</script>
+
+<%
+    }
+%>
 <!-- end page title -->
 
 <main id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png">

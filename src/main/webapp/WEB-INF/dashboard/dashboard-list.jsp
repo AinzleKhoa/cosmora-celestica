@@ -1,14 +1,13 @@
-<%-- 
-    Document   : dashboard 
+<%--
+    Document   : dashboard
     Created on : Jun 20, 2025, 5:55:00 PM
-    Author : HoangSang
+    Author     : HoangSang
 --%>
 
 <%@page import="java.util.Map"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List, shop.model.Product, java.text.NumberFormat, java.util.Locale" %>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-
 
 <%
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
@@ -21,15 +20,17 @@
         productsSold = (int) summaryStats.get("productsSold");
     }
 
-    int totalStock = (Integer) request.getAttribute("totalStock");
-    int totalCustomers = (Integer) request.getAttribute("totalCustomers");
+    Integer totalStockObj = (Integer) request.getAttribute("totalStock");
+    int totalStock = (totalStockObj != null) ? totalStockObj : 0;
+    Integer totalCustomersObj = (Integer) request.getAttribute("totalCustomers");
+    int totalCustomers = (totalCustomersObj != null) ? totalCustomersObj : 0;
     String currentPeriod = (String) request.getAttribute("currentPeriod");
     List<Product> topSellingProducts = (List<Product>) request.getAttribute("topSellingProducts");
 
     String trendLabelsJson = (String) request.getAttribute("trendLabelsJson");
     String trendDataJson = (String) request.getAttribute("trendDataJson");
-    String stockLabelsJson = (String) request.getAttribute("stockLabelsJson");
-    String stockDataJson = (String) request.getAttribute("stockDataJson");
+
+    Map<String, Integer> stockByCategory = (Map<String, Integer>) request.getAttribute("stockByCategory");
 %>
 
 <style>
@@ -38,7 +39,6 @@
         margin-left: 15%;
         background-color: #161922;
         margin-top: 6%;
-
     }
     .dashboard-card {
         background: #1f2334;
@@ -64,17 +64,6 @@
         font-size: 1.8rem;
         color: #434c7a;
     }
-    .dashboard-card-footer {
-        font-size: 0.9rem;
-        margin-top: 15px;
-    }
-    .text-success {
-        color: #28a745 !important;
-    }
-    .text-danger {
-        color: #dc3545 !important;
-    }
-
     .chart-wrapper {
         background: #1f2334;
         border: 1px solid #2b3149;
@@ -98,19 +87,6 @@
         border-color: #6a5af9;
     }
 
-    .table-dark-custom {
-        background-color: transparent;
-        color: #abb9e8;
-    }
-    .table-dark-custom th {
-        background-color: #2b3149;
-        border-color: #3e4565;
-        font-weight: 600;
-    }
-    .table-dark-custom td, .table-dark-custom th {
-        border-color: #2b3149;
-        vertical-align: middle;
-    }
     .table-dark-custom img {
         width: 40px;
         height: 40px;
@@ -118,7 +94,6 @@
         border-radius: 8px;
         margin-right: 15px;
     }
-
 </style>
 <div class="container-fluid mt-4">
     <div class="row g-4">
@@ -188,8 +163,34 @@
         <div class="col-lg-4">
             <div class="chart-wrapper h-100">
                 <h5 class="chart-title mb-3">Stock by Category</h5>
-                <div style="height: 350px; max-width: 300px; margin: auto;">
-                    <canvas id="stockByCategoryChart"></canvas>
+                <div class="table-responsive">
+                    <table class="table table-dark-custom">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th class="text-end">Quantity</th>
+                                <th class="text-end">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (stockByCategory != null && !stockByCategory.isEmpty()) {
+                                    for (Map.Entry<String, Integer> entry : stockByCategory.entrySet()) {
+                                        int quantity = entry.getValue();
+                                        double percentage = (totalStock > 0) ? ((double) quantity * 100 / totalStock) : 0;
+                            %>
+                            <tr>
+                                <td><%= entry.getKey()%></td>
+                                <td class="text-end fw-bold"><%= quantity%></td>
+                                <td class="text-end text-muted"><%= String.format("%.1f%%", percentage)%></td>
+                            </tr>
+                            <%      }
+                            } else { %>
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No stock data available.</td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -234,11 +235,10 @@
         Chart.defaults.color = '#8e95a5';
         Chart.defaults.font.family = 'Poppins, sans-serif';
 
-        const trendLabels = JSON.parse('<%= trendLabelsJson%>');
-        const trendData = JSON.parse('<%= trendDataJson%>');
-        const stockLabels = JSON.parse('<%= stockLabelsJson%>');
-        const stockData = JSON.parse('<%= stockDataJson%>');
+        const trendLabels = JSON.parse('<%= trendLabelsJson != null ? trendLabelsJson : "[]"%>');
+        const trendData = JSON.parse('<%= trendDataJson != null ? trendDataJson : "[]"%>');
 
+        // --- Revenue Bar Chart ---
         const revenueCtx = document.getElementById('revenueChart');
         if (revenueCtx) {
             new Chart(revenueCtx.getContext('2d'), {
@@ -257,38 +257,31 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {y: {beginAtZero: true, grid: {color: '#2b3149'}, ticks: {color: '#828ac4'}}, x: {grid: {display: false}, ticks: {color: '#828ac4'}}},
-                    plugins: {legend: {display: false}, datalabels: {display: false}}
-                }
-            });
-        }
-
-        const stockCtx = document.getElementById('stockByCategoryChart');
-        if (stockCtx && stockData.length > 0) {
-            new Chart(stockCtx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: stockLabels,
-                    datasets: [{
-                            data: stockData,
-                            backgroundColor: ['#6a5af9', '#00ff75', '#ffc107', '#33a1ff', '#ff6b6b', '#20c997'],
-                            borderColor: '#1f2334',
-                            borderWidth: 3
-                        }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    animation: false, // <-- THÊM DÒNG NÀY ĐỂ TẮT HIỆU ỨNG
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {color: '#2b3149'},
+                            ticks: {color: '#828ac4'}
+                        },
+                        x: {
+                            grid: {display: false},
+                            ticks: {color: '#828ac4'}
+                        }
+                    },
                     plugins: {
-                        legend: {position: 'bottom', labels: {color: '#abb9e8'}},
+                        legend: {display: false},
+                        tooltip: {enabled: false},
                         datalabels: {
-                            color: '#fff',
-                            formatter: (value, ctx) => {
-                                let sum = 0;
-                                let dataArr = ctx.chart.data.datasets[0].data;
-                                dataArr.map(data => sum += data);
-                                let percentage = (value * 100 / sum).toFixed(1) + "%";
-                                return percentage;
+                            display: true,
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#abb9e8',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function (value) {
+                                return Math.round(value);
                             }
                         }
                     }

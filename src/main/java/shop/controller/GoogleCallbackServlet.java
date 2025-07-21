@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.time.Instant;
+import shop.dao.CartDAO;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
 
@@ -60,16 +61,41 @@ public class GoogleCallbackServlet extends HttpServlet {
 
         if (customer != null) {
             if (!customer.isIsDeactivated()) {
+                // Google null means account is created but is not an google account => update them to an google account
                 if (customer.getGoogleId() == null) {
                     customer.setGoogleId(googleId);
                     customer.setPasswordHash("GOOGLE_OAUTH_USER");
-                    cDAO.updateLastLoginTime(customer); // Update login time
-                    cDAO.updateCustomer(customer); // Save linked Google ID
+                    if (cDAO.updateLastLoginAndGoogleRelated(customer) > 0) {
+
+                        HttpSession session = request.getSession();
+                        session.setAttribute("currentCustomer", customer);
+
+                        CartDAO cartDAO = new CartDAO();
+                        int cartCount = cartDAO.countCartItems(customer.getCustomerId());
+                        session.setAttribute("cartCount", cartCount);
+
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        request.setAttribute("message", "Login successful, but there was an issue updating your account. Please try again later.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
+                    // Google ID not null means , this is already an google account, not the first time using google account. 
                 } else {
-                    HttpSession session = request.getSession();
-                    cDAO.updateLastLoginTime(customer); // Update login time
-                    session.setAttribute("currentCustomer", customer);
-                    response.sendRedirect(request.getContextPath() + "/home");
+                    if (cDAO.updateLastLoginTime(customer) > 0) {
+                        HttpSession session = request.getSession();
+
+                        session.setAttribute("currentCustomer", customer);
+
+                        CartDAO cartDAO = new CartDAO();
+                        int customerId = customer.getCustomerId();
+                        int cartCount = cartDAO.countCartItems(customerId);
+                        session.setAttribute("cartCount", cartCount);
+
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        request.setAttribute("message", "Login successful, but there was an issue updating your last login time. Please try again later.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
                 }
             } else {
                 request.getSession().setAttribute("message", "Your account is locked. Please contact us for more information.");
@@ -87,12 +113,21 @@ public class GoogleCallbackServlet extends HttpServlet {
             customer.setEmailVerified(true);
             customer.setCreatedAt(Timestamp.from(Instant.now()));
             customer.setUpdatedAt(Timestamp.from(Instant.now()));
-            cDAO.createCustomer(customer);
-            HttpSession session = request.getSession();
-            cDAO.updateLastLoginTime(customer); // Update login time
-            session.setAttribute("currentCustomer", customer);
 
-            response.sendRedirect(request.getContextPath() + "/home");
+            if (cDAO.createCustomer(customer) > 0) {
+                HttpSession session = request.getSession();
+                session.setAttribute("currentCustomer", customer);
+
+                CartDAO cartDAO = new CartDAO();
+                int customerId = customer.getCustomerId();
+                int cartCount = cartDAO.countCartItems(customerId);
+                session.setAttribute("cartCount", cartCount);
+
+                response.sendRedirect(request.getContextPath() + "/home");
+            } else {
+                request.setAttribute("message", "We couldn't complete your registration at the moment. Please try again later.");
+                request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
+            }
         }
     }
 }

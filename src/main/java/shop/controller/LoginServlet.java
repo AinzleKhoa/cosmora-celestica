@@ -69,14 +69,19 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
 
                         CartDAO cartDAO = new CartDAO();
-                        int customerId = customer.getCustomerId();
-                        int cartCount = cartDAO.countCartItems(customerId);
+                        int cartCount = cartDAO.countCartItems(customer.getCustomerId());
                         session.setAttribute("cartCount", cartCount);
 
-                        cDAO.updateLastLoginTime(customer); // Update login time
-
-                        // Redirect to the home page upon successful login
-                        response.sendRedirect(request.getContextPath() + "/home");
+                        // Update login time
+                        if (cDAO.updateLastLoginTime(customer) > 0) {
+                            // Redirect to the home page upon successful login
+                            response.sendRedirect(request.getContextPath() + "/home");
+                        } else {
+                            request.setAttribute("email", email);
+                            request.setAttribute("password", password);
+                            request.setAttribute("message", "Login successful, but there was an issue updating your last login time. Please try again later.");
+                            request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                        }
                     } else {
                         // If password doesn't match, set error message and forward to login page
                         request.setAttribute("email", email);

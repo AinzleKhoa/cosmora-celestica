@@ -74,8 +74,10 @@ public class CheckoutServlet extends HttpServlet {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("single")) {
             if (customer.getAddress() == null || customer.getAddress().isEmpty() || customer.getEmail() == null || customer.getEmail().isEmpty() || customer.getPhone() == null || customer.getPhone().isEmpty()) {
+                session.setAttribute("NotInfo", "You must update your personal information before purchasing.");
                 request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
                         .forward(request, response);
+                return;
             }
 
             String idtemp = request.getParameter("id");
@@ -116,8 +118,11 @@ public class CheckoutServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action.equals("fromcart")) {
             if (customer.getAddress() == null || customer.getAddress().isEmpty() || customer.getEmail() == null || customer.getEmail().isEmpty() || customer.getPhone() == null || customer.getPhone().isEmpty()) {
+                session.setAttribute("NotInfo", "You must update your personal information before purchasing.");
+
                 request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
                         .forward(request, response);
+                return;
             }
             String[] productId = request.getParameterValues("productIds");
             String[] quantity = request.getParameterValues("quantities");
