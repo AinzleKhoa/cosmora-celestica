@@ -57,57 +57,28 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.getAccountByEmail(email);
+        Customer customer = cDAO.getAccountByEmailAndVerify(email);
 
         if (customer != null) {
-            if (!customer.isIsDeactivated()) {
-                if (customer.getGoogleId() == null) {
-                    // Check password match before setting session
-                    boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
-                    if (isPasswordMatched) {
-                        HttpSession session = request.getSession(true);
-                        session.setAttribute("currentCustomer", customer); // Session CurrentCustomer
+            boolean isPasswordMatched = PasswordUtils.checkPassword(password, customer.getPasswordHash());
+            // Check password match before setting session
+            if (isPasswordMatched) {
+                HttpSession session = request.getSession(true);
+                session.setAttribute("currentCustomer", customer);
 
-                        CartDAO cartDAO = new CartDAO();
-                        int cartCount = cartDAO.countCartItems(customer.getCustomerId());
-                        session.setAttribute("cartCount", cartCount);
-
-                        // Update login time
-                        if (cDAO.updateLastLoginTime(customer) > 0) {
-                            // Redirect to the home page upon successful login
-                            response.sendRedirect(request.getContextPath() + "/home");
-                        } else {
-                            request.setAttribute("email", email);
-                            request.setAttribute("password", password);
-                            request.setAttribute("message", "Login successful, but there was an issue updating your last login time. Please try again later.");
-                            request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                        }
-                    } else {
-                        // If password doesn't match, set error message and forward to login page
-                        request.setAttribute("email", email);
-                        request.setAttribute("password", password);
-                        request.setAttribute("message", "Email or password is incorrect. Try again.");
-                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                    }
-                } else {
-                    // If account is an google account already, set error message and forward to login page
-                    request.setAttribute("email", email);
-                    request.setAttribute("password", password);
-                    request.setAttribute("message", "This account is linked to Google. Please log in using your Google account.");
-                    request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                }
+                response.sendRedirect(request.getContextPath() + "/home");
             } else {
-                // If account is deactivated, set error message and forward to login page
+                // If password doesn't match, set error message and forward to login page
                 request.setAttribute("email", email);
                 request.setAttribute("password", password);
-                request.setAttribute("message", "Your account is locked. Please contact us for more information.");
+                request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
                 request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             }
         } else {
-            // If email doesn't exist, set error message and forward to login page
+            // If email doesn't exist or google linked account or locked, set error message and forward to login page
             request.setAttribute("email", email);
             request.setAttribute("password", password);
-            request.setAttribute("message", "Email doesn't exist.");
+            request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
             request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
         }
     }

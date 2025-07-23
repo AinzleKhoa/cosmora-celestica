@@ -43,14 +43,11 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
+                        rs.getBoolean("is_first_time_password_setup"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
-                        rs.getString("remember_me_token"),
                         rs.getString("reset_token"),
                         rs.getTimestamp("reset_token_expiry"),
-                        rs.getBoolean("email_verified"),
-                        rs.getString("email_verification_token"),
-                        rs.getTimestamp("email_verification_expiry"),
                         rs.getTimestamp("created_at"),
                         rs.getTimestamp("updated_at")
                 ));
@@ -103,14 +100,11 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
+                        rs.getBoolean("is_first_time_password_setup"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
-                        rs.getString("remember_me_token"),
                         rs.getString("reset_token"),
                         rs.getTimestamp("reset_token_expiry"),
-                        rs.getBoolean("email_verified"),
-                        rs.getString("email_verification_token"),
-                        rs.getTimestamp("email_verification_expiry"),
                         rs.getTimestamp("created_at"),
                         rs.getTimestamp("updated_at")
                 ));
@@ -159,14 +153,82 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
+                        rs.getBoolean("is_first_time_password_setup"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
-                        rs.getString("remember_me_token"),
                         rs.getString("reset_token"),
                         rs.getTimestamp("reset_token_expiry"),
-                        rs.getBoolean("email_verified"),
-                        rs.getString("email_verification_token"),
-                        rs.getTimestamp("email_verification_expiry"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public Customer getAccountByGoogleId(String googleId, String email) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.google_id = ? OR email = ?";
+            Object[] params = {googleId, email};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("full_name"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("phone"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("avatar_url"),
+                        rs.getDate("date_of_birth"),
+                        rs.getBoolean("is_deactivated"),
+                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getTimestamp("last_login"),
+                        rs.getString("google_id"),
+                        rs.getString("reset_token"),
+                        rs.getTimestamp("reset_token_expiry"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public Customer getAccountByEmailAndVerify(String email) {
+        try {
+            String query = "SELECT *\n"
+                    + "FROM customer c\n"
+                    + "WHERE c.email = ? \n"
+                    + "	AND c.is_deactivated = 0;";
+            Object[] params = {email};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("customer_id"),
+                        rs.getString("full_name"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("phone"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("avatar_url"),
+                        rs.getDate("date_of_birth"),
+                        rs.getBoolean("is_deactivated"),
+                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getTimestamp("last_login"),
+                        rs.getString("google_id"),
+                        rs.getString("reset_token"),
+                        rs.getTimestamp("reset_token_expiry"),
                         rs.getTimestamp("created_at"),
                         rs.getTimestamp("updated_at")
                 );
@@ -197,14 +259,11 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
+                        rs.getBoolean("is_first_time_password_setup"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
-                        rs.getString("remember_me_token"),
                         rs.getString("reset_token"),
                         rs.getTimestamp("reset_token_expiry"),
-                        rs.getBoolean("email_verified"),
-                        rs.getString("email_verification_token"),
-                        rs.getTimestamp("email_verification_expiry"),
                         rs.getTimestamp("created_at"),
                         rs.getTimestamp("updated_at")
                 );
@@ -230,11 +289,11 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
-    public boolean isUsernameOrEmailTakenByOthers(int id, String username, String email) {
+    public boolean isUsernameTakenByOthers(int id, String username) {
         try {
             String query = "SELECT COUNT(*) FROM customer \n"
-                    + "WHERE (username = ? OR email = ?) AND customer_id != ?";
-            Object[] params = {username, email, id};
+                    + "WHERE username = ? AND customer_id != ?";
+            Object[] params = {username, id};
             ResultSet rs = execSelectQuery(query, params);
             if (rs.next()) {
                 return rs.getInt(1) > 0;
@@ -247,7 +306,7 @@ public class CustomerDAO extends DBContext {
 
     public int storeOtpForEmail(String email, String otp, Timestamp expiry) {
         try {
-            String query = "UPDATE customer SET email_verification_token = ?, email_verification_expiry = ? WHERE email = ?";
+            String query = "UPDATE customer SET reset_token = ?, reset_token_expiry = ? WHERE email = ?";
             Object[] params = {otp, expiry, email};
             return execQuery(query, params);
         } catch (SQLException ex) {
@@ -261,8 +320,8 @@ public class CustomerDAO extends DBContext {
             String query = "SELECT *\n"
                     + "FROM customer c\n"
                     + "WHERE c.email = ?\n"
-                    + "  AND c.email_verification_token = ?\n"
-                    + "  AND c.email_verification_expiry > GETDATE();";
+                    + "  AND c.reset_token = ?\n"
+                    + "  AND c.reset_token_expiry > GETDATE();";
             Object[] params = {email, otp};
             ResultSet rs = execSelectQuery(query, params);
             if (rs.next()) {
@@ -292,6 +351,33 @@ public class CustomerDAO extends DBContext {
         return 0;
     }
 
+    public int createCustomerIfUnique(Customer customer) {
+        try {
+            // Check if the username or email is already taken
+            String checkQuery = "SELECT COUNT(*) FROM customer WHERE username = ? OR email = ?";
+            Object[] params = {customer.getUsername(), customer.getEmail()};
+            ResultSet rs = execSelectQuery(checkQuery, params);
+
+            if (!rs.next() && rs.getInt(1) <= 0) {
+                // Proceed to insert the new customer
+                String insertQuery = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, last_login, created_at) "
+                        + "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                Object[] insertParams = {
+                    customer.getFullName(),
+                    customer.getUsername(),
+                    customer.getEmail(),
+                    customer.getPasswordHash(),
+                    customer.getAvatarUrl()
+                };
+
+                return execQuery(insertQuery, insertParams);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;  // Returns false if any error occurs
+    }
+
     public int updateCustomer(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
@@ -319,17 +405,15 @@ public class CustomerDAO extends DBContext {
         }
         return 0;
     }
-    
-    public int updateLastLoginAndGoogleRelated(Customer customer) {
+
+    public int bindGoogleAccount(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
                     + "SET "
-                    + "	password_hash = ?,\n"
                     + "	google_id = ?,\n"
                     + " last_login = CURRENT_TIMESTAMP\n"
-                    + "WHERE customer_id = ?";
+                    + "WHERE customer_id = ? AND is_deactivated = 0";
             Object[] params = {
-                customer.getPasswordHash(),
                 customer.getGoogleId(),
                 customer.getCustomerId()
             };
@@ -350,8 +434,7 @@ public class CustomerDAO extends DBContext {
                     + "	gender = ?,\n"
                     + "	address = ?,\n"
                     + "	avatar_url = ?,\n"
-                    + "	date_of_birth = ?,\n"
-                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "	date_of_birth = ?\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
                 customer.getFullName(),

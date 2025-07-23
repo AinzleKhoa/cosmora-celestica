@@ -182,7 +182,7 @@ public class CustomerServlet extends HttpServlet {
             Customer thisCustomer = cDAO.getAccountById(id);
 
             if (thisCustomer != null) {
-                if (!cDAO.isUsernameOrEmailTakenByOthers(id, username, email)) {
+                if (!cDAO.isUsernameTakenByOthers(id, username)) {
                     if (cDAO.updateCustomer(new Customer(id, username, email, fullName, phone, address)) > 0) {
                         Customer newCustomer = cDAO.getAccountById(id);
                         request.setAttribute("thisCustomer", newCustomer);

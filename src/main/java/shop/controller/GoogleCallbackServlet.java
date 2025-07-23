@@ -18,9 +18,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.time.Instant;
-import shop.dao.CartDAO;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
+import shop.util.PasswordUtils;
 
 /**
  *
@@ -57,49 +57,19 @@ public class GoogleCallbackServlet extends HttpServlet {
         String googleId = payload.getSubject(); // Unique ID for the user from Google
 
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.getAccountByEmail(email);
+        Customer customer = cDAO.getAccountByGoogleId(googleId, email);
 
         if (customer != null) {
-            if (!customer.isIsDeactivated()) {
-                // Google null means account is created but is not an google account => update them to an google account
-                if (customer.getGoogleId() == null) {
-                    customer.setGoogleId(googleId);
-                    customer.setPasswordHash("GOOGLE_OAUTH_USER");
-                    if (cDAO.updateLastLoginAndGoogleRelated(customer) > 0) {
+            customer.setGoogleId(googleId);
+            if (cDAO.bindGoogleAccount(customer) > 0) {
 
-                        HttpSession session = request.getSession();
-                        session.setAttribute("currentCustomer", customer);
+                HttpSession session = request.getSession();
+                session.setAttribute("currentCustomer", customer);
 
-                        CartDAO cartDAO = new CartDAO();
-                        int cartCount = cartDAO.countCartItems(customer.getCustomerId());
-                        session.setAttribute("cartCount", cartCount);
-
-                        response.sendRedirect(request.getContextPath() + "/home");
-                    } else {
-                        request.setAttribute("message", "Login successful, but there was an issue updating your account. Please try again later.");
-                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                    }
-                    // Google ID not null means , this is already an google account, not the first time using google account. 
-                } else {
-                    if (cDAO.updateLastLoginTime(customer) > 0) {
-                        HttpSession session = request.getSession();
-
-                        session.setAttribute("currentCustomer", customer);
-
-                        CartDAO cartDAO = new CartDAO();
-                        int customerId = customer.getCustomerId();
-                        int cartCount = cartDAO.countCartItems(customerId);
-                        session.setAttribute("cartCount", cartCount);
-
-                        response.sendRedirect(request.getContextPath() + "/home");
-                    } else {
-                        request.setAttribute("message", "Login successful, but there was an issue updating your last login time. Please try again later.");
-                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-                    }
-                }
+                response.sendRedirect(request.getContextPath() + "/home");
             } else {
-                request.getSession().setAttribute("message", "Your account is locked. Please contact us for more information.");
-                response.sendRedirect(request.getContextPath() + "/login");
+                request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
+                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             }
         } else {
             // New Google user
@@ -107,21 +77,18 @@ public class GoogleCallbackServlet extends HttpServlet {
             customer.setFullName(name);
             customer.setUsername(name);
             customer.setEmail(email);
-            customer.setPasswordHash("GOOGLE_OAUTH_USER");
             customer.setAvatarUri(request.getContextPath() + "/assets/img/avatar/avatar1.png");
             customer.setGoogleId(googleId);
-            customer.setEmailVerified(true);
             customer.setCreatedAt(Timestamp.from(Instant.now()));
-            customer.setUpdatedAt(Timestamp.from(Instant.now()));
+
+            String tempPass = PasswordUtils.generateTemporaryPassword(12);
+            String hashedTempPass = PasswordUtils.hashPassword(tempPass);
+
+            customer.setPasswordHash(hashedTempPass);
 
             if (cDAO.createCustomer(customer) > 0) {
                 HttpSession session = request.getSession();
                 session.setAttribute("currentCustomer", customer);
-
-                CartDAO cartDAO = new CartDAO();
-                int customerId = customer.getCustomerId();
-                int cartCount = cartDAO.countCartItems(customerId);
-                session.setAttribute("cartCount", cartCount);
 
                 response.sendRedirect(request.getContextPath() + "/home");
             } else {

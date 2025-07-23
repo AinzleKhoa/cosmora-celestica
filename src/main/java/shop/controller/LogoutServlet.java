@@ -34,18 +34,21 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
-        // Check if session contains currentCustomer
-        if (session != null && session.getAttribute("currentCustomer") != null) {
-            // Logic for customer
-            request.setAttribute("message", "Logout successfully!");
-            request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
-        } // Check if session contains currentEmployee
-        else if (session != null && session.getAttribute("currentEmployee") != null) {
-            // Logic for employee
-            request.setAttribute("message", "Logout successfully!");
-            request.getRequestDispatcher("/WEB-INF/dashboard/login-dashboard.jsp").forward(request, response);
+        if (session != null) {
+            // Check if session contains currentCustomer
+            if (session.getAttribute("currentCustomer") != null) {
+                // Logic for customer
+                request.setAttribute("message", "Logout successfully!");
+                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+            } // Check if session contains currentEmployee
+            else if (session.getAttribute("currentEmployee") != null) {
+                // Logic for employee
+                request.setAttribute("message", "Logout successfully!");
+                request.getRequestDispatcher("/WEB-INF/dashboard/login-dashboard.jsp").forward(request, response);
+            }
+        } else {
+            request.getRequestDispatcher("/WEB-INF/home/home.jsp").forward(request, response);
         }
-        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
     }
 
     /**

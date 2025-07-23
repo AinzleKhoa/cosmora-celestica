@@ -19,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
 import shop.util.EmailUtils;
-import shop.util.PasswordUtils;
 import shop.util.SecurityTokenUtils;
 
 /**
@@ -57,102 +56,68 @@ public class ForgotPasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        response.setContentType("application/json");
-        JsonObject jsonResponse = new JsonObject();
 
         // Action SendOtp
         if (action != null && action.equals("sendOtp")) {
             String email = request.getParameter("email");
-
             CustomerDAO cDAO = new CustomerDAO();
-            Customer customer = cDAO.getAccountByEmail(email);
 
-            if (customer != null) {
-                // Check if the account is a google linked account
-                if (customer.getGoogleId() == null) {
-                    // Check if the account is not deactivated
-                    if (!customer.isIsDeactivated()) {
-                        String otp = SecurityTokenUtils.generateOTP(6);
-                        Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
+            String otp = SecurityTokenUtils.generateOTP(6);
+            Timestamp expiry = Timestamp.from(Instant.now().plus(5, ChronoUnit.MINUTES));
 
-                        // Attempt to store OTP in the database
-                        if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
-                            String to = email;
-                            String subject = "Your Cosmora Celestica OTP Code";
-                            String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
+            // Attempt to store OTP in the database
+            if (cDAO.storeOtpForEmail(email, otp, expiry) > 0) {
+                String to = email;
+                String subject = "Your Cosmora Celestica OTP Code";
+                String content = "Your OTP is: " + otp + "\nIt will expire in 5 minutes.";
 
-                            // Try sending the OTP email
-                            if (EmailUtils.sendEmail(to, subject, content)) {
-                                jsonResponse.addProperty("success", true);
-                                jsonResponse.addProperty("message", "OTP sent successfully!");
-                            } else {
-                                // If sending OTP email fails
-                                jsonResponse.addProperty("success", false);
-                                jsonResponse.addProperty("message", "Failed to send OTP to the email.");
-                            }
-                        } else {
-                            // If storing the OTP in the database fails
-                            jsonResponse.addProperty("success", false);
-                            jsonResponse.addProperty("message", "Failed to store OTP.");
-                        }
-                    } else {
-                        // If the account is deactivated
-                        jsonResponse.addProperty("success", false);
-                        jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
-                    }
+                // Try sending the OTP email
+                if (EmailUtils.sendEmail(to, subject, content)) {
+                    // Set a success message and forward to a JSP page to display it
+                    request.setAttribute("email", email);
+                    request.setAttribute("message", "OTP sent successfully!");
+                    request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
                 } else {
-                    // If account is a Google account already
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "This account is linked to Google. Please log in using your Google account.");
+                    // If sending OTP email fails, show error
+                    request.setAttribute("email", email);
+                    request.setAttribute("message", "Failed to send OTP to the email.");
+                    request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
                 }
             } else {
-                // If the email doesn't exist
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Email does not exist.");
+                // If storing the OTP in the database fails
+                request.setAttribute("email", email);
+                request.setAttribute("message", "Failed to store OTP.");
+                request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
             }
-            // Action VerifyOtp
-        } else {
+        } // Action VerifyOtp
+        else if (action != null && action.equals("verifyOtp")) {
             String email = request.getParameter("email");
             String otp = request.getParameter("otp");
 
             CustomerDAO cDAO = new CustomerDAO();
-            Customer customer = cDAO.getAccountByEmail(email);
+            Customer customer = cDAO.getAccountByEmailAndVerify(email);
 
             if (customer != null) {
-                // Check if the account is a google linked account
-                if (customer.getGoogleId() == null) {
-                    // Check if the account is not deactivated
-                    if (!customer.isIsDeactivated()) {
-                        // Check if the OTP matches
-                        if (cDAO.checkOtpForEmail(email, otp)) {
-                            HttpSession session = request.getSession();
-                            session.setAttribute("currentForgotCustomer", customer);
+                // Check if the OTP matches
+                if (cDAO.checkOtpForEmail(email, otp)) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("currentForgotCustomer", customer);
 
-                            jsonResponse.addProperty("success", true);
-                            jsonResponse.addProperty("message", "OTP verified successfully! Redirecting...");
-                            jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/reset-password");
-                        } else {
-                            // If OTP is incorrect
-                            jsonResponse.addProperty("success", false);
-                            jsonResponse.addProperty("message", "The OTP is incorrect or has expired. Please try again.");
-                        }
-                    } else {
-                        // If the account is deactivated
-                        jsonResponse.addProperty("success", false);
-                        jsonResponse.addProperty("message", "Your account is locked. Please contact us for more information.");
-                    }
+                    // Redirect to reset password page on success
+                    response.sendRedirect(request.getContextPath() + "/reset-password");
                 } else {
-                    // If account is a Google account already
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "This account is linked to Google. Please log in using your Google account.");
+                    // If OTP is incorrect
+                    request.setAttribute("email", email);
+                    request.setAttribute("message", "We encountered an issue while processing your request. Please check your email and OTP, or contact support for assistance.");
+                    request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
                 }
             } else {
                 // If the email doesn't exist
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Email does not exist.");
+                request.setAttribute("email", email);
+                request.setAttribute("message", "We encountered an issue while processing your request. Please check your email and OTP, or contact support for assistance.");
+                request.getRequestDispatcher("/WEB-INF/home/forgot-password.jsp").forward(request, response);
             }
         }
-        response.getWriter().write(jsonResponse.toString());
     }
 
     /**

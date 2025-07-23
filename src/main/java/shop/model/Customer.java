@@ -24,18 +24,15 @@ public class Customer {
     private String avatarUrl;
     private Date dateOfBirth;
     private boolean isDeactivated;
+    private boolean isFirstTimePasswordSetup;
     private Timestamp lastLogin;
     private String googleId;
-    private String rememberMeToken;
     private String resetToken;
     private Timestamp resetTokenExpiry;
-    private boolean emailVerified;
-    private String emailVerificationToken;
-    private Timestamp emailVerificationExpiry;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public Customer(int customerId, String fullName, String username, String email, String passwordHash, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, Timestamp lastLogin, String googleId, String rememberMeToken, String resetToken, Timestamp resetTokenExpiry, boolean emailVerified, String emailVerificationToken, Timestamp emailVerificationExpiry, Timestamp createdAt, Timestamp updatedAt) {
+    public Customer(int customerId, String fullName, String username, String email, String passwordHash, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, boolean isFirstTimePasswordSetup, Timestamp lastLogin, String googleId, String resetToken, Timestamp resetTokenExpiry, Timestamp createdAt, Timestamp updatedAt) {
         this.customerId = customerId;
         this.fullName = fullName;
         this.username = username;
@@ -47,14 +44,11 @@ public class Customer {
         this.avatarUrl = avatarUrl;
         this.dateOfBirth = dateOfBirth;
         this.isDeactivated = isDeactivated;
+        this.isFirstTimePasswordSetup = isFirstTimePasswordSetup;
         this.lastLogin = lastLogin;
         this.googleId = googleId;
-        this.rememberMeToken = rememberMeToken;
         this.resetToken = resetToken;
         this.resetTokenExpiry = resetTokenExpiry;
-        this.emailVerified = emailVerified;
-        this.emailVerificationToken = emailVerificationToken;
-        this.emailVerificationExpiry = emailVerificationExpiry;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -101,6 +95,14 @@ public class Customer {
         this.fullName = fullName;
         this.phone = phone;
         this.address = address;
+    }
+
+    public boolean isIsFirstTimePasswordSetup() {
+        return isFirstTimePasswordSetup;
+    }
+
+    public void setIsFirstTimePasswordSetup(boolean isFirstTimePasswordSetup) {
+        this.isFirstTimePasswordSetup = isFirstTimePasswordSetup;
     }
 
     public int getCustomerId() {
@@ -155,28 +157,12 @@ public class Customer {
         return googleId;
     }
 
-    public String getRememberMeToken() {
-        return rememberMeToken;
-    }
-
     public String getResetToken() {
         return resetToken;
     }
 
     public Timestamp getResetTokenExpiry() {
         return resetTokenExpiry;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public String getEmailVerificationToken() {
-        return emailVerificationToken;
-    }
-
-    public Timestamp getEmailVerificationExpiry() {
-        return emailVerificationExpiry;
     }
 
     public Timestamp getUpdatedAt() {
@@ -239,28 +225,12 @@ public class Customer {
         this.googleId = googleId;
     }
 
-    public void setRememberMeToken(String rememberMeToken) {
-        this.rememberMeToken = rememberMeToken;
-    }
-
     public void setResetToken(String resetToken) {
         this.resetToken = resetToken;
     }
 
     public void setResetTokenExpiry(Timestamp resetTokenExpiry) {
         this.resetTokenExpiry = resetTokenExpiry;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public void setEmailVerificationToken(String emailVerificationToken) {
-        this.emailVerificationToken = emailVerificationToken;
-    }
-
-    public void setEmailVerificationExpiry(Timestamp emailVerificationExpiry) {
-        this.emailVerificationExpiry = emailVerificationExpiry;
     }
 
     public void setUpdatedAt(Timestamp updatedAt) {

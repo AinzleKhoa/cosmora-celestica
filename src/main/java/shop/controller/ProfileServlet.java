@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
+import java.sql.Timestamp;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
 import shop.util.PasswordUtils;
@@ -74,10 +75,19 @@ public class ProfileServlet extends HttpServlet {
             CustomerDAO cDAO = new CustomerDAO();
 
             if (customer != null) {
-                if (!cDAO.isUsernameOrEmailTakenByOthers(id, username, email)) {
+                if (!cDAO.isUsernameTakenByOthers(id, username)) {
                     if (cDAO.updateProfileCustomer(new Customer(id, fullName, username, email, phone, gender, address, avatarUrl, dateOfBirth)) > 0) {
-                        Customer newCustomer = cDAO.getAccountById(id);
-                        session.setAttribute("currentCustomer", newCustomer); // Session updated
+                        customer.setFullName(fullName);
+                        customer.setUsername(username);
+                        customer.setEmail(email);
+                        customer.setPhone(phone);
+                        customer.setGender(gender);
+                        customer.setAddress(address);
+                        customer.setAvatarUri(avatarUrl);
+                        customer.setDateOfBirth(dateOfBirth);
+                        customer.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                        
+                        session.setAttribute("currentCustomer", customer); // Session updated
                         request.setAttribute("updateFailed", false);
                         request.setAttribute("message", "Update profile successfully!");
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
