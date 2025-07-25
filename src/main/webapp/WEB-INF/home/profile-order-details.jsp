@@ -152,7 +152,7 @@
                 </form>
 
                 <%}%>
-                <span class="font-semibold">ORDER ID. <span class="text-gray-700"><%= order.getOrderId()%></span></span> 
+                <span class="font-semibold">ORDER ID. <span class="font-bold"><%= order.getOrderId()%></span></span> 
                 <span class="text-red-600 ml-4 font-semibold"><%= order.getStatus()%></span>
             </div>
         </div>

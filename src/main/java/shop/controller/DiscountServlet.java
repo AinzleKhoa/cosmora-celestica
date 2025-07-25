@@ -147,12 +147,12 @@ public class DiscountServlet extends HttpServlet {
                     }
                     if (pD.checkIfProductHasAnotherActiveDiscount(productId, discountId) == 0) {
                         if (pD.editActiveForDiscount(discount) != 0) {
-                            request.getSession().setAttribute("message", "Voucher status updated successfully!");
+                            request.getSession().setAttribute("message", "Discount status updated successfully!");
                         } else {
-                            request.getSession().setAttribute("message", "Failed to update voucher status! The product may already have another active discount.");
+                            request.getSession().setAttribute("message", "Failed to update discount status! The product may already have another active discount.");
                         }
                     } else {
-                        request.getSession().setAttribute("message", "Failed to update voucher status! The product may already have another active discount.");
+                        request.getSession().setAttribute("message", "Failed to update discount status! The product may already have another active discount.");
                     }
                     response.sendRedirect(request.getContextPath() + "/manage-discounts?view=list");
 

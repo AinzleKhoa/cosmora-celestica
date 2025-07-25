@@ -23,27 +23,31 @@ public class CheckoutDAO extends DBContext {
     public Checkout getInfoToCheckout(int productid) throws SQLException {
         Checkout temp = null;
         String query = "SELECT \n"
-                + "	p.product_id,\n"
+                + "    p.product_id,\n"
                 + "    p.name AS product_name,\n"
                 + "    p.price,\n"
                 + "    c.name AS category_name,\n"
-                + "    i.image_url\n"
-                + "FROM \n"
-                + "    product p\n"
-                + "JOIN \n"
-                + "    category c ON p.category_id = c.category_id\n"
+                + "    i.image_url,\n"
+                + "    d.sale_price\n"
+                + "FROM product p\n"
+                + "JOIN category c ON p.category_id = c.category_id\n"
                 + "OUTER APPLY (\n"
                 + "    SELECT TOP 1 image_url \n"
                 + "    FROM image \n"
                 + "    WHERE product_id = p.product_id \n"
                 + "    ORDER BY image_id\n"
                 + ") i\n"
-                + "WHERE \n"
-                + "    p.product_id = ?;";
+                + "OUTER APPLY (\n"
+                + "    SELECT TOP 1 sale_price \n"
+                + "    FROM discount \n"
+                + "    WHERE product_id = p.product_id AND active = 1 \n"
+                + "    ORDER BY discount_id DESC\n"
+                + ") d\n"
+                + "WHERE p.product_id = ?;";
         Object[] params = {productid};
         ResultSet rs = execSelectQuery(query, params);
         while (rs.next()) {
-            temp = new Checkout(rs.getInt("product_id"), rs.getString("image_url"), rs.getString("product_name"), rs.getString("category_name"), rs.getDouble("price"), getSalePrice(productid));
+            temp = new Checkout(rs.getInt("product_id"), rs.getString("image_url"), rs.getString("product_name"), rs.getString("category_name"), rs.getDouble("price"), rs.getDouble("sale_price"));
         }
         return temp;
     }
@@ -73,7 +77,7 @@ public class CheckoutDAO extends DBContext {
                 .append("FROM product p ")
                 .append("JOIN category c ON p.category_id = c.category_id ")
                 .append("JOIN game_details gd ON p.game_details_id = gd.game_details_id ")
-.append("JOIN game_key gk ON gd.game_details_id = gk.game_details_id ")
+                .append("JOIN game_key gk ON gd.game_details_id = gk.game_details_id ")
                 .append("WHERE c.category_name = 'game' AND p.product_id IN (");
 
         Object[] params = new Object[productIds.length];
@@ -137,10 +141,9 @@ public class CheckoutDAO extends DBContext {
 
         }
 
-        
-         int b = execQuery(query.toString(), params);
-       int a = updateOrderDetailsWithGameKey(orderId, productId);
-       return b;
+        int b = execQuery(query.toString(), params);
+        int a = updateOrderDetailsWithGameKey(orderId, productId);
+        return b;
 
     }
 
@@ -153,7 +156,7 @@ public class CheckoutDAO extends DBContext {
 
             String keyQuery = "SELECT TOP 1 gk.game_key_id, gk.key_code "
                     + "FROM game_key gk "
-+ "JOIN game_details gd ON gk.game_details_id = gd.game_details_id "
+                    + "JOIN game_details gd ON gk.game_details_id = gd.game_details_id "
                     + "JOIN product p ON gd.game_details_id = p.game_details_id "
                     + "JOIN category c ON p.category_id = c.category_id "
                     + "WHERE p.product_id = ? AND c.name = 'Game' "
@@ -183,10 +186,9 @@ public class CheckoutDAO extends DBContext {
         if (query.length() == 0) {
             return 0;
         }
-System.out.println("Query: " + query.toString());
-System.out.println("Params: " + paramList);
+        System.out.println("Query: " + query.toString());
+        System.out.println("Params: " + paramList);
         return execQuery(query.toString(), paramList.toArray());
-        
 
     }
 

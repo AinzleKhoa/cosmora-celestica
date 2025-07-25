@@ -343,10 +343,10 @@
                     %>
                     <div class="row g-2 mb-2 custom-attribute-row">
                         <div class="col-md-5">
-                            <input type="text" name="customAttributeNames" class="form-control admin-manage-input" placeholder="Attribute Name" value="<%= attr.getAttributeName()%>" required>
+                            <input type="text" name="customAttributeNames" class="form-control admin-manage-input" placeholder="Attribute Name" value="<%= attr.getValue()%>" required>
                         </div>
                         <div class="col-md-5">
-                            <input type="text" name="customAttributeValues" class="form-control admin-manage-input" placeholder="Attribute Value" value="<%= attr.getValue()%>" required>
+                            <input type="text" name="customAttributeValues" class="form-control admin-manage-input" placeholder="Attribute Value" value="<%= attr.getAttributeName()%>" required>
                         </div>
                         <div class="col-md-2">
                             <button type="button" class="btn btn-danger remove-attr-btn btn-delete">Delete</button>

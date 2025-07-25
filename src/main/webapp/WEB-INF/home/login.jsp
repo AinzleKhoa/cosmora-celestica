@@ -82,7 +82,7 @@
                                 <span class="sign__text">Don't have an account? <a href="${pageContext.servletContext.contextPath}/register">Register!</a></span>
 
                                 <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
-                                <a type="button" href="${pageContext.servletContext.contextPath}/home" class="sign__goback">Go Back</a>
+                                <a type="button" href="${pageContext.servletContext.contextPath}/home" class="sign__goback">Go Back Home</a>
                             </form>
                             <!-- end authorization form -->
                         </div>

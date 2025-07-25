@@ -58,7 +58,7 @@
                         <!-- To blank or anonymize if it’s spammy or fake -->
                         <div class="col-md-6">
                             <label class="form-label admin-manage-label">Phone</label>
-                            <input type="text" class="form-control admin-manage-input" value="${thisCustomer.phone}" name="phone">
+                            <input type="text" class="form-control admin-manage-input" value="${thisCustomer.phone != null && !thisCustomer.phone.equals('0') ? thisCustomer.phone : ''}" name="phone">
                         </div>
                         <!-- 	If it contains abusive content or was misused -->
                         <div class="col-md-6">

@@ -16,7 +16,7 @@
         <section id="top-background" class="section--first" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
             <div class="container">
                 <h2 class="section__title">Cart</h2>
-                <ul class="breadcrumb">
+                <ul class="breadcrumb" style="display: flex; justify-content: flex-end;">
                     <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
                     <li class="breadcrumb__item breadcrumb__item--active">Cart</li>
                 </ul>
@@ -24,13 +24,13 @@
         </section>
 
         <main id="main-background" data-bg="${pageContext.servletContext.contextPath}/assets/img/main-background.png">
-            <div class="container" style="padding-bottom: 380px; padding-top: 30px;">
+            <div class="container pt-5">
                 <a href="${pageContext.servletContext.contextPath}/home" class="btn btn-secondary mb-3">Back</a>
 
                 <% List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems"); %>
 
                 <% if (cartItems == null || cartItems.isEmpty()) { %>
-                <h3 style="color: white; padding-bottom: 400px;">Your cart is empty.</h3>
+                <h3 style="color: white; padding-bottom: 700px">Your cart is empty.</h3>
                 <% } else { %>
                 <div id="messageContainer"></div>
                 <div class="table-responsive">
@@ -54,7 +54,7 @@
                             %>
                             <tr id="row-<%= item.getProductId()%>">
                                 <td>
-                                    <!-- GIỮ NGUYÊN NÚT CHECKBOX CŨ (to, không đổi giao diện) -->
+
                                     <input type="checkbox"
                                            class="product-check"
                                            data-product-id="<%= item.getProductId()%>"
@@ -91,7 +91,7 @@
                     </table>
                 </div>
 
-                <div class="mt-3">
+                <div class="mt-3" style="padding-bottom: 500px;">
                     <h3 style="color: white;">Summary: $<span id="summaryTotal">0.00</span></h3>
 
                     <form id="checkoutForm" action="checkout" method="post">
@@ -117,7 +117,7 @@
                         .then(res => res.json())
                         .then(data => {
                             if (data.status === 'success') {
-                                
+
 
                                 if (action === 'delete' && data.deleted) {
                                     document.getElementById('row-' + productId).remove();
@@ -179,49 +179,51 @@
             }
 
             function prepareAndSubmitForm() {
-    const form = document.getElementById("checkoutForm");
-    document.querySelectorAll(".dynamic-input").forEach(e => e.remove());
+                const form = document.getElementById("checkoutForm");
+                document.querySelectorAll(".dynamic-input").forEach(e => e.remove());
 
-    const checkboxes = document.querySelectorAll('.product-check:checked');
-    let total = 0;
+                const checkboxes = document.querySelectorAll('.product-check:checked');
+                let total = 0;
 
-    checkboxes.forEach(cb => {
-        const productId = cb.getAttribute("data-product-id");
-        const quantityElement = document.getElementById("quantity-" + productId);
-        const quantity = quantityElement ? quantityElement.innerText.trim() : "1";
-        const price = parseFloat(cb.getAttribute("data-price"));
-        total += isNaN(price) ? 0 : price;
+                checkboxes.forEach(cb => {
+                    const productId = cb.getAttribute("data-product-id");
+                    const quantityElement = document.getElementById("quantity-" + productId);
+                    const quantity = quantityElement ? quantityElement.innerText.trim() : "1";
+                    const price = parseFloat(cb.getAttribute("data-price"));
+                    total += isNaN(price) ? 0 : price;
 
-        const idInput = document.createElement("input");
-        idInput.type = "hidden";
-        idInput.name = "productIds";
-        idInput.value = productId;
-        idInput.classList.add("dynamic-input");
-        form.appendChild(idInput);
+                    const idInput = document.createElement("input");
+                    idInput.type = "hidden";
+                    idInput.name = "productIds";
+                    idInput.value = productId;
+                    idInput.classList.add("dynamic-input");
+                    form.appendChild(idInput);
 
-        const quantityInput = document.createElement("input");
-        quantityInput.type = "hidden";
-        quantityInput.name = "quantities";
-        quantityInput.value = quantity; // LẤY quantity MỚI NHẤT
-        quantityInput.classList.add("dynamic-input");
-        form.appendChild(quantityInput);
-    });
+                    const quantityInput = document.createElement("input");
+                    quantityInput.type = "hidden";
+                    quantityInput.name = "quantities";
+                    quantityInput.value = quantity;
+                    quantityInput.classList.add("dynamic-input");
+                    form.appendChild(quantityInput);
+                });
 
-    document.getElementById("hiddenTotalAmount").value = total.toFixed(2);
+                const summaryText = document.getElementById("summaryTotal").innerText.trim();
+                const summaryTotal = parseFloat(summaryText);
+                document.getElementById("hiddenTotalAmount").value = isNaN(summaryTotal) ? 0 : summaryTotal.toFixed(2);
 
-    const actionInput = document.createElement("input");
-    actionInput.type = "hidden";
-    actionInput.name = "action";
-    actionInput.value = "fromcart";
-    actionInput.classList.add("dynamic-input");
-    form.appendChild(actionInput);
+                const actionInput = document.createElement("input");
+                actionInput.type = "hidden";
+                actionInput.name = "action";
+                actionInput.value = "fromcart";
+                actionInput.classList.add("dynamic-input");
+                form.appendChild(actionInput);
 
-    form.submit();
-}
+                form.submit();
+            }
 
             document.addEventListener('DOMContentLoaded', calculateSummary);
 
-         
+
         </script>
 
         <%@include file="/WEB-INF/include/home-footer.jsp" %>

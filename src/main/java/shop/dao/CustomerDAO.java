@@ -483,7 +483,8 @@ public class CustomerDAO extends DBContext {
     public int updateCustomerPassword(Customer customer) {
         try {
             String query = "UPDATE customer\n"
-                    + "SET password_hash = ?\n"
+                    + "SET password_hash = ?,\n"
+                    + "has_set_password = 1\n"
                     + "WHERE email = ?";
             Object[] params = {
                 customer.getPasswordHash(),

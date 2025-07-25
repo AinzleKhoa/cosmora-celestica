@@ -300,7 +300,7 @@
                                             <% } %>
                                         </div>
 
-                                        <button style="color: white" type="submit">Submit</button>
+                                        <button style="color: white; background-color: #007bff" type="submit">Submit</button>
                                     </form>
                                     <%
                                         }

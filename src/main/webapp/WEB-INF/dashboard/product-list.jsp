@@ -102,6 +102,7 @@
                 <tbody>
                     <% if (productList != null && !productList.isEmpty()) {
                             for (Product p : productList) {
+                            
                     %>
                     <tr>
                         <td><%= p.getProductId()%></td> 
@@ -115,7 +116,7 @@
                         <td><%= p.getName()%></td>
                         <td>$<%= p.getPrice()%></td>
                         <td>
-                            <% if (p.getSalePrice() != null) {%>
+                            <% if (p.getSalePrice() != null && p.getActive() == 1) {%>
                             $<%= p.getSalePrice()%>
                             <% } else { %>
                             N/A

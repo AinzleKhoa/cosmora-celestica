@@ -69,6 +69,8 @@ public class ResetPasswordServlet extends HttpServlet {
                 if (session != null) {
                     session.removeAttribute("currentForgotCustomer");
                 }
+                request.setAttribute("email", email);
+                request.setAttribute("password", password);
                 request.setAttribute("message", "Password reset successfully! Please log in.");
                 request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             } else {

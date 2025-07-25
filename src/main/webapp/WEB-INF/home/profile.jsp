@@ -101,7 +101,7 @@
         display: none;
         position: fixed;
         top: 0;
-        left: 0;
+        right: 0;
         width: 100%;
         height: 100%;
         z-index: 9999;
@@ -338,7 +338,7 @@
         <div class="container">
 
             <!-- Message Container -->
-            <div id="message" style="color: yellow; margin-bottom: 15px;">
+            <div id="message" style="color: yellow; margin: 15px; text-align: center">
                 <p id="messageText">
                     <c:if test="${not empty message}">
                         ${message}
@@ -694,18 +694,20 @@
         const email = this.querySelector('[name="email"]').value.trim();
         const fullName = this.querySelector('[name="fullName"]').value.trim();
         const phone = this.querySelector('[name="phone"]').value.trim();
+        const dateOfBirth = this.querySelector('[name="dateOfBirth"]').value.trim();
 
-        // Username - required
+        // Username - required + regex check (3-20 chars, letters, numbers, underscores, dashes, spaces)
+        const usernameRegex = /^[a-zA-Z0-9_ -]{3,20}$/;
         if (username === '') {
             alert('Username is required.');
             e.preventDefault();
             return;
-        }
-        if (/\s/.test(username)) { // Check for any whitespace character
-            alert('Username must not contain spaces.');
+        } else if (!usernameRegex.test(username)) {
+            alert('Username must be 3-20 characters long and can only contain letters, numbers, underscores, dashes, and spaces.');
             e.preventDefault();
             return;
         }
+
 
         // Email - required + valid format
         const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
@@ -741,6 +743,21 @@
             alert('Phone number must contain 9 to 15 digits only.');
             e.preventDefault();
             return;
+        }
+
+        // Date of Birth - Ensure it's not in the future
+        if (dateOfBirth !== '') {
+            const dob = new Date(dateOfBirth);
+            const today = new Date();
+
+            // Reset time to 00:00:00 to compare only the date part
+            today.setHours(0, 0, 0, 0);
+
+            if (dob > today) {
+                alert('Date of Birth cannot be in the future.');
+                e.preventDefault();
+                return;
+            }
         }
 
         // No validation for address

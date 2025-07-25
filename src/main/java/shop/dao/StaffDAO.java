@@ -4,6 +4,9 @@
  */
 package shop.dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -119,7 +122,6 @@ public class StaffDAO extends DBContext {
         }
         return null;
     }
-    
 
     public int update(Staff staff) {
         String sql = "UPDATE staff SET full_name = ?, email = ?, password_hash = ?, gender = ?, phone = ?, role = ?, date_of_birth = ?, avatar_url = ? WHERE staff_id = ?";
@@ -135,12 +137,21 @@ public class StaffDAO extends DBContext {
             staff.getId()
         };
 
-        try {
-            return execQuery(sql, params);
-        } catch (SQLException ex) {
-            Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
+        try (
+                // Mở connection tạm thời ở đây, không dùng conn toàn cục
+                 Connection conn = DriverManager.getConnection(
+                        "jdbc:sqlserver://localhost:1433;databaseName=done1;encrypt=true;trustServerCertificate=true",
+                        "sa",
+                        "123456"
+                );  PreparedStatement ps = conn.prepareStatement(sql)) {
+                    for (int i = 0; i < params.length; i++) {
+                        ps.setObject(i + 1, params[i]);
+                    }
+                    return ps.executeUpdate();
+                } catch (SQLException ex) {
+                    Logger.getLogger(StaffDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return 0;
     }
 
     public int delete(int id) {

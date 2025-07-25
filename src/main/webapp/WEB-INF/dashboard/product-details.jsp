@@ -187,8 +187,8 @@
                             <% if (product.getAttributes() != null && !product.getAttributes().isEmpty()) { %>
                             <% for (ProductAttribute attr : product.getAttributes()) {%>
                             <tr>
-                                <th style="width: 30%; text-transform: capitalize;"><i class="fas fa-sliders-h fa-fw me-2 text-secondary"></i><%= attr.getValue().replace('_', ' ')%></th>
-                                <td><%= attr.getAttributeName()%></td>
+                                <th style="width: 30%; text-transform: capitalize;"><i class="fas fa-sliders-h fa-fw me-2 text-secondary"></i><%= attr.getAttributeName()%></th>
+                                <td><%= attr.getValue().replace('_', ' ')%></td>
                             </tr>
                             <% } %>
                             <% } %>

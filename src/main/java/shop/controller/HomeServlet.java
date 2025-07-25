@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -92,6 +93,11 @@ public class HomeServlet extends HttpServlet {
                         } else {
                             productlist = productDAO.getAllProducts();
                         }
+                        // Lặp qua danh sách sản phẩm để lấy và set averageStars
+                        for (Product product : productlist) {
+                            double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                            product.setAverageStars(stars);
+                        }
                         request.setAttribute("productList", productlist);
                         request.setAttribute("messageFilter", keyword);
                         request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
@@ -119,19 +125,20 @@ public class HomeServlet extends HttpServlet {
 
                     request.setAttribute("gameList", gameList);
                     request.setAttribute("accessoryList", accessoryList);
-
                     HttpSession session = request.getSession(false);
-                    Customer customer = (Customer) session.getAttribute("currentCustomer");
-                    if (customer != null) {
-                        int customerId = customer.getCustomerId();
+                    if (session != null) {
+                        Customer customer = (Customer) session.getAttribute("currentCustomer");
+                        if (customer != null) {
+                            int customerId = customer.getCustomerId();
+                            CartDAO cartDAO = new CartDAO();
+                            int cartCount = cartDAO.countCartItems(customerId);
 
-                        CartDAO cartDAO = new CartDAO();
-                        int cartCount = cartDAO.countCartItems(customerId);
-
-                        session.setAttribute("cartCount", cartCount);
+                            session.setAttribute("cartCount", cartCount);  // Update cart count in session
+                        }
                     }
-                    request.getRequestDispatcher("/WEB-INF/home/home.jsp")
-                            .forward(request, response);
+
+                    // Forward to home.jsp to display the products and cart count
+                    request.getRequestDispatcher("/WEB-INF/home/home.jsp").forward(request, response);
                     break;
                 }
             }
@@ -143,7 +150,7 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String action = request.getParameter("action");
+        String action = request.getParameter("action");
         ProductDAO productDAO = new ProductDAO();
         try {
             switch (action) {
@@ -157,17 +164,24 @@ public class HomeServlet extends HttpServlet {
                                 productlist = productDAO.getProductsByStoreOS(attribute);
                                 List<String> osList = productDAO.getDistinctStoreOSNames();
                                 request.setAttribute("osList", osList);
+
                             } else {
                                 productlist = productDAO.getProductsByCategoryAndBrand(keyword, attribute);
                                 List<String> brandList = productDAO.getDistinctBrandNames();
                                 request.setAttribute("osList", brandList);
+
                             }
 
                         } else {
                             productlist = productDAO.getAllProducts();
                         }
+                        // Lặp qua danh sách sản phẩm để lấy và set averageStars
+                        for (Product product : productlist) {
+                            double stars = productDAO.getAverageStarsForProduct(product.getProductId());
+                            product.setAverageStars(stars);
+                        }
                         request.setAttribute("productList", productlist);
-                        request.setAttribute("messageFilter", keyword);
+                        request.setAttribute("messageFilter", attribute);
                         request.getRequestDispatcher("/WEB-INF/home/search.jsp").forward(request, response);
 
                     } catch (Exception ex) {

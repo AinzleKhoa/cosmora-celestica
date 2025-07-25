@@ -146,7 +146,6 @@
                     <div class="card card--catalog card--uniform h-100">
                         <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= product.getProductId()%>" class="card__cover">
                             <img src="<%= request.getContextPath()%>/assets/img/<%= (product.getImageUrls() != null && !product.getImageUrls().isEmpty() ? product.getImageUrls().get(0) : "default-product.png")%>" alt="<%= product.getName()%>" />
-                            <span class="card__new">NEW</span>
                         </a>
                         <div class="card__title">
                             <h3 class="card__brand"><%= (product.getBrandName() != null && !product.getBrandName().isEmpty() ? product.getBrandName() : "N/A")%></h3>
@@ -217,7 +216,7 @@
                 <% }
                 } else { %>
                 <div class="row mt-5">
-                    <div class="col-12 text-center">
+                    <div class="col-12 text-center" style="padding-bottom: 180px;">
                         <p>No products available.</p>
                     </div>
                 </div>

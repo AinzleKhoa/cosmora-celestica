@@ -89,7 +89,16 @@ public class ProductDAO extends DBContext {
                 + ") AS image_url "
                 + "FROM product p "
                 + "JOIN store_platform sp ON p.game_details_id = sp.game_details_id "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id "
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
                 + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
                 + "WHERE sp.store_OS_name = ? "
@@ -163,10 +172,20 @@ public class ProductDAO extends DBContext {
                 + "p.name, "
                 + "p.price, "
                 + "p.quantity, "
+                + "d.sale_price, d.active AS discount_active, "
                 + "b.brand_name, "
                 + "(SELECT TOP 1 i.image_url FROM image i WHERE i.product_id = p.product_id) AS image_url "
                 + "FROM product p "
-                + "JOIN category c ON p.category_id = c.category_id "
+                + "JOIN category c ON p.category_id = c.category_id " + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
                 + "WHERE LOWER(c.name) = LOWER(?)";
 
@@ -181,6 +200,7 @@ public class ProductDAO extends DBContext {
                 product.setPrice(rs.getBigDecimal("price"));
                 product.setQuantity(rs.getInt("quantity"));
                 product.setBrandName(rs.getString("brand_name"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
 
                 String singleImageUrl = rs.getString("image_url");
                 List<String> imageUrls = new ArrayList<>();
@@ -210,7 +230,16 @@ public class ProductDAO extends DBContext {
                 + "(SELECT TOP 1 i.image_url FROM image i WHERE i.product_id = p.product_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id "
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "WHERE LOWER(p.name) LIKE LOWER(?) AND p.active_product = 1";
 
         try ( PreparedStatement stmt = this.getConnection().prepareStatement(query)) {
@@ -528,24 +557,35 @@ public class ProductDAO extends DBContext {
 
     public ArrayList<Product> getAllProducts() {
         ArrayList<Product> productList = new ArrayList<>();
-        String sql = "SELECT "
-                + "p.product_id, "
-                + "p.name, "
-                + "p.price, "
-                + "d.sale_price, "
-                + "p.quantity, "
-                + "p.active_product, "
-                + "c.name AS category_name, "
-                + "( "
-                + "    SELECT TOP 1 i.image_URL "
-                + "    FROM image i "
-                + "    WHERE i.product_id = p.product_id "
-                + "    ORDER BY i.image_id "
-                + ") AS image_url "
-                + "FROM product p "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id "
-                + "LEFT JOIN category c ON p.category_id = c.category_id "
-                + "ORDER BY product_id DESC;";
+        String sql = "SELECT \n"
+                + "    p.product_id,\n"
+                + "    p.name,\n"
+                + "    p.price,\n"
+                + "    d.sale_price,\n"
+                + "    d.active,\n"
+                + "    p.quantity,\n"
+                + "    p.active_product,\n"
+                + "    c.name AS category_name,\n"
+                + "    (\n"
+                + "        SELECT TOP 1 i.image_URL\n"
+                + "        FROM image i\n"
+                + "        WHERE i.product_id = p.product_id\n"
+                + "        ORDER BY i.image_id\n"
+                + "    ) AS image_url\n"
+                + "FROM product p\n"
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
+                + "LEFT JOIN category c ON p.category_id = c.category_id\n"
+                + "-- WHERE p.active_product = 1 -- (tuỳ chọn, bật nếu chỉ muốn sản phẩm đang hoạt động)\n"
+                + "ORDER BY p.product_id DESC;";
 
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -557,6 +597,7 @@ public class ProductDAO extends DBContext {
                 product.setCategoryName(rs.getString("category_name"));
                 product.setSalePrice(rs.getBigDecimal("sale_price"));
                 product.setActiveProduct(rs.getInt("active_product"));
+                product.setActive(rs.getInt("active"));
 
                 String singleImageUrl = rs.getString("image_url");
                 List<String> imageUrls = new ArrayList<>();
@@ -799,7 +840,16 @@ public class ProductDAO extends DBContext {
                 + "b.brand_name, "
                 + "gd.developer, gd.genre, gd.release_date, gd.game_details_id "
                 + "FROM product p "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id "
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
                 + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
                 + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id "
@@ -852,6 +902,7 @@ public class ProductDAO extends DBContext {
                         }
 
                         BigDecimal salePrice = rs.getBigDecimal("sale_price");
+                        
                         Object discountActiveObj = rs.getObject("discount_active");
 
                         if (salePrice != null && discountActiveObj != null) {
@@ -975,7 +1026,16 @@ public class ProductDAO extends DBContext {
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
                 + "LEFT JOIN brand b ON p.brand_id = b.brand_id "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id " // 👈 thêm join bảng discount
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "WHERE p.game_details_id IS NULL AND p.active_product = 1 AND p.quantity > 0 "
                 + "ORDER BY p.product_id";
 
@@ -999,7 +1059,16 @@ public class ProductDAO extends DBContext {
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN game_details gd ON p.game_details_id = gd.game_details_id "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id "
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "WHERE p.game_details_id IS NOT NULL AND p.active_product = 1 AND p.quantity > 0"
                 + "ORDER BY p.product_id";
 
@@ -1021,6 +1090,7 @@ public class ProductDAO extends DBContext {
         product.setPrice(rs.getBigDecimal("price"));
         product.setQuantity(rs.getInt("quantity"));
         product.setBrandName(rs.getString("brand_name"));
+        product.setActive(rs.getInt("active"));
 
         // Lấy thông tin discount nếu có
         if (hasColumn(rs, "sale_price") && hasColumn(rs, "active")) {
@@ -1058,7 +1128,16 @@ public class ProductDAO extends DBContext {
                 + "(SELECT TOP 1 i.image_URL FROM image i WHERE i.product_id = p.product_id ORDER BY i.image_id) AS image_url "
                 + "FROM product p "
                 + "LEFT JOIN category c ON p.category_id = c.category_id "
-                + "LEFT JOIN discount d ON p.product_id = d.product_id "
+                + "LEFT JOIN (\n"
+                + "    SELECT *\n"
+                + "    FROM (\n"
+                + "        SELECT *, \n"
+                + "               ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY discount_id DESC) AS rn\n"
+                + "        FROM discount\n"
+                + "        WHERE active = 1\n"
+                + "    ) AS filtered\n"
+                + "    WHERE rn = 1\n"
+                + ") d ON p.product_id = d.product_id\n"
                 + "WHERE LOWER(p.name) LIKE ?";
 
         try ( Connection connection = this.getConnection();  PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -1073,6 +1152,7 @@ public class ProductDAO extends DBContext {
                     product.setQuantity(rs.getInt("quantity"));
                     product.setCategoryName(rs.getString("category_name"));
                     product.setSalePrice(rs.getBigDecimal("sale_price"));
+                    product.setActiveProduct(rs.getInt("active_product"));
 
                     String singleImageUrl = rs.getString("image_url");
                     List<String> imageUrls = new ArrayList<>();

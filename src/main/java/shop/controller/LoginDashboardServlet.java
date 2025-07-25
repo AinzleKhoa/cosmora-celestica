@@ -64,8 +64,20 @@ public class LoginDashboardServlet extends HttpServlet {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("currentEmployee", staff); // Session CurrentEmployee
 
-                // Redirect to the home page upon successful login
-                response.sendRedirect(request.getContextPath() + "/manage-orders");
+                if (staff != null) {
+                    // Check if session contains currentCustomer
+                    if (staff.getRole().equalsIgnoreCase("admin")) {
+                        // Logic for customer
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                    } // Check if session contains currentEmployee
+                    else if (staff.getRole().equalsIgnoreCase("staff")) {
+                        // Logic for employee
+                        response.sendRedirect(request.getContextPath() + "/manage-orders");
+                    }
+                } else {
+                    request.setAttribute("message", "Current session is null");
+                    request.getRequestDispatcher("/WEB-INF/dashboard/login-dashboard.jsp").forward(request, response);
+                }
             } else {
                 // If password doesn't match, set error message and forward to login page
                 request.setAttribute("email", email);

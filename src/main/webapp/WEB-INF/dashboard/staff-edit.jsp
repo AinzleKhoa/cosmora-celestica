@@ -48,7 +48,7 @@
                     <!-- Email -->
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Email</label>
-                        <input type="email" class="form-control admin-manage-input" value="<%=s.getEmail()%>" name="email" id="email" required>
+                        <input type="email" class="form-control admin-manage-input" value="<%=s.getEmail()%>" name="email" id="email" readonly>
                     </div>
 
                     <!-- Password -->

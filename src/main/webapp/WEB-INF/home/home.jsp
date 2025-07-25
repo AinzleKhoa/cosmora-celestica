@@ -135,7 +135,6 @@
                             <div class="card card--catalog card--uniform">
                                 <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= product.getProductId()%>" class="card__cover">
                                     <img src="<%= request.getContextPath()%>/assets/img/<%= (product.getImageUrls() != null && !product.getImageUrls().isEmpty() ? product.getImageUrls().get(0) : "default-product.png")%>" alt="<%= product.getName()%>" />
-                                    <span class="card__new">NEW</span>
                                 </a>
                                 <div class="card__title">
                                     <h3 class="card__brand"><%= (product.getBrandName() != null && !product.getBrandName().isEmpty() ? product.getBrandName() : "N/A")%></h3>
@@ -159,7 +158,7 @@
                                     </div>
                                     <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
                                     <span>
-                                        <% if (product.getDiscount().getSale_price() != null && product.getDiscount().getSale_price().compareTo(BigDecimal.ZERO) > 0) {%>
+                                        <% if ( product.getDiscount().getSale_price() != null && product.getDiscount().getSale_price().compareTo(BigDecimal.ZERO) > 0 && product.getActive() == 1 ) {%>
                                         <span style="color: red;"><%= currencyFormatter.format(product.getDiscount().getSale_price())%></span>
                                         <s><%= currencyFormatter.format(product.getPrice())%></s>
                                             <% } else {%>
@@ -224,7 +223,6 @@
                             <div class="card card--catalog card--uniform">
                                 <a href="<%= request.getContextPath()%>/home?action=details&productId=<%= game.getProductId()%>" class="card__cover">
                                     <img src="<%= request.getContextPath()%>/assets/img/<%= (game.getImageUrls() != null && !game.getImageUrls().isEmpty() ? game.getImageUrls().get(0) : "default-product.png")%>" alt="<%= game.getName()%>" />
-                                    <span class="card__new">New</span>
                                 </a>
                                 <div class="card__title">
                                     <h3 class="card__brand"><%= (game.getBrandName() != null && !game.getBrandName().isEmpty() ? game.getBrandName() : "N/A")%></h3>
@@ -248,7 +246,7 @@
                                     <%-- KẾT THÚC: Hiển thị đánh giá sao --%>
                                     <h3><a href="<%= request.getContextPath()%>/home?action=details&productId=<%= game.getProductId()%>"><%= game.getName()%></a></h3>
                                     <span>
-                                        <% if (game.getDiscount().getSale_price() != null && game.getDiscount().getSale_price().compareTo(BigDecimal.ZERO) > 0) {%>
+                                        <% if (game.getDiscount().getSale_price() != null && game.getDiscount().getSale_price().compareTo(BigDecimal.ZERO) > 0 && game.getActive() == 1) {%>
                                         <span style="color: red;"><%= currencyFormatter.format(game.getDiscount().getSale_price())%></span>
                                         <s><%= currencyFormatter.format(game.getPrice())%></s>
                                             <% } else {%>
