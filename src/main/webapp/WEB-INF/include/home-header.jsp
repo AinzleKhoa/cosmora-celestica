@@ -63,9 +63,10 @@
                                 %>
 
                                 <div class="header__actions">
-                                    <a href="<%= request.getContextPath()%>/cart" class="header__link" style="position: relative; display: inline-block;">
+                                   <a href="<%= request.getContextPath()%>/cart" class="header__link" style="position: relative; display: inline-block;">
                                         <%-- Badge số lượng --%>
-                                        <span style="
+                                        <span id="cartCountBadge"
+                                            style="
                                               position: absolute;
                                               top: -8px;
                                               right: -8px;

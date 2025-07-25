@@ -21,7 +21,7 @@
                     String error = (String) session.getAttribute("errorMessage");
                     if (error != null) {
                 %>
-                <div style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 10px; margin-top: 15px; border-radius: 5px;">
+                <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
                     <strong>Error:</strong> <%= error%>
 
                 </div>
@@ -90,7 +90,16 @@
                     <!-- Date of Birth -->
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Date of Birth</label>
-                        <input type="date" class="form-control admin-manage-input" value="<%=s.getDateOfBirth()%>" name="date_of_birth">
+                        <%
+                            String dobFormatted = "";
+                            if (s.getDateOfBirth() != null) {
+                                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                                dobFormatted = sdf.format(s.getDateOfBirth());
+                            }
+                        %>
+
+                      <input type="date" id="dateOfBirth" class="form-control admin-manage-input" name="date_of_birth" value="<%= dobFormatted %>" required>
+                        <small id="dobError" class="text-danger"></small>
                     </div>
                 </div>
                 <% }%>
@@ -150,6 +159,34 @@
             e.preventDefault();
             return;
         }
+    })
+
+    document.getElementById('dateOfBirth').addEventListener('change', function () {
+        const dobInput = this.value;
+        const errorDisplay = document.getElementById('dobError');
+
+        if (dobInput) {
+            const dob = new Date(dobInput);
+            const today = new Date();
+
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            const dayDiff = today.getDate() - dob.getDate();
+
+            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+                age--;
+            }
+
+            if (age < 18) {
+                errorDisplay.textContent = "You must be at least 18 years old.";
+                this.value = ""; // clear invalid date
+            } else {
+                errorDisplay.textContent = "";
+            }
+        } else {
+            errorDisplay.textContent = "";
+        }
     });
+    ;
 </script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

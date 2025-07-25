@@ -1,3 +1,4 @@
+<%@page import="java.math.BigDecimal"%>
 <%@page import="shop.model.Product"%>
 <%@page import="shop.model.OrderDetails"%>
 <%@page import="shop.dao.OrderDAO"%>
@@ -9,7 +10,7 @@
 
 <main class="admin-main">
     <div class="table-header">
-        <h2 class="table-title">Order Detail</h2>
+        <h2 class="table-title">Customer and Order information</h2>
     </div>
 
     <%
@@ -21,7 +22,7 @@
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">
                     <tr>
-                        <th>ID</th>
+                        <th>Order ID</th>
                         <th>Customer Name</th>
                         <th>Email</th>
                         <th>Order Date</th>
@@ -33,17 +34,22 @@
                 <tbody>
                     <tr>
                         <td><%= request.getParameter("order_id")%></td>
-                        <td><%= order.getCustomerName() %></td>
-                        <td><%= order.getCustomerEmail() %></td>
+                        <td><%= order.getCustomerName()%></td>
+                        <td><%= order.getCustomerEmail()%></td>
                         <td><%= order.getOrderDate()%></td>
-                        <td><%= order.getTotalAmount()%></td>
+                        <td><span 
+                                class="relative group cursor-pointer" 
+                                title="Original: <%= order.getTotalAmount()%>$ | Discount: <%= order.getVoucherValue()%>$">
+                                <%= order.getTotalAmount().subtract(order.getVoucherValue())%>$
+                            </span></td>
                         <td><span class="badge-status"><%= order.getStatus()%></span></td>
-                        <td><span class="badge-staff"><%= order.getShippingAddress()%></span></td>
+                        <td><span ><%= order.getShippingAddress()%></span></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </section>
+
 
     <div class="table-header">
         <h2 class="table-title">Product in order</h2>
@@ -54,10 +60,12 @@
             <table class="table table-dark table-bordered table-hover align-middle mb-0">
                 <thead class="table-light text-dark">
                     <tr>
-                        <th>Product ID</th>
+                        <th>Product Image</th>
                         <th>Product Name</th>
                         <th>Quantity</th>
                         <th>Price</th>
+                        <th>Total</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -67,19 +75,22 @@
 
                     %>
                     <tr>
-                        <td><%= orderdetails.getOrderId()%></td>
+                        <td><div class="cart__img">
+                                <img src="<%= request.getContextPath()%>/assets/img/<%= orderdetails.getImageURL()%>" alt="">
+                            </div></td>
                         <td><%= orderdetails.getProductName()%></td>
                         <td><%= orderdetails.getQuantity()%></td>
-                        <td><%= orderdetails.getPrice()%></td>
+                        <td><%= orderdetails.getPrice()%>$</td>
+                        <td><%= orderdetails.getPrice().multiply(BigDecimal.valueOf(orderdetails.getQuantity()))%>$</td>
                     </tr>
                     <%  }%>
                 </tbody>
             </table>
         </div>
     </section>
-   <a href="javascript:history.back()" class="admin-manage-back">
-    <i class="fas fa-arrow-left mr-1"></i> Back
-</a>
+    <a href="javascript:history.back()" class="admin-manage-back">
+        <i class="fas fa-arrow-left mr-1"></i> Back
+    </a>
 </main>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

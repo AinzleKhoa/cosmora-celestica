@@ -11,6 +11,7 @@ import java.security.SecureRandom;
  * @author Le Anh Khoa - CE190449
  */
 public class SecurityTokenUtils {
+
     private static final SecureRandom random = new SecureRandom();
 
     // Generate a numeric 6-digit OTP

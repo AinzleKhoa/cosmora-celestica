@@ -31,11 +31,15 @@ public class EmployeeAuthFilter implements Filter {
         if (SessionUtil.isStaffLoggedIn(req)) {
             // Staff can only access specific pages
             String requestedUrl = req.getRequestURI();
-            if (requestedUrl.contains("/manage-discounts") || 
-                    requestedUrl.contains("/profile-dashboard") || 
-                    requestedUrl.contains("/dashboard") || 
-                    requestedUrl.contains("/manage-vouchers") ||
-                    requestedUrl.contains("/manage-products")) {
+            String queryString = req.getQueryString();
+            if (requestedUrl.contains("/manage-discounts")
+                    || requestedUrl.contains("/dashboard")
+                    || requestedUrl.contains("/manage-staffs")
+                    || (requestedUrl.contains("/manage-products") && queryString != null && queryString.contains("view=edit"))
+                    || (requestedUrl.contains("/manage-products") && queryString != null && queryString.contains("view=delete"))
+                    || (requestedUrl.contains("/manage-customers") && queryString != null && queryString.contains("view=edit"))
+                    || (requestedUrl.contains("/manage-customers") && queryString != null && queryString.contains("view=delete"))
+                    || requestedUrl.contains("/manage-vouchers")) {
                 ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/404");
                 System.out.println("Staff tried to access a restricted page! Redirecting to 404.");
             } else {

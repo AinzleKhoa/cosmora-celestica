@@ -4,6 +4,7 @@
  */
 package shop.util;
 
+import java.security.SecureRandom;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -16,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class PasswordUtils {
 
+    private static final SecureRandom random = new SecureRandom();
     /**
      * Hashes the given password using MD5.
      *
@@ -35,7 +37,7 @@ public class PasswordUtils {
                 }
                 hexString.append(hex);
             }
-            return hexString.toString().toUpperCase(); 
+            return hexString.toString().toUpperCase();
         } catch (Exception e) {
             throw new RuntimeException("MD5 hashing error", e);
         }
@@ -53,5 +55,16 @@ public class PasswordUtils {
         // Hash the plain password and compare it with the stored hashed password
         String hashedPlainPassword = hashPassword(plainPassword);
         return hashedPlainPassword.equals(hashedPassword);
+    }
+
+    // Generate a secure random temporary password with alphanumeric characters
+    public static String generateTemporaryPassword(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(characters.length());
+            sb.append(characters.charAt(randomIndex)); // Randomly pick a character
+        }
+        return sb.toString();
     }
 }

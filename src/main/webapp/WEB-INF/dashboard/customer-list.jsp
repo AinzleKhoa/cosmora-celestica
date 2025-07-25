@@ -7,6 +7,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<style>
+    .admin-filter-select:hover {
+        transform: scale(1.1); /* Slightly increase size on hover */
+    }
+
+    .admin-filter-select:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+</style>
 <main class="admin-main">
 
     <div class="table-header">
@@ -32,13 +42,13 @@
     </section>
 
     <!-- Message Container -->
-    <div id="message" style="color: yellow; margin-bottom: 15px;">
-        <p id="messageText">
-            <c:if test="${not empty message}">
+    <c:if test="${not empty message}">
+        <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <p id="messageText">
                 ${message}
-            </c:if>
-        </p>
-    </div>
+            </p>
+        </div>
+    </c:if>
     <%
         request.getSession().removeAttribute("message");
     %>
@@ -67,11 +77,14 @@
                             <c:forEach var="customer" items="${requestScope.paginatedList}">
                                 <tr>
                                     <td>${customer.customerId}</td>
-                                    <td><img src="${customer.avatarUrl}" alt="Avatar" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;"></td>
+                                    <td><img src="${customer.avatarUrl}" alt="Avatar" style="width: 80px;
+                                             height: 60px;
+                                             object-fit: cover;
+                                             border-radius: 4px;"></td>
                                     <td>${customer.fullName}</td>
                                     <td>${customer.username}</td>
                                     <td>${customer.email}</td>
-                                    <td style="text-align: center; display:flex; align-content: center">
+                                    <td>
                                         <form action="manage-customers" method="POST" style="margin: 0;">
                                             <input type="hidden" name="action" value="statusUpdate">
                                             <input type="hidden" name="id" value="${customer.customerId}">
@@ -80,8 +93,14 @@
                                             <c:choose>
                                                 <c:when test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
                                                     <select name="status" class="admin-filter-select" 
-                                                            style="border: 1px solid ${customer.isDeactivated ? '#F44336' : '#4CAF50'}; border-radius: 4px; padding: 2px;"
-                                                            onchange="this.form.submit()">
+                                                            style="border: 1px solid ${customer.isDeactivated ? '#F44336' : '#4CAF50'};
+                                                            border-radius: 4px;
+                                                            padding: 2px;
+                                                            cursor: pointer;
+                                                            transition: transform 0.3s ease, background-color 0.3s ease;"
+                                                            onchange="if (confirm('Are you sure you want to change this status?')) {
+                                                                        this.form.submit();
+                                                                    }">
                                                         <option value="false" ${customer.isDeactivated == false ? "selected" : ""}>Active</option>
                                                         <option value="true" ${customer.isDeactivated == true ? "selected" : ""}>Inactive</option>
                                                     </select>

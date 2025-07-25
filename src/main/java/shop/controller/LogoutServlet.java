@@ -33,8 +33,19 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
+
         if (session != null) {
-            session.invalidate();
+            // Check if session contains currentCustomer
+            if (session.getAttribute("currentCustomer") != null) {
+                // Logic for customer
+                request.setAttribute("message", "Logout successfully!");
+                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+            } // Check if session contains currentEmployee
+            else if (session.getAttribute("currentEmployee") != null) {
+                // Logic for employee
+                request.setAttribute("message", "Logout successfully!");
+                request.getRequestDispatcher("/WEB-INF/dashboard/login-dashboard.jsp").forward(request, response);
+            }
         }
         request.setAttribute("message", "Logout successfully!");
         request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);

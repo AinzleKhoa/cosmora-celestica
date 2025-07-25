@@ -26,6 +26,7 @@ public class Order {
     private String customerName;
     private String customerEmail ;
     private boolean isReviewed = false;
+    private BigDecimal voucherValue ;
 
     public Order(int orderId, int customerId, int voucherId, BigDecimal totalAmount, String paymentMethod, String shippingAddress, LocalDateTime orderDate, String status, int staffId, String customerName) {
         this.orderId = orderId;
@@ -43,6 +44,15 @@ public class Order {
 
     public Order() {
     }
+
+    public BigDecimal getVoucherValue() {
+        return voucherValue;
+    }
+
+    public void setVoucherValue(BigDecimal voucherValue) {
+        this.voucherValue = voucherValue;
+    }
+    
 
     public boolean isIsReviewed() {
         return isReviewed;

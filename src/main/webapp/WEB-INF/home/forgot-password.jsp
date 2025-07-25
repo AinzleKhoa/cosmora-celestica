@@ -54,17 +54,20 @@
                                 </div>
 
                                 <!-- Send OTP Form -->
-                                <form id="sendOtpForm" class="sign__group">
+                                <form action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" id="sendOtpForm" class="sign__group">
+                                    <input type="hidden" name="action" value="sendOtp"/>
                                     <div class="sign__group sign__group--otp">
-                                        <input type="email" class="sign__input" placeholder="Email" name="email" id="emailForgotInput" value="${currentForgotEmail}" required>
-                                        <button type="button" id="sendOtpForgotBtn" class="send-otp-link">Send OTP</button>
+                                        <input type="email" value="${requestScope.email}" class="sign__input" placeholder="Email" name="email" id="emailForgotInput" value="${currentForgotEmail}" required>
+                                        <button type="submit" id="sendOtpForgotBtn" class="send-otp-link">Send OTP</button>
                                     </div>
                                     <p id="cooldownText" style="text-align: right; font-size: 12px; color: #999;"></p>
-
-
+                                </form>
+                                <form action="${pageContext.servletContext.contextPath}/forgot-password" method="POST" id="verifyOtpForm" class="sign__group">
+                                    <input type="hidden" name="action" value="verifyOtp"/>
+                                    <input type="hidden" name="email" id="emailForgotPassword" value=""/>
                                     <div class="sign__group" id="otpSection">
                                         <input type="text" class="sign__input" name="otp" id="otpForgotInput" placeholder="Enter OTP" required>
-                                        <button type="button" id="verifyOtpForgotBtn" class="sign__btn">Verify OTP</button>
+                                        <button type="submit" id="verifyOtpForgotBtn" class="sign__btn">Verify OTP</button>
                                     </div>
                                 </form>
                                 <span class="sign__text">An OTP will be sent to your registered email address.</span>
@@ -172,164 +175,86 @@
             <script src="${pageContext.servletContext.contextPath}/assets/js/jquery.mCustomScrollbar.min.js"></script>
             <script src="${pageContext.servletContext.contextPath}/assets/js/main.js"></script>
             <script>
-                const contextPath = window.location.pathname.split('/')[1]; // Get the context path dynamically
+                // Validation for Send OTP Form
+                const sendOtpForm = document.getElementById("sendOtpForm");
 
-                let countdown = 30;
-                let countdownInterval;
-
-                const sendOtpForgotBtn = document.getElementById('sendOtpForgotBtn');
-                const verifyOtpForgotBtn = document.getElementById('verifyOtpForgotBtn');
-                const emailForgotInput = document.getElementById('emailForgotInput');
-                const otpForgotInput = document.getElementById('otpForgotInput');
-                const cooldownText = document.getElementById('cooldownText');
-
-                if (sendOtpForgotBtn) {
-                    sendOtpForgotBtn.addEventListener('click', function () {
-                        const email = emailForgotInput.value.trim();
-
-                        showMessage("Processing...");
-
+                if (sendOtpForm) {
+                    sendOtpForm.addEventListener("submit", function (event) {
+                        const email = document.getElementById('emailForgotInput').value.trim();
                         const errorMessage = isValidEmail(email);
                         if (errorMessage) {
+                            event.preventDefault(); // Prevent submission
                             showMessage(errorMessage);
                             return;
                         }
-
-                        this.disabled = true;
-
-                        sendOtpToBackend(email);
-
-                        startCountdown();
-                    });
-                }
-
-                if (verifyOtpForgotBtn) {
-                    verifyOtpForgotBtn.addEventListener('click', function () {
-                        const email = emailForgotInput.value.trim();
-                        const otp = otpForgotInput.value.trim();
-
                         showMessage("Processing...");
+                    });
+                }
 
-                        const errorMessage = validateFormForgotPassword(email, otp);
+                // Validation for Verify OTP Form
+                const verifyOtpForm = document.getElementById("verifyOtpForm");
+
+                if (verifyOtpForm) {
+                    verifyOtpForm.addEventListener("submit", function (event) {
+                        // Get OTP and Email values
+                        const otp = document.getElementById('otpForgotInput').value.trim();
+                        const email = document.getElementById('emailForgotInput').value.trim();
+
+                        // Validate OTP
+                        const errorMessage = isValidOtp(otp);
                         if (errorMessage) {
+                            event.preventDefault(); // Prevent submission
                             showMessage(errorMessage);
                             return;
                         }
 
-                        sendOtpForVerification(email, otp);
+                        // Validate Email (just in case it's empty or invalid at this point)
+                        const emailErrorMessage = isValidEmail(email);
+                        if (emailErrorMessage) {
+                            event.preventDefault(); // Prevent submission
+                            showMessage(emailErrorMessage);
+                            return;
+                        }
+
+                        // Set the email value to the hidden input in the verifyOtpForm before submitting
+                        const hiddenEmailField = verifyOtpForm.querySelector('input[id="emailForgotPassword"]');
+                        hiddenEmailField.value = email; // Set its value
+
+                        // Show verification message
+                        showMessage("Verifying OTP...");
                     });
                 }
 
-                function validateFormForgotPassword(email, otp) {
-                    const emailError = isValidEmail(email);
-                    if (emailError)
-                        return emailError;
 
-                    const otpError = isValidOtp(otp);
-                    if (otpError)
-                        return otpError;
-
-                    return null;
-                }
-
+                // Email validation function
                 function isValidEmail(email) {
                     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                     if (!email) {
-                        emailForgotInput.focus();
                         return "Please enter your email.";
                     }
-
                     if (!emailRegex.test(email)) {
-                        emailForgotInput.focus();
                         return "Please enter a valid email address (example@gmail.com).";
                     }
                     return null;
                 }
 
+                // OTP validation function
                 function isValidOtp(otp) {
                     const otpRegex = /^[0-9]+$/;
                     if (!otp) {
-                        otpForgotInput.focus();
-                        return "Please enter your otp.";
+                        return "Please enter your OTP.";
                     }
                     if (!otpRegex.test(otp) || otp.length !== 6) {
-                        otpForgotInput.focus();
-                        return "Please enter a valid otp (6-digit).";
+                        return "Please enter a valid OTP (6-digit).";
+                    }
+                    return null;
+                }
+
+                // Function to display messages
+                function showMessage(message) {
+                    const messageContainer = document.getElementById("messageText");
+                    if (messageContainer) {
+                        messageContainer.innerHTML = message;
                     }
                 }
-
-                function sendOtpToBackend(email) {
-                    fetch('/' + contextPath + '/forgot-password', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: 'email=' + encodeURIComponent(email) + '&action=sendOtp'
-                    })
-                            .then(res => res.json())  // Parse response as JSON
-                            .then(data => {
-                                if (data.success) {
-                                    showMessage(data.message);
-                                } else {
-                                    showMessage(data.message);
-                                    sendOtpForgotBtn.disabled = false;
-                                    clearInterval(countdownInterval);
-                                    cooldownText.textContent = '';
-                                }
-                            })
-                            .catch(() => {
-                                showMessage("An error occurred. Please try again.");
-                                sendOtpForgotBtn.disabled = false;
-                                clearInterval(countdownInterval);
-                                cooldownText.textContent = '';
-                            });
-                }
-
-                function sendOtpForVerification(email, otp) {
-                    fetch('/' + contextPath + '/forgot-password', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                        body: 'email=' + encodeURIComponent(email) +
-                                '&otp=' + encodeURIComponent(otp) +
-                                '&action=verifyOtp'
-                    })
-                            .then(res => res.json())  // Parse response as JSON
-                            .then(data => {
-                                if (data.success) {
-                                    showMessage(data.message);
-                                    window.location.href = data.redirectUrl;
-                                } else {
-                                    showMessage(data.message);
-                                }
-                            })
-                            .catch(() => {
-                                showMessage("An error occurred. Please try again.");
-                            });
-                }
-
-                function startCountdown() {
-                    countdown = 30;
-                    cooldownText.textContent = "You can resend OTP in " + countdown + "s";  // Initial message
-
-                    countdownInterval = setInterval(() => {
-                        countdown--;
-
-                        if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            cooldownText.textContent = '';
-                            sendOtpForgotBtn.disabled = false;
-                            sendOtpForgotBtn.textContent = 'Resend OTP';
-                        } else {
-                            cooldownText.textContent = "You can resend OTP in " + countdown + "s";  // Update the countdown text
-                        }
-                    }, 1000);
-                }
-
-                function showMessage(msg) {
-                    document.getElementById('messageText').textContent = "";
-                    document.getElementById('messageText').textContent = msg;
-                }
             </script>
-    </body>
-
-</html>

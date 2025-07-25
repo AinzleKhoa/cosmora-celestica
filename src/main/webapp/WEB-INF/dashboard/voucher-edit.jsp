@@ -34,6 +34,7 @@
 
     <%
         }
+    
     %>
     <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
         <input type="hidden" name="action" value="edit" >
@@ -49,7 +50,7 @@
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="value" value="<%= voucher.getValue()%>" min="0" required>
+                               name="value" value="<%= voucher.getValue()%>" min="0" step="0.01"required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
@@ -59,7 +60,7 @@
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Minimum Order Value</label>
                         <input type="number" class="form-control admin-manage-input"
-                               name="min_order_value" value="<%= voucher.getMinOrderValue()%>"  min="0" required>
+                               name="min_order_value" value="<%= voucher.getMinOrderValue()%>"  min="0" step="0.01" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Start Date</label>
@@ -74,15 +75,8 @@
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
                         <textarea class="form-control admin-manage-input"
-                                  required      name="description" value="<%= voucher.getDescription()%>"> </textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label admin-manage-label">Active</label>
-                        <select class="form-control admin-manage-input" name="active" required>
-                            <option value="1" <%= voucher.getActive() == 1 ? "selected" : ""%>>Active</option>
-                            <option value="0" <%= voucher.getActive() == 0 ? "selected" : ""%>>Inactive</option>
-                            <option value="2" <%= voucher.getActive() == 2 ? "selected" : ""%>>Not yet started</option>
-                        </select>
+                                  required name="description"><%= voucher.getDescription() != null ? voucher.getDescription().replaceAll("<", "&lt;").replaceAll(">", "&gt;") : ""%></textarea>
+
                     </div>
                 </div>
             </fieldset>
@@ -103,50 +97,45 @@
 
 
     <script>
-        function validateDateRange(changedField) {
-            const startInput = document.getElementById("start_date");
-            const endInput = document.getElementById("end_date");
-            const notYetOption = document.querySelector('select[name="active"] option[value="2"]');
-            const select = document.querySelector('select[name="active"]');
+   function validateDateRange(changedField) {
+    const startInput = document.getElementById("start_date");
+    const endInput = document.getElementById("end_date");
+    const select = document.querySelector('select[name="active"]'); // n?u kh?ng c? select n?y th? b?
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-            if (startInput.value) {
-                const startDate = new Date(startInput.value);
-                startDate.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
+    // Chuy?n ??i gi? tr? input sang Date
+    const startDate = startInput.value ? new Date(startInput.value + "T00:00:00") : null;
+    const endDate = endInput.value ? new Date(endInput.value + "T00:00:00") : null;
 
-                if (startDate.getTime() > today.getTime()) {
-                    // N?u startDate > h?m nay ? cho ph?p "Not yet started"
-                    notYetOption.disabled = false;
-                } else {
-                    // N?u startDate ? h?m nay ? KH?NG cho ch?n "Not yet started"
-                    notYetOption.disabled = true;
-
-                    // N?u ?ang ch?n "Not yet started" th? reset l?i v? "Inactive"
-                    if (select.value === "2") {
-                        select.value = "0";
-                    }
-                }
-            }
-
-            // Ki?m tra ng?y b?t ??u < ng?y k?t th?c
-            if (startInput.value && endInput.value) {
-                const startDate = new Date(startInput.value);
-                const endDate = new Date(endInput.value);
-
-                if (startDate >= endDate) {
-                    alert("Start date must be earlier than end date.");
-                    if (changedField === "start") {
-                        startInput.value = "";
-                        startInput.focus();
-                    } else if (changedField === "end") {
-                        endInput.value = "";
-                        endInput.focus();
-                    }
-                }
-            }
+    // ? Ki?m tra start >= end
+    if (startDate && endDate && startDate >= endDate) {
+        alert("Start date must be earlier than end date.");
+        if (changedField === "start") {
+            startInput.value = "";
+            startInput.focus();
+        } else {
+            endInput.value = "";
+            endInput.focus();
         }
+        return;
+    }
+
+    // ? N?u b?n c? dropdown tr?ng th?i th? c?p nh?t n? (n?u kh?ng c? th? b? ph?n n?y ?i)
+    if (select) {
+        if (startDate && startDate > today) {
+            select.innerHTML = `<option value="0" selected>Inactive</option>`;
+        } else if (endDate && endDate < today) {
+            select.innerHTML = `<option value="0" selected>Inactive</option>`;
+        } else {
+            select.innerHTML = `
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            `;
+        }
+    }
+}
         window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("start_date").addEventListener("change", function () {
                 validateDateRange("start");
@@ -157,6 +146,15 @@
 
             // G?i l?n ??u khi trang v?a load (n?u ?? c? ng?y start ???c prefill)
             validateDateRange("start");
+        });
+        document.querySelector("form").addEventListener("submit", function (event) {
+            const value = parseFloat(document.querySelector('input[name="value"]').value);
+            const minOrderValue = parseFloat(document.querySelector('input[name="min_order_value"]').value);
+
+            if (value >= minOrderValue / 2) {
+                alert("Voucher value must be less than half of the minimum order value.");
+                event.preventDefault(); // ch?n form submit
+            }
         });
 
     </script>

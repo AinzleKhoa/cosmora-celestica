@@ -19,16 +19,16 @@
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
         </div>
-                
+
         <!-- Message Container -->
-        <div id="message" style="color: yellow; margin-bottom: 15px;">
-            <p id="messageText">
-                <c:if test="${not empty message}">
+        <c:if test="${not empty message}">
+            <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                <p id="messageText">
                     ${message}
-                </c:if>
-            </p>
-        </div>
-        
+                </p>
+            </div>
+        </c:if>
+
         <c:choose>
             <c:when test="${empty thisCustomer}">
                 <p class="sign__empty">This Id does not exists.</p>
@@ -48,7 +48,7 @@
                         <!-- 	If it contains abusive text or spam patterns; or to anonymize -->
                         <div class="col-md-6">
                             <label class="form-label admin-manage-label">Email</label>
-                            <input type="email" class="form-control admin-manage-input" name="email" value="${thisCustomer.email}" required>
+                            <input type="email" class="form-control admin-manage-input" name="email" value="${thisCustomer.email}" readonly>
                         </div>
                         <!-- If it includes slurs, fake names, or inappropriate language -->
                         <div class="col-md-6">

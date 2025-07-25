@@ -8,7 +8,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,10 +31,9 @@ public class DBContext {
      */
     public Connection conn;
 
-    private final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=CosmoraCelestica;encrypt=true;trustServerCertificate=true;user=sa;password=123456";
+    private final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=done1;encrypt=true;trustServerCertificate=true;user=sa;password=123456";
     private final String DB_USER = "sa";
     private final String DB_PWD = "123456";
-
 
     /**
      * Constructor that initializes the database connection. This constructor
@@ -100,4 +104,21 @@ public class DBContext {
     public ResultSet execSelectQuery(String query) throws SQLException {
         return this.execSelectQuery(query, null);
     }
+
+    public List<Map<String, Object>> resultSetToList(ResultSet rs) throws SQLException {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        while (rs.next()) {
+                Map<String, Object> row = new LinkedHashMap<>();
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = metaData.getColumnLabel(i);
+                row.put(columnName, rs.getObject(i));
+            }
+            rows.add(row);
+        }
+        return rows;
+    }
+
 }

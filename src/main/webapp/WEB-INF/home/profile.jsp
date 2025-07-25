@@ -9,6 +9,50 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 <style>
+    .profile {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        max-width: 1000px;
+        padding: 0 20px;
+        margin-bottom: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    .section--last {
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    .section {
+        margin-top: 0;
+        padding-top: 25px;
+    }
+
+    #resetPasswordForm {
+        margin-top: 0;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+        max-width: 800px;
+        margin-bottom: 400px;
+    }
+
+    #profileCommonUpdate {
+        margin-top: 0;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+    }
+
+    .avatar-input__wrap {
+        width: 200px;
+    }
+
     .avatar-display-container {
         margin-bottom: 15px;
         text-align: center;
@@ -52,25 +96,33 @@
         display: none;
     }
 
+    /* Avatar modal styles for centering */
     .avatar-modal {
         display: none;
-        padding: 10px;
-        background-color: #004085;
-        border-radius: 8px;
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
         opacity: 0;
-        transform: translateY(-20px);
+        background-color: rgba(0, 0, 0, 0);
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.3s ease;
     }
 
     .avatar-modal.show {
-        display: block;
+        display: flex;
         opacity: 1;
-        transform: translateY(0);
     }
 
-    .avatar-modal .modal-dialog {
-        max-width: 700px;
+    .avatar-modal-dialog {
+        max-width: 600px;
+        width: 90%;
         margin: 0 auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 10px;
     }
 
     .avatar-selection-container {
@@ -84,6 +136,7 @@
         text-align: center;
         border-radius: 8px;
         padding: 10px;
+        cursor: pointer;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -130,7 +183,9 @@
     }
 
     .modal-title {
-        font-size: 20px;
+        text-align: center;
+        font-size: 24px;
+        padding: 15px;
         font-weight: bold;
     }
 
@@ -195,14 +250,6 @@
         background-color: #0056b3;
     }
 </style>
-<c:choose>
-    <c:when test="${not empty requestScope.updateFailed and not empty requestScope.thisCustomer}">
-        <c:set var="user" value="${requestScope.thisCustomer}" />
-    </c:when>
-    <c:otherwise>
-        <c:set var="user" value="${sessionScope.currentCustomer}" />
-    </c:otherwise>
-</c:choose>
 
 <!-- page title -->
 <section id="top-background" class="section--first " data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">        
@@ -225,6 +272,19 @@
         </div>
     </div>
 </section>
+<%    String successMsg = (String) session.getAttribute("NotInfo");
+    if (successMsg != null) {
+        session.removeAttribute("NotInfo"); // Xóa sau khi hiển thị
+%>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        alert("<%= successMsg%>");
+    });
+</script>
+
+<%
+    }
+%>
 <!-- end page title -->
 
 <main id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png">
@@ -293,7 +353,7 @@
                 <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
                     <div class="row">
                         <!-- details form -->
-                        <div class="col-12 col-lg-7">
+                        <div class="col-12">
                             <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="profileCommonUpdate" class="form">
                                 <input type="hidden" name="action" value="updateProfile"/>
                                 <input type="hidden" name="id" value="${user.customerId}"/>
@@ -304,7 +364,7 @@
 
                                     <div class="col-12 d-flex justify-content-center mb-5">
                                         <!-- Avatar URL input and display -->
-                                        <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                        <div class="avatar-input__wrap">
                                             <label class="form__label" for="avatarUrl">Avatar</label>
                                             <input type="hidden" id="avatarUrl" name="avatarUrl" class="form__input avatar-input" value="${user.avatarUrl}" readonly>
                                             <div class="avatar-display-container">
@@ -326,9 +386,7 @@
                                     <div class="col-12 col-md-6 col-lg-12 col-xl-6">
                                         <label class="form__label" for="email">Email</label>
                                         <input id="email" type="email" name="email" class="form__input"
-                                               value="${user.email}" placeholder="${user.email}" disabled>
-                                        <input id="email" type="hidden" name="email" class="form__input"
-                                               value="${user.email}" placeholder="${user.email}">
+                                               value="${user.email}" placeholder="${user.email}" readonly>
                                     </div>
 
                                     <!-- Full Name -->
@@ -371,7 +429,7 @@
                                                value="${user.dateOfBirth}">
                                     </div>
 
-                                    <div class="col-12 mt-5">
+                                    <div class="col-12 mt-1">
                                         <p class="profile__info"><strong>Account Created At:</strong> 
                                             <fmt:formatDate value="${user.createdAt}" pattern="dd MMM yyyy HH:mm" />
                                         </p>
@@ -394,7 +452,7 @@
                             </form>
                         </div>
                         <!-- end details form -->
-                        <div class="col-12 col-lg-4">
+                        <div class="col-12">
                             <!-- Avatar selection modal (initially hidden) -->
                             <div class="modal avatar-modal" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
                                 <div class="modal-dialog avatar-modal-dialog" role="document"> <!-- Fixed modal width -->
@@ -459,123 +517,53 @@
 
                 <div class="tab-pane fade" id="tab-2" role="tabpanel">
                     <div class="row">
-                        <c:choose>
-                            <c:when test="${not empty user.googleId}">
-                                <p class="page-404__text" style="margin-bottom: 300px">Since your account is linked to Google, the password cannot be changed.</p>
-                            </c:when>
-                            <c:otherwise>
-                                <!-- details form -->
-                                <div class="col-12 col-lg-7">
-                                    <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="resetPasswordForm" class="form">
-                                        <input type="hidden" name="action" value="updatePassword"/>
-                                        <input type="hidden" name="id" value="${user.customerId}"/>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <h4 class="form__title">Change password</h4>
-                                            </div>
+                        <!-- details form -->
+                        <div class="col-12">
+                            <form action="${pageContext.servletContext.contextPath}/profile" method="POST" id="resetPasswordForm" class="form">
+                                <input type="hidden" name="action" value="updatePassword"/>
+                                <input type="hidden" name="id" value="${user.customerId}"/>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h4 class="form__title">Change password</h4>
+                                    </div>
 
-                                            <!-- New Password -->
-                                            <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                                <label class="form__label" for="newpass">New Password</label>
-                                                <input id="newpass" type="password" name="newpass" class="form__input" required>
-                                                <!-- Eye Icon for toggling new password visibility -->
-                                                <i class="fa-solid fa-eye" id="newpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
-                                            </div>
-
-                                            <!-- Confirm New Password -->
-                                            <div class="col-12 col-md-6 col-lg-12 col-xl-6">
-                                                <label class="form__label" for="confirmpass">Confirm New Password</label>
-                                                <input id="confirmpass" type="password" name="confirmnewpass" class="form__input" required>
-                                                <!-- Eye Icon for toggling confirm new password visibility -->
-                                                <i class="fa-solid fa-eye" id="confirmpassEyeIcon" style="position: absolute; right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <h4 class="form__title">Your old Password is required to update profile</h4>
-                                            </div>
-
-                                            <!-- Old Password -->
-                                            <div class="col-12">
-                                                <label class="form__label" for="oldpass">Old Password</label>
-                                                <input id="oldpass" type="password" name="oldpass" class="form__input" required>
-                                                <!-- Eye Icon for toggling old password visibility -->
-                                                <i class="fa-solid fa-eye" id="oldpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
-                                            </div>
-
-                                            <!-- Save Button -->
-                                            <div class="col-12">
-                                                <button class="form__btn" type="submit">Save</button>
-                                            </div>
-
-                                            <div class="col-12 mt-5">
-                                                <span class="sign__text"><a href="${pageContext.servletContext.contextPath}/forgot-password">Forgot password?</a></span>
-                                            </div>
+                                    <c:if test="${user.hasSetPassword}">
+                                        <div class="col-12">
+                                            <h4 class="form__title">Your old Password is required</h4>
                                         </div>
-                                    </form>
-                                </div>
-                                <!-- end details form -->
-                                <div class="col-12 col-lg-4">
-                                    <!-- Avatar selection modal (initially hidden) -->
-                                    <div class="modal avatar-modal" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog avatar-modal-dialog" role="document"> <!-- Fixed modal width -->
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="avatarModalLabel">Select an Avatar</h5>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <!-- Avatar grid container -->
-                                                    <div class="avatar-selection-container">
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" alt="Avatar 1">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" alt="Avatar 2">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" alt="Avatar 3">
-                                                        </div>
-                                                        <div class="avatar-item">
-                                                            <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" 
-                                                                 class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" alt="Avatar 3">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn closeBtnModal" id="closeBtnModal" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
+                                        <!-- Old Password -->
+                                        <div class="col-12">
+                                            <label class="form__label" for="oldpass">Old Password</label>
+                                            <input id="oldpass" type="password" name="oldpass" class="form__input" required>
+                                            <!-- Eye Icon for toggling old password visibility -->
+                                            <i class="fa-solid fa-eye" id="oldpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
                                         </div>
+                                    </c:if>
+
+                                    <!-- New Password -->
+                                    <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                        <label class="form__label" for="newpass">New Password</label>
+                                        <input id="newpass" type="password" name="newpass" class="form__input" required>
+                                        <!-- Eye Icon for toggling new password visibility -->
+                                        <i class="fa-solid fa-eye" id="newpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
+                                    </div>
+
+                                    <!-- Confirm New Password -->
+                                    <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+                                        <label class="form__label" for="confirmpass">Confirm New Password</label>
+                                        <input id="confirmpass" type="password" name="confirmnewpass" class="form__input" required>
+                                        <!-- Eye Icon for toggling confirm new password visibility -->
+                                        <i class="fa-solid fa-eye" id="confirmpassEyeIcon" style="position: absolute; right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
+                                    </div>
+
+                                    <!-- Save Button -->
+                                    <div class="col-12">
+                                        <button class="form__btn" type="submit">Save</button>
                                     </div>
                                 </div>
-                            </c:otherwise>
-                        </c:choose>
+                            </form>
+                        </div>
+                        <!-- end details form -->
                     </div>
                 </div>
 

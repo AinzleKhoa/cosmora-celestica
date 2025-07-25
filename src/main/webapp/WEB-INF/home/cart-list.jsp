@@ -1,319 +1,229 @@
 <%@page import="shop.model.CartItem"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Locale"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@include file="../include/home-header.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Cart</title>
+    </head>
+    <body>
 
-
-
-    <!-- page title -->
-    <section id="top-background" class="section--first " data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section__wrap">
-                        <!-- section title -->
-                        <h2 class="section__title">Cart</h2>
-                        <!-- end section title -->
-
-                        <!-- breadcrumb -->
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
-                            <li class="breadcrumb__item breadcrumb__item--active">Cart</li>
-                        </ul>
-                        <!-- end breadcrumb -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end page title -->
-
-    <main id="main-background" data-bg="<%= request.getContextPath()%>/assets/img/main-background.png" style="padding-bottom: 80px">
-
-        <!-- section -->
-        <div class="section">
+        <section id="top-background" class="section--first" data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
             <div class="container">
-                <div class="mb-4">
-                    <a href="${pageContext.servletContext.contextPath}/home" class="admin-manage-back mb-5">
-                        <i class="fas fa-arrow-left mr-1"></i> Back
-                    </a>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-
-                        <% String message = (String) session.getAttribute("sMessage");
-                            if (message != null) {%>
-                        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
-                            <%= message%>
-                        </div>
-                        <%
-
-                            }
-                            session.removeAttribute("sMessage");
-                        %>
-
-                        <% String errorMessage = (String) session.getAttribute("errorMessage");
-                            if (errorMessage != null) {%>
-                        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
-                            <%= errorMessage%>
-                        </div>
-                        <%
-
-                            }
-                            session.removeAttribute("errorMessage");
-                        %>
-                        <!-- Cart -->
-                        <div style="
-                             position: relative;
-                             display: flex;
-                             flex-direction: column;
-                             justify-content: flex-start;
-                             align-items: stretch;
-                             background-color: #1f2634;
-                             padding: 30px 20px;
-                             border: 1px solid rgba(167, 130, 233, 0.1);
-                             border-radius: 8px;
-                             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                             color: #fff;
-                             min-height: 400px;
-                             overflow: hidden;
-                             ">
-                                <%                                    List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
-
-                                    if (cartItems == null || cartItems.isEmpty()) {
-                                %>
-
-                                <h2 style="color: white">Your cart is empty.</h2>
-                                <%
-                                } else {
-                                %>
-
-                                <div class="table-responsive">
-                                    <table class="cart__table">
-                                        <thead>
-                                            <tr>
-                                                <th>Check</th>
-                                                <th>Image</th>
-                                                <th>Title</th>
-                                                <th>Category</th>
-                                                <th>Price</th>
-                                                <th>Quantity</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            <%
-                                                for (CartItem item : cartItems) {
-                                                    int cartQuantity = item.getCartQuantity();
-                                                    int productQuantity = item.getProductQuantity();
-
-                                                    if (cartQuantity > productQuantity) {
-                                                        cartQuantity = productQuantity;
-                                                    }
-
-                                                    boolean canIncrease = cartQuantity < productQuantity;
-
-                                                    double unitPrice = item.getSalePrice() != null ? item.getSalePrice() : item.getPrice();
-                                                    double totalPrice = unitPrice * cartQuantity;
-                                            %>
-
-
-                                            <tr>
-                                                <!-- Checkbox -->
-                                                <td>
-                                                    <input type="checkbox"
-                                                           class="product-check"
-                                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", (item.getSalePrice() != null ? item.getSalePrice() : item.getPrice()) * item.getCartQuantity())%>"
-                                                           data-product-id="<%= item.getProductId()%>"
-                                                           data-quantity="<%= cartQuantity%>"
-                                                           onclick="updateTotalPrice()"
-                                                           style="transform: scale(1.5); appearance: auto; margin-right: 10px;" />
-                                                </td>
-
-                                                <!-- Image -->
-                                                <td>
-                                                    <div class="cart__img">
-                                                        <img src="<%= request.getContextPath()%>/assets/img/<%= item.getImageUrl()%>" alt="">
-                                                    </div>
-                                                </td>
-
-                                                <!-- Product Name -->
-                                                <td><%= item.getProductName()%></td>
-
-                                                <!-- Category -->
-                                                <td><%= item.getCategoryName()%></td>
-
-                                                <!-- Price * Quantity -->
-                                                <td>
-                                                    <span class="cart__price">
-                                                        $<%= String.format("%.2f", totalPrice)%>
-                                                    </span>
-                                                </td>
-
-                                                <!-- Quantity -->
-                                                <td>
-                                                    <div class="quantity">
-                                                        <!-- Decrease -->
-                                                        <form method="post" action="cart" style="display:inline;">
-                                                            <input type="hidden" name="action" value="decrease">
-                                                            <input type="hidden" name="page" value="cart">
-                                                            <input type="hidden" name="productId" value="<%= item.getProductId()%>">
-                                                            <input type="hidden" name="quantity" value="1">
-                                                            <button type="submit" style="color: white;">-</button>
-                                                        </form>
-
-                                                        <span class="cart__price"><%= cartQuantity%></span>
-
-                                                        <!-- Increase -->
-                                                        <% if (canIncrease) {%>
-                                                        <form method="post" action="cart" style="display:inline;">
-                                                            <input type="hidden" name="page" value="cart">
-                                                            <input type="hidden" name="action" value="increase">
-                                                            <input type="hidden" name="productId" value="<%= item.getProductId()%>">
-                                                            <input type="hidden" name="quantity" value="1">
-                                                            <button type="submit" style="color: white;">+</button>
-                                                        </form>
-                                                        <% }%>
-                                                    </div>
-                                                </td>
-
-
-                                                <!-- Delete -->
-                                                <td>
-                                                    <form method="post" action="cart">
-                                                        <input type="hidden" name="action" value="delete">
-                                                        <input type="hidden" name="productId" value="<%= item.getProductId()%>">
-                                                        <button type="submit" class="btn-action btn-delete">Delete</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                            <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <!-- Cart Info -->
-                                <div class="cart__info">
-                                    <div class="cart__total">
-                                        <p>Total:</p>
-                                        <span id="totalAmount">
-                                            <span id="dollarSign">$</span><span id="totalNumber">0.00</span>
-                                        </span>
-                                    </div>
-
-                                    <div class="cart__systems">
-                                        <i class="pf pf-visa"></i>
-                                        <i class="pf pf-mastercard"></i>
-                                        <i class="pf pf-paypal"></i>
-                                    </div>
-                                    <form id="checkoutForm" action="checkout" method="post">
-
-                                        <input type="hidden" name="totalAmount" id="hiddenTotalAmount" value="">
-                                        <div class="checkout_btn">
-                                            <button type="button" class="form__btn" id="checkoutBtn" onclick="prepareAndSubmitForm()" disabled>
-                                                Proceed to checkout
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <%
-                                    }
-                                %>
-
-
-
-                                <!-- end cart -->
-                        </div>
-                    </div>
-                </div>
+                <h2 class="section__title">Cart</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="${pageContext.servletContext.contextPath}/home">Home</a></li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Cart</li>
+                </ul>
             </div>
-        </div>
-    </main>
+        </section>
 
-    <script>
-        function updateTotalPrice() {
-            let total = 0;
-            const checkboxes = document.querySelectorAll('.product-check:checked');
+        <main id="main-background" data-bg="${pageContext.servletContext.contextPath}/assets/img/main-background.png">
+            <div class="container" style="padding-bottom: 380px; padding-top: 30px;">
+                <a href="${pageContext.servletContext.contextPath}/home" class="btn btn-secondary mb-3">Back</a>
 
-            checkboxes.forEach(cb => {
-                const rawPrice = cb.getAttribute('data-price');
-                console.log("? Checkbox selected - data-price:", rawPrice); // <-- DEBUG
+                <% List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems"); %>
 
-                const price = parseFloat(rawPrice);
-                if (!isNaN(price)) {
-                    total += price;
+                <% if (cartItems == null || cartItems.isEmpty()) { %>
+                <h3 style="color: white; padding-bottom: 400px;">Your cart is empty.</h3>
+                <% } else { %>
+                <div id="messageContainer"></div>
+                <div class="table-responsive">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th>Check</th>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (CartItem item : cartItems) {
+                                    double unitPrice = item.getSalePrice() != null ? item.getSalePrice() : item.getPrice();
+                                    double totalPrice = unitPrice * item.getCartQuantity();
+                            %>
+                            <tr id="row-<%= item.getProductId()%>">
+                                <td>
+                                    <!-- GIỮ NGUYÊN NÚT CHECKBOX CŨ (to, không đổi giao diện) -->
+                                    <input type="checkbox"
+                                           class="product-check"
+                                           data-product-id="<%= item.getProductId()%>"
+                                           data-quantity="<%= item.getCartQuantity()%>"
+                                           data-price="<%= String.format(Locale.ENGLISH, "%.2f", totalPrice)%>"
+                                           onchange="calculateSummary()"
+                                           style="transform: scale(1.5); appearance: auto; margin-right: 10px;" />
+                                </td>
+                                <td><img src="${pageContext.servletContext.contextPath}/assets/img/<%= item.getImageUrl()%>" width="50"></td>
+                                <td><%= item.getProductName()%></td>
+                                <td><%= item.getCategoryName()%></td>
+                                <td>$<%= String.format("%.2f", unitPrice)%></td>
+                                <td>
+                                    <div class="quantity-control">
+                                        <button style="background-color: gray" onclick="handleDecrease(<%= item.getProductId()%>)">-</button>
+                                        <span id="quantity-<%= item.getProductId()%>"><%= item.getCartQuantity()%></span>
+                                        <button
+                                            style="background-color: gray"
+                                            class="btn-increase"
+                                            id="btn-increase-<%= item.getProductId()%>"
+                                            onclick="updateCart('increase', <%= item.getProductId()%>)"
+                                            <%= item.getCartQuantity() >= item.getProductQuantity() ? "disabled" : ""%>>
+                                            +
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>$<span id="total-<%= item.getProductId()%>"><%= String.format("%.2f", totalPrice)%></span></td>
+                                <td>
+                                    <button class="btn-action btn-delete" onclick="confirmDelete(<%= item.getProductId()%>)">Delete</button>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3">
+                    <h3 style="color: white;">Summary: $<span id="summaryTotal">0.00</span></h3>
+
+                    <form id="checkoutForm" action="checkout" method="post">
+                        <input type="hidden" name="totalAmount" id="hiddenTotalAmount" value="">
+                        <div class="checkout_btn">
+                            <button type="button" class="form__btn" id="checkoutBtn" onclick="prepareAndSubmitForm()" disabled>
+                                Proceed to checkout
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <% }%>
+            </div>
+        </main>
+
+        <script>
+            function updateCart(action, productId) {
+                fetch('<%= request.getContextPath()%>/api/cart', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({action: action, productId: productId, quantity: 1})
+                })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                
+
+                                if (action === 'delete' && data.deleted) {
+                                    document.getElementById('row-' + productId).remove();
+                                } else {
+                                    document.getElementById('quantity-' + productId).innerText = data.newQuantity;
+                                    document.getElementById('total-' + productId).innerText = data.newTotal.toFixed(2);
+
+                                    let checkbox = document.querySelector(`.product-check[data-product-id='${productId}']`);
+                                    if (checkbox) {
+                                        checkbox.dataset.price = data.newTotal.toFixed(2);
+                                        checkbox.dataset.quantity = data.newQuantity;
+
+                                    }
+
+                                    const btnIncrease = document.getElementById('btn-increase-' + productId);
+                                    if (btnIncrease) {
+                                        btnIncrease.disabled = !data.canIncrease;
+                                    }
+                                }
+                                calculateSummary();
+                            } else {
+                                showMessage(data.message, false);
+                            }
+                        })
+                        .catch(err => console.error(err));
+            }
+
+            function handleDecrease(productId) {
+                const quantity = parseInt(document.getElementById('quantity-' + productId).innerText);
+                if (quantity <= 1) {
+                    if (confirm("Are you sure you want to remove this product from your cart?")) {
+                        updateCart('delete', productId);
+                    }
                 } else {
-                    console.warn("? Invalid price encountered:", rawPrice); // <-- DEBUG
+                    updateCart('decrease', productId);
                 }
-            });
+            }
 
+            function confirmDelete(productId) {
+                if (confirm("Are you sure you want to delete this product from your cart?")) {
+                    updateCart('delete', productId);
+                }
+            }
 
+            function calculateSummary() {
+                let total = 0;
+                document.querySelectorAll('.product-check:checked').forEach(cb => {
+                    const productId = cb.dataset.productId;
+                    const totalElement = document.getElementById('total-' + productId);
+                    if (totalElement) {
+                        const itemTotal = parseFloat(totalElement.innerText.replace('$', '').trim());
+                        if (!isNaN(itemTotal)) {
+                            total += itemTotal;
+                        }
+                    }
+                });
+                document.getElementById('summaryTotal').innerText = total.toFixed(2);
+                document.getElementById('checkoutBtn').disabled = total === 0;
+            }
 
-            const totalSpan = document.getElementById("totalNumber").textContent = total.toFixed(2);
-            totalSpan.textContent = `$${total.toFixed(2)}`;
-            console.log("? Total updated:", total.toFixed(2)); // <-- DEBUG
-        }
+            function prepareAndSubmitForm() {
+    const form = document.getElementById("checkoutForm");
+    document.querySelectorAll(".dynamic-input").forEach(e => e.remove());
 
+    const checkboxes = document.querySelectorAll('.product-check:checked');
+    let total = 0;
 
-    </script>
-    <script>
-        document.querySelectorAll('.product-check').forEach(cb => {
-            cb.addEventListener("change", function () {
-                const anyChecked = document.querySelectorAll('.product-check:checked').length > 0;
-                document.getElementById("checkoutBtn").disabled = !anyChecked;
-            });
-        });
-    </script>
-    <script>
-        function prepareAndSubmitForm() {
-            const form = document.getElementById("checkoutForm");
+    checkboxes.forEach(cb => {
+        const productId = cb.getAttribute("data-product-id");
+        const quantityElement = document.getElementById("quantity-" + productId);
+        const quantity = quantityElement ? quantityElement.innerText.trim() : "1";
+        const price = parseFloat(cb.getAttribute("data-price"));
+        total += isNaN(price) ? 0 : price;
 
-            document.querySelectorAll(".dynamic-input").forEach(input => input.remove());
+        const idInput = document.createElement("input");
+        idInput.type = "hidden";
+        idInput.name = "productIds";
+        idInput.value = productId;
+        idInput.classList.add("dynamic-input");
+        form.appendChild(idInput);
 
-            const checkboxes = document.querySelectorAll('.product-check:checked');
-            let total = 0;
+        const quantityInput = document.createElement("input");
+        quantityInput.type = "hidden";
+        quantityInput.name = "quantities";
+        quantityInput.value = quantity; // LẤY quantity MỚI NHẤT
+        quantityInput.classList.add("dynamic-input");
+        form.appendChild(quantityInput);
+    });
 
-            checkboxes.forEach(cb => {
-                const productId = cb.getAttribute("data-product-id");
-                const quantity = cb.getAttribute("data-quantity");
-                const price = parseFloat(cb.getAttribute("data-price"));
-                total += isNaN(price) ? 0 : price;
+    document.getElementById("hiddenTotalAmount").value = total.toFixed(2);
 
-                const idInput = document.createElement("input");
-                idInput.type = "hidden";
-                idInput.name = "productIds";
-                idInput.value = productId;
-                idInput.classList.add("dynamic-input");
-                form.appendChild(idInput);
+    const actionInput = document.createElement("input");
+    actionInput.type = "hidden";
+    actionInput.name = "action";
+    actionInput.value = "fromcart";
+    actionInput.classList.add("dynamic-input");
+    form.appendChild(actionInput);
 
-                const quantityInput = document.createElement("input");
-                quantityInput.type = "hidden";
-                quantityInput.name = "quantities";
-                quantityInput.value = quantity;
-                quantityInput.classList.add("dynamic-input");
-                form.appendChild(quantityInput);
-            });
+    form.submit();
+}
 
-            document.getElementById("hiddenTotalAmount").value = total.toFixed(2);
-            const actionInput = document.createElement("input");
-            actionInput.type = "hidden";
-            actionInput.name = "action";
-            actionInput.value = "fromcart";
-            form.appendChild(actionInput);
+            document.addEventListener('DOMContentLoaded', calculateSummary);
 
-            form.submit();
-        }
+         
+        </script>
 
-    </script>
-
-
-
-</body>
-
+        <%@include file="/WEB-INF/include/home-footer.jsp" %>
+    </body>
 </html>
-<%@include file="/WEB-INF/include/home-footer.jsp" %>

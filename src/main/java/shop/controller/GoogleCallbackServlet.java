@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import shop.dao.CustomerDAO;
 import shop.model.Customer;
+import shop.util.PasswordUtils;
 
 /**
  *
@@ -61,19 +62,35 @@ public class GoogleCallbackServlet extends HttpServlet {
         if (customer != null) {
             if (!customer.isIsDeactivated()) {
                 if (customer.getGoogleId() == null) {
+                    // Account exists but is not linked to Google
                     customer.setGoogleId(googleId);
-                    customer.setPasswordHash("GOOGLE_OAUTH_USER");
-                    cDAO.updateLastLoginTime(customer); // Update login time
-                    cDAO.updateCustomer(customer); // Save linked Google ID
+                    if (cDAO.bindGoogleAccountAndUpdateLastLoginTime(customer) > 0) {
+
+                        HttpSession session = request.getSession();
+                        session.setAttribute("currentCustomer", customer);
+
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
                 } else {
-                    HttpSession session = request.getSession();
-                    cDAO.updateLastLoginTime(customer); // Update login time
-                    session.setAttribute("currentCustomer", customer);
-                    response.sendRedirect(request.getContextPath() + "/home");
+                    // Account exists and is already linked to google
+                    if (cDAO.updateLastLoginTime(customer) > 0) {
+
+                        HttpSession session = request.getSession();
+                        session.setAttribute("currentCustomer", customer);
+
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        request.setAttribute("message", "Your account has been deactivated. Please contact support.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
                 }
+                // Else of deactivated account
             } else {
-                request.getSession().setAttribute("message", "Your account is locked. Please contact us for more information.");
-                response.sendRedirect(request.getContextPath() + "/login");
+                request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
+                request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             }
         } else {
             // New Google user
@@ -81,18 +98,25 @@ public class GoogleCallbackServlet extends HttpServlet {
             customer.setFullName(name);
             customer.setUsername(name);
             customer.setEmail(email);
-            customer.setPasswordHash("GOOGLE_OAUTH_USER");
             customer.setAvatarUri(request.getContextPath() + "/assets/img/avatar/avatar1.png");
+            customer.setHasSetPassword(false);
             customer.setGoogleId(googleId);
-            customer.setEmailVerified(true);
             customer.setCreatedAt(Timestamp.from(Instant.now()));
-            customer.setUpdatedAt(Timestamp.from(Instant.now()));
-            cDAO.createCustomer(customer);
-            HttpSession session = request.getSession();
-            cDAO.updateLastLoginTime(customer); // Update login time
-            session.setAttribute("currentCustomer", customer);
 
-            response.sendRedirect(request.getContextPath() + "/home");
+            String tempPass = PasswordUtils.generateTemporaryPassword(12);
+            String hashedTempPass = PasswordUtils.hashPassword(tempPass);
+
+            customer.setPasswordHash(hashedTempPass);
+
+            if (cDAO.createGoogleCustomerAccount(customer) > 0) {
+                HttpSession session = request.getSession();
+                session.setAttribute("currentCustomer", customer);
+
+                response.sendRedirect(request.getContextPath() + "/home");
+            } else {
+                request.setAttribute("message", "We couldn't complete your registration at the moment. Please try again later.");
+                request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
+            }
         }
     }
 }

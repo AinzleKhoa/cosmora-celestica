@@ -39,7 +39,7 @@
     <section class="admin-table-wrapper">
         <% String message = (String) session.getAttribute("sMessage");
             if (message != null) {%>
-        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: green; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
             <%= message%>
         </div>
         <%
@@ -50,7 +50,7 @@
 
         <% String errorMessage = (String) session.getAttribute("errorMessage");
             if (errorMessage != null) {%>
-        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
             <%= errorMessage%>
         </div>
         <%
@@ -98,10 +98,10 @@
                                   display: inline-block;
                                   padding: 4px 10px;
                                   border-radius: 12px;
-                                  font-size: 0.9em;
+                                  font-size: 14px;
                                   font-weight: bold;
                                   color: white;
-                                  background-color: <%= "admin".equalsIgnoreCase(s.getRole()) ? "#4CAF50" : "#2196F3"%>;">
+                                  color: <%= "admin".equalsIgnoreCase(s.getRole()) ? "#4CAF50" : "#2196F3"%>;">
                                 <%= s.getRole()%>
                             </span>
                         </td>

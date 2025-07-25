@@ -23,6 +23,7 @@ import shop.dao.VouchersDAO;
 import shop.model.Checkout;
 import shop.model.Customer;
 import shop.model.Product;
+import shop.model.Voucher;
 
 /**
  *
@@ -74,8 +75,11 @@ public class CheckoutServlet extends HttpServlet {
         String view = request.getParameter("view");
         if (view == null || view.isEmpty() || view.equals("single")) {
             if (customer.getAddress() == null || customer.getAddress().isEmpty() || customer.getEmail() == null || customer.getEmail().isEmpty() || customer.getPhone() == null || customer.getPhone().isEmpty()) {
+
+                session.setAttribute("NotInfo", "You must update your personal information before purchasing.");
                 request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
                         .forward(request, response);
+                return;
             }
 
             String idtemp = request.getParameter("id");
@@ -88,7 +92,10 @@ public class CheckoutServlet extends HttpServlet {
                 double price = (temp.getSale_price() == 0.0) ? temp.getPrice() : temp.getSale_price();
                 double total = price * temp.getQuantity();
                 ArrayList<Checkout> pro = new ArrayList<>();
+                VouchersDAO vD = new VouchersDAO();
+                ArrayList<Voucher> voucherslist = vD.getList();
                 pro.add(temp);
+                request.setAttribute("voucherslist", voucherslist);
                 session.setAttribute("checkout", pro);
                 session.setAttribute("totalAmount", total);
                 session.setAttribute("status", "single");
@@ -116,8 +123,11 @@ public class CheckoutServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action.equals("fromcart")) {
             if (customer.getAddress() == null || customer.getAddress().isEmpty() || customer.getEmail() == null || customer.getEmail().isEmpty() || customer.getPhone() == null || customer.getPhone().isEmpty()) {
+                session.setAttribute("NotInfo", "You must update your personal information before purchasing.");
+
                 request.getRequestDispatcher("/WEB-INF/home/profile.jsp")
                         .forward(request, response);
+                return;
             }
             String[] productId = request.getParameterValues("productIds");
             String[] quantity = request.getParameterValues("quantities");
@@ -135,7 +145,9 @@ public class CheckoutServlet extends HttpServlet {
                         temp.add(c);
                     }
                 }
-
+                VouchersDAO vD = new VouchersDAO();
+                ArrayList<Voucher> voucherslist = vD.getList();
+                request.setAttribute("voucherslist", voucherslist);
                 session.setAttribute("checkout", temp);
                 session.setAttribute("status", "list");
                 session.setAttribute("totalAmount", total);
@@ -164,8 +176,8 @@ public class CheckoutServlet extends HttpServlet {
                 } else {
                     voucherID = null;
                 }
-                if (CD.writeOrderDetails(CD.writeOrderIntoDb(customerId, voucherID, total, payment, customerAddress),
-                        ids, quantities, prices) != 0) {
+                int OID = CD.writeOrderIntoDb(customerId, voucherID, total, payment, customerAddress);
+                if (CD.writeOrderDetails(OID, ids, quantities, prices) != 0) {
                     CartDAO cartDAO = new CartDAO();
                     cartDAO.deleteCartAfterBuy(customerId, ids);
                     int cartCount = cartDAO.countCartItems(customerId);

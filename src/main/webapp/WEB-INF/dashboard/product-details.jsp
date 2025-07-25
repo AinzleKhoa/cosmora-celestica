@@ -68,10 +68,14 @@
         <div class="d-flex gap-2">
             <a href="<%= request.getContextPath()%>/manage-products?action=list" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i> Back</a>
-            <a href="<%= request.getContextPath()%>/manage-products?action=update&id=<%= product.getProductId()%>" class="btn btn-warning">
-                <i class="fas fa-edit me-1"></i> Edit</a>
-            <a href="<%= request.getContextPath()%>/manage-products?action=delete&id=<%= product.getProductId()%>" class="btn btn-danger">
-                <i class="fas fa-trash me-1"></i> Delete</a>
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                <a href="<%= request.getContextPath()%>/manage-products?action=update&id=<%= product.getProductId()%>" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i> Edit</a>
+                </c:if>
+                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                <a href="<%= request.getContextPath()%>/manage-products?action=delete&id=<%= product.getProductId()%>" class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i> Delete</a>
+                </c:if>
         </div>
     </div>
 
@@ -79,7 +83,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-info-circle me-2"></i>General Information             
+                    <i class="fas fa-info-circle me-2"></i>General Information                  
                 </div>
                 <div class="card-body p-4">
                     <h2 class="card-title h1 fw-bolder"><%= product.getName()%></h2>
@@ -115,26 +119,32 @@
                         <dt class="col-sm-3"><i class="fas fa-sitemap fa-fw me-2 text-secondary"></i>Category</dt>
                         <dd class="col-sm-9 fs-5"><%= product.getCategoryName() != null ? product.getCategoryName() : "N/A"%></dd>
 
-                        <dt class="col-sm-3"><i class="fas fa-copyright fa-fw me-2 text-secondary"></i>Brand</dt>
-                        <dd class="col-sm-9 fs-5"><%= product.getBrandName() != null ? product.getBrandName() : "N/A"%></dd>
-
                         <dt class="col-sm-3"><i class="fas fa-align-left fa-fw me-2 text-secondary"></i>Description</dt>
                         <dd class="col-sm-9" style="white-space: pre-wrap;"><%= product.getDescription() != null ? product.getDescription() : "N/A"%></dd>
                     </dl>
                 </div>
             </div>
 
+            <%-- ✨✨✨ BẮT ĐẦU KHỐI ĐÃ SỬA LỖI ✨✨✨ --%>
             <div class="card mt-4">
                 <div class="card-header"><i class="fas fa-cogs me-2"></i>Specifications</div>
                 <div class="card-body p-0">
-                    <% if ("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetails() != null) {%>
                     <table class="table table-hover mb-0">
                         <tbody>
+                            <%-- Chỉ hiển thị các thông tin này nếu sản phẩm là GAME và có GameDetails --%>
+                            <% if ("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetails() != null) {%>
                             <tr>
-                                <th style="width: 30%"><i class="fas fa-user-edit fa-fw me-2 text-secondary"></i>Developer</th><td><%= product.getGameDetails().getDeveloper()%></td></tr>
-                            <tr><th><i class="fas fa-gamepad fa-fw me-2 text-secondary"></i>Genre</th><td><%= product.getGameDetails().getGenre()%></td></tr>
-                            <tr><th><i class="fas fa-calendar-alt fa-fw me-2 text-secondary"></i>Release Date</th><td><%= dateFormatter.format(product.getGameDetails().getReleaseDate())%></td></tr>
-
+                                <th style="width: 30%"><i class="fas fa-user-edit fa-fw me-2 text-secondary"></i>Developer</th>
+                                <td><%= product.getGameDetails().getDeveloper() != null ? product.getGameDetails().getDeveloper() : "N/A"%></td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-gamepad fa-fw me-2 text-secondary"></i>Genre</th>
+                                <td><%= product.getGameDetails().getGenre() != null ? product.getGameDetails().getGenre() : "N/A"%></td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-calendar-alt fa-fw me-2 text-secondary"></i>Release Date</th>
+                                <td><%= product.getGameDetails().getReleaseDate() != null ? dateFormatter.format(product.getGameDetails().getReleaseDate()) : "N/A"%></td>
+                            </tr>
                             <tr>
                                 <th><i class="fas fa-desktop fa-fw me-2 text-secondary"></i>Platforms</th>
                                 <td>
@@ -142,12 +152,9 @@
                                     <% for (int i = 0; i < platforms.size(); i++) {%>
                                     <%= platforms.get(i).getStoreOSName()%><%= (i < platforms.size() - 1) ? ", " : ""%>
                                     <% } %>
-                                    <% } else { %>
-                                    N/A
-                                    <% } %>
+                                    <% } else { %> N/A <% } %>
                                 </td>
                             </tr>
-
                             <tr>
                                 <th><i class="fab fa-windows fa-fw me-2 text-secondary"></i>Operating Systems</th>
                                 <td>
@@ -155,21 +162,18 @@
                                     <% for (int i = 0; i < operatingSystems.size(); i++) {%>
                                     <%= operatingSystems.get(i).getOsName()%><%= (i < operatingSystems.size() - 1) ? ", " : ""%>
                                     <% } %>
-                                    <% } else { %>
-                                    N/A
-                                    <% } %>
+                                    <% } else { %> N/A <% }%>
                                 </td>
                             </tr>
-
                             <tr>
                                 <th><i class="fas fa-key fa-fw me-2 text-secondary"></i>Available Keys (<%= (gameKeys != null ? gameKeys.size() : 0)%>)</th>
                                 <td>
                                     <div class="key-list-scroller">
                                         <% if (gameKeys != null && !gameKeys.isEmpty()) { %>
-                                        <ul class="list-unstyled">
+                                        <ul class="list-unstyled mb-0">
                                             <% for (GameKey key : gameKeys) {%>
-                                            <li class="key-item"><%= key.getKeyCode()%></li>
-                                                <% } %>
+                                            <li class="key-item"><code><%= key.getKeyCode()%></code></li>
+                                                    <% } %>
                                         </ul>
                                         <% } else { %>
                                         <span class="text-secondary">No keys available</span>
@@ -177,22 +181,26 @@
                                     </div>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
-                    <% } else if (product.getAttributes() != null && !product.getAttributes().isEmpty()) { %>
-                    <table class="table table-hover mb-0">
-                        <tbody>
+                            <% } %>
+
+                            <%-- Hiển thị các thuộc tính (attributes) cho MỌI LOẠI sản phẩm --%>
+                            <% if (product.getAttributes() != null && !product.getAttributes().isEmpty()) { %>
                             <% for (ProductAttribute attr : product.getAttributes()) {%>
                             <tr>
-                                <th style="width: 30%; text-transform: capitalize;"><i class="fas fa-sliders-h fa-fw me-2 text-secondary"></i><%= attr.getAttributeName().replace('_', ' ')%></th>
-                                <td><%= attr.getValue()%></td>
+                                <th style="width: 30%; text-transform: capitalize;"><i class="fas fa-sliders-h fa-fw me-2 text-secondary"></i><%= attr.getValue().replace('_', ' ')%></th>
+                                <td><%= attr.getAttributeName()%></td>
+                            </tr>
+                            <% } %>
+                            <% } %>
+
+                            <%-- Nếu không có thông số nào (cả game và attribute) thì hiển thị thông báo --%>
+                            <% if (("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetails() == null) && (product.getAttributes() == null || product.getAttributes().isEmpty())) { %>
+                            <tr>
+                                <td colspan="2" class="text-center text-secondary p-3">No specifications available.</td>
                             </tr>
                             <% } %>
                         </tbody>
                     </table>
-                    <% } else { %>
-                    <p class="text-secondary p-3">No specific attributes for this product.</p>
-                    <% } %>
                 </div>
             </div>
         </div>
@@ -272,18 +280,18 @@
 
 <script>
     function changeMainImage(thumbElement) {
-                document.getElementById('mainProductImage').src = thumbElement.src;
-                document.querySelectorAll('.thumbnail-container .thumb').forEach(thumb => {
-                        thumb.classList.remove('active');
-                });
-                thumbElement.classList.add('active');
-        }
+        document.getElementById('mainProductImage').src = thumbElement.src;
+        document.querySelectorAll('.thumbnail-container .thumb').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+        thumbElement.classList.add('active');
+    }
 
     function scrollGallery(direction) {
-                const container = document.getElementById('thumbnailContainer');
-                const scrollAmount = (120 + 12) * 3 * direction;
-                container.scrollBy({left: scrollAmount, behavior: 'smooth'});
-        }
+        const container = document.getElementById('thumbnailContainer');
+        const scrollAmount = (120 + 12) * 3 * direction;
+        container.scrollBy({left: scrollAmount, behavior: 'smooth'});
+    }
 
 </script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

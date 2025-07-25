@@ -8,7 +8,7 @@
     <div class="admin-manage-wrapper container py-4">
         <% String errorMessage = (String) request.getAttribute("errorMessage");
             if (errorMessage != null) {%>
-        <div class="alert alert-danger" role="alert"  style="border: 1px solid red; background-color: #ffe6e6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
             <%= errorMessage%>
         </div>
         <% }%>
@@ -63,7 +63,8 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Date of Birth</label>
-                        <input type="date" class="form-control admin-manage-input" name="date_of_birth" required>
+                        <input type="date" id="dateOfBirth" class="form-control admin-manage-input" name="date_of_birth" required>
+                        <small id="dobError" class="text-danger"></small>
                     </div>
                 </div>
 
@@ -131,5 +132,31 @@
             return;
         }
     });
+    document.getElementById('dateOfBirth').addEventListener('change', function() {
+    const dobInput = this.value;
+    const errorDisplay = document.getElementById('dobError');
+
+    if (dobInput) {
+        const dob = new Date(dobInput);
+        const today = new Date();
+        
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        const dayDiff = today.getDate() - dob.getDate();
+
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            age--;
+        }
+
+        if (age < 18) {
+            errorDisplay.textContent = "You must be at least 18 years old.";
+            this.value = ""; // clear invalid date
+        } else {
+            errorDisplay.textContent = "";
+        }
+    } else {
+        errorDisplay.textContent = "";
+    }
+});
 </script>
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

@@ -22,13 +22,13 @@
         </div>
 
         <!-- Message Container -->
-        <div id="message" style="color: yellow; margin-bottom: 15px;">
-            <p id="messageText">
-                <c:if test="${not empty message}">
+        <c:if test="${not empty message}">
+            <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                <p id="messageText">
                     ${message}
-                </c:if>
-            </p>
-        </div>
+                </p>
+            </div>
+        </c:if>
 
         <c:choose>
             <c:when test="${empty thisCustomer}">
@@ -100,9 +100,9 @@
                                     <c:otherwise>Active</c:otherwise>
                                 </c:choose>
                             </p>
-                            <p class="mb-2"><strong>Email Verified:</strong> 
+                            <p class="mb-2"><strong>Google Account:</strong> 
                                 <c:choose>
-                                    <c:when test="${thisCustomer.emailVerified}">Yes</c:when>
+                                    <c:when test="${not empty thisCustomer.googleId}">Yes</c:when>
                                     <c:otherwise>No</c:otherwise>
                                 </c:choose>
                             </p>

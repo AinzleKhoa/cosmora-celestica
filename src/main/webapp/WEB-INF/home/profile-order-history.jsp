@@ -8,6 +8,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="/WEB-INF/include/home-header.jsp" %>
 <style>
+    .section--last {
+        padding-top: 0;
+    }
+    
     .avatar-display-container {
         margin-bottom: 15px;
         text-align: center;
@@ -194,20 +198,12 @@
         background-color: #0056b3;
     }
 </style>
-<c:choose>
-    <c:when test="${not empty requestScope.updateFailed and not empty requestScope.thisCustomer}">
-        <c:set var="user" value="${requestScope.thisCustomer}" />
-    </c:when>
-    <c:otherwise>
-        <c:set var="user" value="${sessionScope.currentCustomer}" />
-    </c:otherwise>
-</c:choose>
 
 <!-- page title -->
 <section id="top-background" class="section--first " data-bg="${pageContext.servletContext.contextPath}/assets/img/bg3.png">
     <div class="container">
         <div class="row">
-            <div class="col-12">
+            <div class="col-12"">
                 <div class="section__wrap">
                     <!-- section title -->
                     <h2 class="section__title">Order History</h2>
@@ -230,7 +226,7 @@
 
     <section class="section section--last">
 
-        <div class="row" style="padding: 80px">
+        <div class="row" style="padding: 200px">
             <div class="col-12">
                 <div class="mb-4">
                     <a href="${pageContext.servletContext.contextPath}/profile" class="admin-manage-back mb-5">
@@ -262,7 +258,7 @@
                                 <td><span class="profile__price"><%= od.getTotalAmount()%></span></td>
                                 <td><%= od.getOrderDate()%></td>
                                 <td><span class="profile__status"><%= od.getStatus()%></span></td>
-                                    <% if (od.getStatus().equalsIgnoreCase("Shipped") || od.getStatus().equalsIgnoreCase("Delivered")) {%>
+                                    <% if (od.getStatus().equalsIgnoreCase("Shipped") || od.getStatus().equalsIgnoreCase("Order Completed")) {%>
                                 <td>
                                     <%
                                         Customer currentCustomer = (Customer) session.getAttribute("currentCustomer");
@@ -311,7 +307,9 @@
                                     %>
 
                                 </td>
-                                <% } else {%>
+                                <% } else if(od.getStatus().equalsIgnoreCase("Cancel")) {%>
+                                <td>Order has been cancelled</td>
+                                <% } else{%>
                                 <<td>Order is still in transit</td><%}%>
                                 <td><form action="<%= request.getContextPath()%>/profile-order-history" method="post" class="table-actions-center" style="display:inline;">
                                         <input type="hidden" name="action" value="details">

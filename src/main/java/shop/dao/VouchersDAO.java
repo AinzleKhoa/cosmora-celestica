@@ -23,6 +23,7 @@ public class VouchersDAO extends DBContext {
 
     public ArrayList<Voucher> getList() {
         ArrayList<Voucher> codes = new ArrayList<>();
+        LocalDate today = LocalDate.now();
         try {
             String query = "SELECT * from voucher  ";
 
@@ -39,6 +40,15 @@ public class VouchersDAO extends DBContext {
                         rs.getString("description"),
                         rs.getBigDecimal("min_order_value")
                 );
+                int currentActive = voucher.getActive();
+                int newActive;
+
+                // chưa bắt đầu
+                if (voucher.getEndDate().isBefore(today) || voucher.getStartDate().isAfter(today)) {
+                    newActive = 0; // hết hạn
+                    updateStatus(voucher.getVoucherId(), 0); // cập nhật trong DB
+                } 
+
                 codes.add(voucher);
             }
         } catch (SQLException ex) {
@@ -86,6 +96,34 @@ public class VouchersDAO extends DBContext {
         return false;
     }
 
+    public int updateStatus(int voucherId, int status) {
+        try {
+            String query
+                    = "UPDATE voucher\n"
+                    + "SET active = ?"
+                    + "WHERE voucher_id = ?;";
+            Object[] params = {status, voucherId};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public boolean isDuplicateIdForOtherVoucher(int id) {
+        try {
+            String query = "SELECT COUNT(*) FROM voucher WHERE voucher_id = ?";
+            Object[] params = {id};
+            ResultSet rs = execSelectQuery(query, params);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public boolean isDuplicateCodeForOtherVoucherOfTheCreate(String code) {
         try {
             String query = "SELECT COUNT(*) FROM voucher WHERE code = ?";
@@ -100,6 +138,20 @@ public class VouchersDAO extends DBContext {
         return false;
     }
 
+    public int editActiveForVoucher(Voucher code) {
+        try {
+            String query
+                    = "UPDATE voucher\n"
+                    + "SET active = ?"
+                    + "WHERE voucher_id = ?;";
+            Object[] params = {code.getActive(), code.getVoucherId()};
+            return execQuery(query, params);
+        } catch (SQLException ex) {
+            Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
     public int editVoucherCode(Voucher code) {
         try {
             String query
@@ -109,11 +161,10 @@ public class VouchersDAO extends DBContext {
                     + "    usage_limit = ?,\n"
                     + "    start_date = ?,\n"
                     + "    end_date = ?,\n"
-                    + "    active = ?,\n"
                     + "    description = ?,\n"
                     + "    min_order_value = ?\n"
                     + "WHERE voucher_id = ?;";
-            Object[] params = {code.getCode(), code.getValue(), code.getUsageLimit(), code.getStartDate(), code.getEndDate(), code.getActive(), code.getDescription(), code.getMinOrderValue(), code.getVoucherId()};
+            Object[] params = {code.getCode(), code.getValue(), code.getUsageLimit(), code.getStartDate(), code.getEndDate(), code.getDescription(), code.getMinOrderValue(), code.getVoucherId()};
             return execQuery(query, params);
         } catch (SQLException ex) {
             Logger.getLogger(VouchersDAO.class.getName()).log(Level.SEVERE, null, ex);

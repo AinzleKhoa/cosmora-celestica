@@ -67,13 +67,10 @@ public class CustomerServlet extends HttpServlet {
             List<Customer> paginatedList;
             int totalCustomers;
 
-            if (search != null && !search.trim().isEmpty()) {
-                paginatedList = cDAO.getPaginatedCustomersBySearch(search.trim(), currentPage, pageSize);
-                totalCustomers = cDAO.getTotalCustomerCountBySearch(search.trim());
-            } else {
-                paginatedList = cDAO.getPaginatedCustomerList(currentPage, pageSize);
-                totalCustomers = cDAO.getTotalCustomerCount();
-            }
+            String searchQuery = (search != null && !search.trim().isEmpty()) ? search.trim() : "";
+
+            paginatedList = cDAO.getPaginatedCustomersBySearch(searchQuery, currentPage, pageSize);
+            totalCustomers = cDAO.getTotalCustomerCountBySearch(searchQuery);
 
             int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
 
@@ -182,7 +179,7 @@ public class CustomerServlet extends HttpServlet {
             Customer thisCustomer = cDAO.getAccountById(id);
 
             if (thisCustomer != null) {
-                if (!cDAO.isUsernameOrEmailTakenByOthers(id, username, email)) {
+                if (!cDAO.isUsernameTakenByOthers(id, username)) {
                     if (cDAO.updateCustomer(new Customer(id, username, email, fullName, phone, address)) > 0) {
                         Customer newCustomer = cDAO.getAccountById(id);
                         request.setAttribute("thisCustomer", newCustomer);
@@ -195,7 +192,7 @@ public class CustomerServlet extends HttpServlet {
                     }
                 } else {
                     request.setAttribute("thisCustomer", thisCustomer);
-                    request.setAttribute("message", "Username or Email already exists.");
+                    request.setAttribute("message", "Username already exists.");
                     request.getRequestDispatcher("/WEB-INF/dashboard/customer-edit.jsp").forward(request, response);
                 }
             } else {
@@ -228,7 +225,6 @@ public class CustomerServlet extends HttpServlet {
             int currentPage = 1;
 
             CustomerDAO cDAO = new CustomerDAO();
-            cDAO.updateCustomerStatus(id, status);
 
             if (request.getParameter("page") != null) {
                 try {
@@ -236,6 +232,12 @@ public class CustomerServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     currentPage = 1;
                 }
+            }
+
+            if (cDAO.updateCustomerStatus(id, status) > 0) {
+                request.getSession().setAttribute("message", "Change status successfully");
+            } else {
+                request.getSession().setAttribute("message", "Change status unsuccessfully");
             }
 
             response.sendRedirect(request.getContextPath() + "/manage-customers" + "?page=" + currentPage);

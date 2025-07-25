@@ -13,7 +13,7 @@ import java.util.List;
  * @author SangNH
  */
 public class Product {
-
+    
     private int productId;
     private String name;
     private String description;
@@ -30,6 +30,26 @@ public class Product {
     private GameDetails gameDetails;
     private List<ProductAttribute> attributes;
     private List<String> imageUrls;
+    private Discount discount;
+
+    public Product(int productId) {
+        this.productId = productId;
+    }
+
+    public Product(int productId, String name, BigDecimal price, Discount discount) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.discount = discount;
+    }
+
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
+    }
     private double averageStars;
     private int active;
     private int activeProduct;
@@ -43,21 +63,20 @@ public class Product {
     }
 
     // Sửa lại constructor này nếu bạn có sử dụng nó ở đâu đó
-    public Product(int productId, String name, BigDecimal price, BigDecimal salePrice, int active, int activeProduct) {
+    public Product(int productId, String name, BigDecimal price, int activeProduct) {
         this.productId = productId;
         this.name = name;
         this.price = price;
-        this.salePrice = salePrice;
+
         this.active = active; // Giả sử 'active' dùng cho mục đích khác
         this.activeProduct = activeProduct; // Đã sửa tên tham số
     }
 
-    public Product(int productId, String name, BigDecimal price, BigDecimal salePrice, int active) {
+    public Product(int productId, String name, BigDecimal price) {
         this.productId = productId;
         this.name = name;
         this.price = price;
-        this.salePrice = salePrice;
-        this.active = active;
+
     }
 
     public Product(String name, BigDecimal price, BigDecimal salePrice, int active) {
@@ -78,13 +97,12 @@ public class Product {
     public Product() {
     }
 
-    public Product(int productId, String name, String description, BigDecimal price, int quantity, BigDecimal salePrice, Integer categoryId, Integer brandId, Integer gameDetailsId, Timestamp createdAt, Timestamp updatedAt, String categoryName, String brandName, GameDetails gameDetails, List<ProductAttribute> attributes, List<String> imageUrls, double averageStars) {
+    public Product(int productId, String name, String description, BigDecimal price, int quantity, Integer categoryId, Integer brandId, Integer gameDetailsId, Timestamp createdAt, Timestamp updatedAt, String categoryName, String brandName, GameDetails gameDetails, List<ProductAttribute> attributes, List<String> imageUrls, double averageStars) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
-        this.salePrice = salePrice;
         this.categoryId = categoryId;
         this.brandId = brandId;
         this.gameDetailsId = gameDetailsId;
@@ -233,5 +251,5 @@ public class Product {
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
     }
-
+ 
 }

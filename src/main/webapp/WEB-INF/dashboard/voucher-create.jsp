@@ -1,12 +1,11 @@
 <%@page import="shop.model.Voucher"%>
-
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
-
 
 <main class="admin-main">
     <div class="table-header">
         <h2 class="table-title">Create Voucher</h2>
     </div>
+
     <%
         String error = (String) request.getAttribute("message");
         if (error != null) {
@@ -15,10 +14,11 @@
         <strong>Error:</strong> <%= error%>
     </div>
     <% }%>
+
     <form method="post" action="<%= request.getContextPath()%>/manage-vouchers">
-        <input type="hidden" name="action" value="create" >
+        <input type="hidden" name="action" value="create">
         <div class="admin-manage-type voucher-details">
-            <fieldset class="mb-4 admin-manage-fieldset">                  
+            <fieldset class="mb-4 admin-manage-fieldset">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Code</label>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Value</label>
-                        <input type="number" class="form-control admin-manage-input" name="value" max="100" min="0" required>
+                        <input type="number" class="form-control admin-manage-input" name="value" min="0" step="0.01" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Usage Limit</label>
@@ -38,11 +38,13 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Start Date</label>
-                        <input type="date" class="form-control admin-manage-input" name="start_date" id="start_date" required>
+                        <input type="date" class="form-control admin-manage-input"
+                               name="start_date" id="start_date"  required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">End Date</label>
-                        <input type="date" class="form-control admin-manage-input" name="end_date" id="end_date" required>
+                        <input type="date" class="form-control admin-manage-input"
+                               name="end_date" id="end_date" required>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
@@ -50,10 +52,9 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Active</label>
-                        <select class="form-control admin-manage-input" name="active" required>
+                        <select class="form-control admin-manage-input" name="active" id="active-select" required>
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
-                            <option value="2">Not yet started</option>
                         </select>
                     </div>
                 </div>
@@ -64,7 +65,6 @@
             <a href="<%= request.getContextPath()%>/manage-vouchers" class="admin-manage-back">
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
-
             <div>
                 <button type="submit" class="btn admin-manage-button">
                     <i class="fas fa-plus mr-1"></i> Create
@@ -73,53 +73,51 @@
         </div>
     </form>
 
-
-
     <script>
         function validateDateRange(changedField) {
             const startInput = document.getElementById("start_date");
             const endInput = document.getElementById("end_date");
-            const notYetOption = document.querySelector('select[name="active"] option[value="2"]');
             const select = document.querySelector('select[name="active"]');
 
-
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
-            if (startInput.value) {
-                const startDate = new Date(startInput.value);
-                startDate.setHours(0, 0, 0, 0); // reset gi? v? ??u ng?y
+            today.setHours(0, 0, 0, 0);
 
-                if (startDate.getTime() > today.getTime()) {
-                    // N?u startDate > h?m nay ? cho ph?p "Not yet started"
-                    notYetOption.disabled = false;
+            const startDate = startInput.value ? new Date(startInput.value + "T00:00:00") : null;
+            const endDate = endInput.value ? new Date(endInput.value + "T00:00:00") : null;
+
+            // N?u ngày b?t ??u l?n h?n ho?c b?ng ngày k?t thúc
+            if (startDate && endDate && startDate >= endDate) {
+                alert("Start date must be earlier than end date.");
+                if (changedField === "start") {
+                    startInput.value = "";
+                    startInput.focus();
                 } else {
-                    // N?u startDate ? h?m nay ? KH?NG cho ch?n "Not yet started"
-                    notYetOption.disabled = true;
+                    endInput.value = "";
+                    endInput.focus();
+                }
 
-                    // N?u ?ang ch?n "Not yet started" th? reset l?i v? "Inactive"
-                    if (select.value === "2") {
-                        select.value = "0";
-                    }
+                // Set tr?ng thái Inactive
+                if (select) {
+                    select.value = "0";
                 }
             }
 
-            // Ki?m tra ng?y b?t ??u < ng?y k?t th?c
-            if (startInput.value && endInput.value) {
-                const startDate = new Date(startInput.value);
-                const endDate = new Date(endInput.value);
+            // N?u ngày b?t ??u l?n h?n hôm nay => Inactive
+            if (startDate && startDate > today) {
+                if (select) {
+                    select.value = "0";
+                }
+            }
 
-                if (startDate >= endDate) {
-                    alert("Start date must be earlier than end date.");
-                    if (changedField === "start") {
-                        startInput.value = "";
-                        startInput.focus();
-                    } else if (changedField === "end") {
-                        endInput.value = "";
-                        endInput.focus();
-                    }
+            // N?u ngày k?t thúc nh? h?n hôm nay => Inactive
+            if (endDate && endDate < today) {
+                if (select) {
+                    select.value = "0";
                 }
             }
         }
+
+        // Ch?y khi trang load
         window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("start_date").addEventListener("change", function () {
                 validateDateRange("start");
@@ -128,10 +126,27 @@
                 validateDateRange("end");
             });
 
-            // G?i l?n ??u khi trang v?a load (n?u ?? c? ng?y start ???c prefill)
             validateDateRange("start");
         });
 
+        // Ki?m tra khi submit
+        document.querySelector("form").addEventListener("submit", function (event) {
+            const value = parseFloat(document.querySelector('input[name="value"]').value);
+            const minOrderValue = parseFloat(document.querySelector('input[name="min_order_value"]').value);
+            const startDate = new Date(document.getElementById("start_date").value + "T00:00:00");
+            const endDate = new Date(document.getElementById("end_date").value + "T00:00:00");
+
+            if (startDate >= endDate) {
+                alert("Start date must be earlier than end date.");
+                event.preventDefault();
+                return;
+            }
+
+            if (value >= minOrderValue / 2) {
+                alert("Voucher value must be less than half of the minimum order value.");
+                event.preventDefault();
+            }
+        });
     </script>
 </main>
 
