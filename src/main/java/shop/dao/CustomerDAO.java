@@ -43,7 +43,7 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
-                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getBoolean("has_set_password"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
                         rs.getString("reset_token"),
@@ -100,7 +100,7 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
-                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getBoolean("has_set_password"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
                         rs.getString("reset_token"),
@@ -153,7 +153,7 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
-                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getBoolean("has_set_password"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
                         rs.getString("reset_token"),
@@ -188,7 +188,7 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
-                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getBoolean("has_set_password"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
                         rs.getString("reset_token"),
@@ -224,7 +224,7 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
-                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getBoolean("has_set_password"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
                         rs.getString("reset_token"),
@@ -259,7 +259,7 @@ public class CustomerDAO extends DBContext {
                         rs.getString("avatar_url"),
                         rs.getDate("date_of_birth"),
                         rs.getBoolean("is_deactivated"),
-                        rs.getBoolean("is_first_time_password_setup"),
+                        rs.getBoolean("has_set_password"),
                         rs.getTimestamp("last_login"),
                         rs.getString("google_id"),
                         rs.getString("reset_token"),
@@ -333,10 +333,10 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
-    public int createCustomer(Customer customer) {
+    public int createGoogleCustomerAccount(Customer customer) {
         try {
-            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, last_login, created_at)\n"
-                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);";
+            String query = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, google_id, has_set_password, last_login, created_at)\n"
+                    + "VALUES (?, ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);";
             Object[] params = {
                 customer.getFullName(),
                 customer.getUsername(),
@@ -358,10 +358,10 @@ public class CustomerDAO extends DBContext {
             Object[] params = {customer.getUsername(), customer.getEmail()};
             ResultSet rs = execSelectQuery(checkQuery, params);
 
-            if (!rs.next() && rs.getInt(1) <= 0) {
+            if (rs.next() && rs.getInt(1) <= 0) {
                 // Proceed to insert the new customer
-                String insertQuery = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, last_login, created_at) "
-                        + "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                String insertQuery = "INSERT INTO customer (full_name, username, email, password_hash, avatar_url, has_set_password, last_login, created_at) "
+                        + "VALUES (?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
                 Object[] insertParams = {
                     customer.getFullName(),
                     customer.getUsername(),
@@ -386,9 +386,7 @@ public class CustomerDAO extends DBContext {
                     + "	username = ?,\n"
                     + "	email = ?,\n"
                     + "	phone = ?,\n"
-                    + "	address = ?,\n"
-                    + "	google_id = ?,\n"
-                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + "	address = ?\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
                 customer.getFullName(),
@@ -396,7 +394,6 @@ public class CustomerDAO extends DBContext {
                 customer.getEmail(),
                 customer.getPhone(),
                 customer.getAddress(),
-                customer.getGoogleId(),
                 customer.getCustomerId()
             };
             return execQuery(query, params);
@@ -406,13 +403,13 @@ public class CustomerDAO extends DBContext {
         return 0;
     }
 
-    public int bindGoogleAccount(Customer customer) {
+    public int bindGoogleAccountAndUpdateLastLoginTime(Customer customer) {
         try {
             String query = "UPDATE Customer\n"
                     + "SET "
                     + "	google_id = ?,\n"
                     + " last_login = CURRENT_TIMESTAMP\n"
-                    + "WHERE customer_id = ? AND is_deactivated = 0";
+                    + "WHERE customer_id = ?;";
             Object[] params = {
                 customer.getGoogleId(),
                 customer.getCustomerId()
@@ -503,8 +500,7 @@ public class CustomerDAO extends DBContext {
         try {
             String query = "UPDATE Customer\n"
                     + "SET "
-                    + " is_deactivated = ?,\n"
-                    + " updated_at = CURRENT_TIMESTAMP\n"
+                    + " is_deactivated = ?\n"
                     + "WHERE customer_id = ?";
             Object[] params = {
                 status,

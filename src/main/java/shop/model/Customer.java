@@ -24,7 +24,7 @@ public class Customer {
     private String avatarUrl;
     private Date dateOfBirth;
     private boolean isDeactivated;
-    private boolean isFirstTimePasswordSetup;
+    private boolean hasSetPassword;
     private Timestamp lastLogin;
     private String googleId;
     private String resetToken;
@@ -32,7 +32,7 @@ public class Customer {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public Customer(int customerId, String fullName, String username, String email, String passwordHash, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, boolean isFirstTimePasswordSetup, Timestamp lastLogin, String googleId, String resetToken, Timestamp resetTokenExpiry, Timestamp createdAt, Timestamp updatedAt) {
+    public Customer(int customerId, String fullName, String username, String email, String passwordHash, String phone, String gender, String address, String avatarUrl, Date dateOfBirth, boolean isDeactivated, boolean hasSetPassword, Timestamp lastLogin, String googleId, String resetToken, Timestamp resetTokenExpiry, Timestamp createdAt, Timestamp updatedAt) {
         this.customerId = customerId;
         this.fullName = fullName;
         this.username = username;
@@ -44,7 +44,7 @@ public class Customer {
         this.avatarUrl = avatarUrl;
         this.dateOfBirth = dateOfBirth;
         this.isDeactivated = isDeactivated;
-        this.isFirstTimePasswordSetup = isFirstTimePasswordSetup;
+        this.hasSetPassword = hasSetPassword;
         this.lastLogin = lastLogin;
         this.googleId = googleId;
         this.resetToken = resetToken;
@@ -97,12 +97,12 @@ public class Customer {
         this.address = address;
     }
 
-    public boolean isIsFirstTimePasswordSetup() {
-        return isFirstTimePasswordSetup;
+    public boolean isHasSetPassword() {
+        return hasSetPassword;
     }
 
-    public void setIsFirstTimePasswordSetup(boolean isFirstTimePasswordSetup) {
-        this.isFirstTimePasswordSetup = isFirstTimePasswordSetup;
+    public void setHasSetPassword(boolean hasSetPassword) {
+        this.hasSetPassword = hasSetPassword;
     }
 
     public int getCustomerId() {

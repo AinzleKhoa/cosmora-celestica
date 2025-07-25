@@ -86,21 +86,18 @@ public class ProfileServlet extends HttpServlet {
                         customer.setAvatarUri(avatarUrl);
                         customer.setDateOfBirth(dateOfBirth);
                         customer.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-                        
+
                         session.setAttribute("currentCustomer", customer); // Session updated
-                        request.setAttribute("updateFailed", false);
                         request.setAttribute("message", "Update profile successfully!");
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                     } else {
                         request.setAttribute("thisCustomer", customer);
-                        request.setAttribute("updateFailed", true);
                         request.setAttribute("message", "Update profile unsucessfully");
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("thisCustomer", customer);
-                    request.setAttribute("updateFailed", true);
-                    request.setAttribute("message", "Username or Email already exists.");
+                    request.setAttribute("message", "Username already exists.");
                     request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                 }
             } else {
@@ -118,41 +115,53 @@ public class ProfileServlet extends HttpServlet {
             CustomerDAO cDAO = new CustomerDAO();
 
             if (customer != null) {
-                // Check old pass
-                boolean isOldPasswordMatched = PasswordUtils.checkPassword(oldpass, customer.getPasswordHash());
+                // Check if the user has already set a password before
 
-                if (isOldPasswordMatched) {
-                    // Check new pass already exist or not
-                    boolean isNewPasswordSame = PasswordUtils.checkPassword(newpass, customer.getPasswordHash());
+                if (customer.isHasSetPassword()) {
+                    // Validate the old password (this will only happen if the user is not using Google and has set a password before)
+                    boolean isOldPasswordMatched = PasswordUtils.checkPassword(oldpass, customer.getPasswordHash());
 
-                    if (!isNewPasswordSame) {
+                    if (isOldPasswordMatched) {
                         String hashedPassword = PasswordUtils.hashPassword(newpass);
-                        // Update customer password
+
                         if (cDAO.updateCustomerPassword(new Customer(customer.getEmail(), hashedPassword)) > 0) {
-                            Customer newCustomer = cDAO.getAccountById(id);
-                            session.setAttribute("currentCustomer", newCustomer); // Session updated
-                            request.setAttribute("message", "Password update successfully!");
+                            customer.setPasswordHash(hashedPassword);
+                            customer.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+                            session.setAttribute("currentCustomer", customer); // Session updated
+
+                            request.setAttribute("message", "Password updated successfully!");
                             request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                         } else {
-                            request.setAttribute("updateFailed", true);
                             request.setAttribute("message", "Something went wrong. Please try again.");
                             request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                         }
                     } else {
-                        request.setAttribute("updateFailed", true);
-                        request.setAttribute("message", "Your new password must be different from your current password.");
+                        request.setAttribute("message", "Your old password does not match.");
                         request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("updateFailed", true);
-                    request.setAttribute("message", "Your old password does not match.");
-                    request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                    // If it is the first time password setup or the user is logged in with Google, skip the old password check
+                    String hashedPassword = PasswordUtils.hashPassword(newpass);
+
+                    if (cDAO.updateCustomerPassword(new Customer(customer.getEmail(), hashedPassword)) > 0) {
+                        customer.setPasswordHash(hashedPassword);
+                        customer.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                        customer.setHasSetPassword(true); // Set to true
+
+                        session.setAttribute("currentCustomer", customer); // Session updated
+
+                        request.setAttribute("message", "Password updated successfully!");
+                        request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                    } else {
+                        request.setAttribute("message", "Something went wrong. Please try again.");
+                        request.getRequestDispatcher("/WEB-INF/home/profile.jsp").forward(request, response);
+                    }
                 }
             } else {
                 request.setAttribute("message", "Your session has expired. Please login again.");
                 request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
             }
-
         }
     }
 

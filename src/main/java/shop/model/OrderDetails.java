@@ -21,6 +21,7 @@ public class OrderDetails {
     private String imageURL;
     private String categoryName;
     private String gameKey ;
+    private boolean isProductReview=false;
 
     public OrderDetails(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price, String productName) {
         this.orderDetailId = orderDetailId;
@@ -51,6 +52,15 @@ public class OrderDetails {
 
     public OrderDetails() {
     }
+
+    public boolean isIsProductReview() {
+        return isProductReview;
+    }
+
+    public void setIsProductReview(boolean isProductReview) {
+        this.isProductReview = isProductReview;
+    }
+    
 
     public String getGameKey() {
         return gameKey;
@@ -104,8 +114,7 @@ public class OrderDetails {
     public int getOrderId() {
         return orderId;
     }
-
-    public void setOrderId(int orderId) {
+public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
 

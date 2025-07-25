@@ -74,10 +74,10 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
 
         try {
             ArrayList<Order> fullOrderList = OD.getOrderById(temp.getCustomerId());
-             //check order is reviewed
+            //check order is reviewed
             ProductDAO pd = new ProductDAO();
             for (Order order : fullOrderList) {
-                
+
                 if (pd.isOrderReviewed(order.getOrderId(), temp.getCustomerId())) {
                     order.setIsReviewed(true);
                 }
@@ -113,7 +113,6 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
 
-           
             request.getRequestDispatcher("/WEB-INF/home/profile-order-history.jsp")
                     .forward(request, response);
 
@@ -134,15 +133,24 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
 
         if (action.equals("details")) {
             OrderDAO OD = new OrderDAO();
+            ProductDAO pd = new ProductDAO();
+            Customer temp = (Customer) session.getAttribute("currentCustomer");
             int orderid = Integer.parseInt(request.getParameter("order_id"));
 
             try {
                 ArrayList<OrderDetails> orderDetails = OD.getOrderDetailForCus(orderid);
+
                 Order order = OD.getOneOrder(orderid);
+                for (OrderDetails orderDetail : orderDetails) {
+                    if (pd.isProductReviewed(orderid, temp.getCustomerId(), orderDetail.getProductId())) {
+                        orderDetail.setIsProductReview(true);
+                    }
+                }
                 request.setAttribute("order", order);
                 request.setAttribute("orderdetails", orderDetails);
                 request.getRequestDispatcher("/WEB-INF/home/profile-order-details.jsp").forward(request, response);
@@ -155,26 +163,70 @@ public class ProfileOrderHistoryServlet extends HttpServlet {
             int value = 0;
             String ratingStr = request.getParameter("rating");
             if (ratingStr == null || ratingStr.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/profile-order-history");
+                String referer = request.getHeader("referer");
+                response.sendRedirect(referer != null ? referer : request.getContextPath() + "/profile-order-history");
+
                 return;
             }
             value = Integer.parseInt(ratingStr);
 
-            HttpSession session = request.getSession();
             Customer temp = (Customer) session.getAttribute("currentCustomer");
             OrderDAO OD = new OrderDAO();
             ProductDAO PD = new ProductDAO();
             try {
                 int[] productId = OD.getProIdByOrderId(orderId);
                 if (PD.writeReviewIntoDb(productId, temp.getCustomerId(), value, orderId) != 0) {
-                    response.sendRedirect(request.getContextPath() + "/profile-order-history");
+                    String referer = request.getHeader("referer");
+                    response.sendRedirect(referer != null ? referer : request.getContextPath() + "/profile-order-history");
 
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else if (action.equals("reviewsingle")) {
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            int value = 0;
+            String ratingStr = request.getParameter("rating");
+            if (ratingStr == null || ratingStr.isEmpty()) {
+                String referer = request.getHeader("referer");
+response.sendRedirect(referer != null ? referer : request.getContextPath() + "/profile-order-history");
+                return;
+            }
+            value = Integer.parseInt(ratingStr);
+
+            Customer temp = (Customer) session.getAttribute("currentCustomer");
+            ProductDAO PD = new ProductDAO();
+            try {
+                int[] productId = new int[1];
+                productId[0] = Integer.parseInt(request.getParameter("productId"));
+                if (PD.writeReviewIntoDb(productId, temp.getCustomerId(), value, orderId) != 0) {
+                    String referer = request.getHeader("referer");
+                    System.out.println(referer);
+                    response.sendRedirect(referer != null ? referer : request.getContextPath() + "/profile-order-history");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (action.equals("update")) {
+
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            String status = request.getParameter("status");
+            OrderDAO OD = new OrderDAO();
+            try {
+                if (OD.updateOrderStatus(status, orderId) == 1) {
+                    session.setAttribute("received", "Congratulations on receiving your order!");
+                    response.sendRedirect(request.getContextPath() + "/home");
+
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+
         }
     }
+
 
     /**
      * Returns a short description of the servlet.

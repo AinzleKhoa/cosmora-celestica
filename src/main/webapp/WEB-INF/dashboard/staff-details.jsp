@@ -22,7 +22,7 @@
 
             <% String errorMessage = (String) session.getAttribute("errorMessage");
             if (errorMessage != null) {%>
-        <div class="alert alert-danger" role="alert" style="border: 1px solid green; background-color: #e6ffe6; color: red; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
             <%= errorMessage%>
         </div>
         <%

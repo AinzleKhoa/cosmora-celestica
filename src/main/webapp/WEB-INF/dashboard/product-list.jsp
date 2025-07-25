@@ -8,7 +8,16 @@
 <%@page import="shop.model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
+<style>
+    .admin-filter-select:hover {
+        transform: scale(1.1); /* Slightly increase size on hover */
+    }
 
+    .admin-filter-select:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+</style>
 <%
     String contextPath = request.getContextPath();
     int currentPage = (Integer) request.getAttribute("currentPage");
@@ -19,6 +28,10 @@
     String pageUrl = (String) request.getAttribute("pageUrl");
     String previousPageUrl = (String) request.getAttribute("previousPageUrl");
     String nextPageUrl = (String) request.getAttribute("nextPageUrl");
+
+    // <<< GET THE MESSAGES FROM THE SERVLET >>>
+    String successMessage = (String) request.getAttribute("successMessage");
+    String errorMessage = (String) request.getAttribute("errorMessage");
 %>
 
 <style>
@@ -37,14 +50,17 @@
 </style>
 
 <main class="admin-main">
+
     <div class="table-header">
         <h2 class="table-title">Manage Products</h2>
     </div>
 
     <section class="admin-header">
         <div class="admin-header-top">
-            <a class="btn-admin-add" href="manage-products?action=add">+ Add New Product</a>
-            <div class="search-filter-wrapper">
+            <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                <a class="btn-admin-add" href="manage-products?action=add">+ Add New Product</a>
+            </c:if>
+            <div class="search-filter-wrapper" style="margin-left: auto">
                 <form action="manage-products" method="get" class="search-form">
                     <input type="hidden" name="action" value="search">
                     <input type="text" name="query" class="search-input" placeholder="Enter product name..." value="${param.query != null ? param.query : ''}">
@@ -54,8 +70,19 @@
                     <i class="fas fa-times "></i> Clear
                 </a>
             </div>
-        </div>              
+        </div>      
     </section>
+
+    <% if (successMessage != null && !successMessage.isEmpty()) {%>
+    <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <%= successMessage%>
+    </div>
+    <% } %>
+    <% if (errorMessage != null && !errorMessage.isEmpty()) {%>
+    <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <%= errorMessage%>
+    </div>
+    <% } %>
 
     <section class="admin-table-wrapper">
         <div class="table-responsive shadow-sm rounded overflow-hidden">
@@ -77,7 +104,7 @@
                             for (Product p : productList) {
                     %>
                     <tr>
-                        <td><%= p.getProductId() %></td> 
+                        <td><%= p.getProductId()%></td> 
                         <td>
                             <% if (p.getImageUrls() != null && !p.getImageUrls().isEmpty()) {%>
                             <img src="<%= contextPath%>/assets/img/<%= p.getImageUrls().get(0)%>" alt="<%= p.getName()%>" class="table-product-img">
@@ -96,30 +123,45 @@
                         </td>
                         <td><%= p.getCategoryName() != null ? p.getCategoryName() : "N/A"%></td>
                         <td style="text-align: center;">
-                            <%-- Form sẽ tự động gửi khi người dùng thay đổi lựa chọn trong select --%>
                             <form action="manage-products" method="POST" style="margin: 0;">
                                 <input type="hidden" name="action" value="updateVisibility">
                                 <input type="hidden" name="id" value="<%= p.getProductId()%>">
                                 <input type="hidden" name="page" value="<%= currentPage%>">
 
-                                <%-- Thẻ select với sự kiện onchange --%>
-                                <select name="newStatus" class="admin-filter-select" 
-                                        style="border: 1px solid <%= (p.getActiveProduct() == 0) ? "F44336" : "#4CAF50"%>; border-radius: 4px; padding: 2px;"
-                                        onchange="this.form.submit()">
-                                    <option value="1" <%= (p.getActiveProduct() == 1) ? "selected" : ""%>>
-                                        Enabled
-                                    </option>
-                                    <option value="0" <%= (p.getActiveProduct() == 0) ? "selected" : ""%>>
-                                        Disabled
-                                    </option>
-                                </select>
+
+                                <c:choose>
+                                    <c:when test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                                        <select name="newStatus" class="admin-filter-select" 
+                                                style="border: 1px solid <%= (p.getActiveProduct() == 0) ? "#F44336" : "#4CAF50"%>; border-radius: 4px; padding: 2px; cursor: pointer; transition: transform 0.3s ease, background-color 0.3s ease;"
+                                                onchange="if (confirm('Are you sure you want to change this status?')) {
+                                                            this.form.submit();
+                                                        }">
+                                            <option value="1" <%= (p.getActiveProduct() == 1) ? "selected" : ""%>>
+                                                Enabled
+                                            </option>
+                                            <option value="0" <%= (p.getActiveProduct() == 0) ? "selected" : ""%>>
+                                                Disabled
+                                            </option>
+                                        </select>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="badge-status <%= (p.getActiveProduct() == 1) ? "badge-active" : "badge-suspend"%>">
+                                            ${customer.isDeactivated ? 'Suspended' : 'Active'}
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+
                             </form>
                         </td>
                         <td>
                             <div class="table-actions-center">
                                 <a class="btn-action btn-details" href="manage-products?action=details&id=<%= p.getProductId()%>">Details</a>
-                                <a class="btn-action btn-edit" href="manage-products?action=update&id=<%= p.getProductId()%>">Edit</a>
-                                <a class="btn-action btn-delete" href="manage-products?action=delete&id=<%= p.getProductId()%>">Delete</a>
+                                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                                    <a class="btn-action btn-edit" href="manage-products?action=update&id=<%= p.getProductId()%>">Edit</a>
+                                </c:if>
+                                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
+                                    <a class="btn-action btn-delete" href="manage-products?action=delete&id=<%= p.getProductId()%>">Delete</a>
+                                </c:if>
                             </div>
                         </td>
                     </tr>
@@ -127,15 +169,14 @@
                     } else {
                     %>
                     <tr>
-                        <td colspan="7" class="text-center">No products found.</td>
+                        <td colspan="8" class="text-center">No products found.</td>
                     </tr>
                     <%  } %>
                 </tbody>
             </table>
         </div>
-
-
     </section>
+
     <% if (totalPages > 1) {%>
     <nav class="admin-pagination">
         <ul class="pagination">

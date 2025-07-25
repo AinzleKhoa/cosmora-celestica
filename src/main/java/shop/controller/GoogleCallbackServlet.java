@@ -57,16 +57,37 @@ public class GoogleCallbackServlet extends HttpServlet {
         String googleId = payload.getSubject(); // Unique ID for the user from Google
 
         CustomerDAO cDAO = new CustomerDAO();
-        Customer customer = cDAO.getAccountByGoogleId(googleId, email);
+        Customer customer = cDAO.getAccountByEmail(email);
 
         if (customer != null) {
-            customer.setGoogleId(googleId);
-            if (cDAO.bindGoogleAccount(customer) > 0) {
+            if (!customer.isIsDeactivated()) {
+                if (customer.getGoogleId() == null) {
+                    // Account exists but is not linked to Google
+                    customer.setGoogleId(googleId);
+                    if (cDAO.bindGoogleAccountAndUpdateLastLoginTime(customer) > 0) {
 
-                HttpSession session = request.getSession();
-                session.setAttribute("currentCustomer", customer);
+                        HttpSession session = request.getSession();
+                        session.setAttribute("currentCustomer", customer);
 
-                response.sendRedirect(request.getContextPath() + "/home");
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
+                } else {
+                    // Account exists and is already linked to google
+                    if (cDAO.updateLastLoginTime(customer) > 0) {
+
+                        HttpSession session = request.getSession();
+                        session.setAttribute("currentCustomer", customer);
+
+                        response.sendRedirect(request.getContextPath() + "/home");
+                    } else {
+                        request.setAttribute("message", "Your account has been deactivated. Please contact support.");
+                        request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
+                    }
+                }
+                // Else of deactivated account
             } else {
                 request.setAttribute("message", "We encountered an issue with your login. Please check your credentials or contact support.");
                 request.getRequestDispatcher("/WEB-INF/home/login.jsp").forward(request, response);
@@ -78,6 +99,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             customer.setUsername(name);
             customer.setEmail(email);
             customer.setAvatarUri(request.getContextPath() + "/assets/img/avatar/avatar1.png");
+            customer.setHasSetPassword(false);
             customer.setGoogleId(googleId);
             customer.setCreatedAt(Timestamp.from(Instant.now()));
 
@@ -86,7 +108,7 @@ public class GoogleCallbackServlet extends HttpServlet {
 
             customer.setPasswordHash(hashedTempPass);
 
-            if (cDAO.createCustomer(customer) > 0) {
+            if (cDAO.createGoogleCustomerAccount(customer) > 0) {
                 HttpSession session = request.getSession();
                 session.setAttribute("currentCustomer", customer);
 

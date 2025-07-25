@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import shop.dao.VouchersDAO;
 import shop.model.Checkout;
+import shop.model.Voucher;
 
 /**
  *
@@ -89,7 +90,9 @@ public class ApplyVoucherServlet extends HttpServlet {
                 int voucherID = VD.getVoucherIdByCode(voucher);
                 VD.decreaseLimit(voucherID);
                 ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
-                
+                VouchersDAO vD = new VouchersDAO();
+                ArrayList<Voucher> voucherslist = vD.getList();
+                request.setAttribute("voucherslist", voucherslist);
 
                 session.setAttribute("checkout", product);
                 request.setAttribute("voucherApplied", true);
@@ -98,10 +101,15 @@ public class ApplyVoucherServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
 
             } else {
-
+                VouchersDAO vD = new VouchersDAO();
+                ArrayList<Voucher> voucherslist = vD.getList();
+                request.setAttribute("voucherslist", voucherslist);
                 ArrayList<Checkout> product = (ArrayList<Checkout>) session.getAttribute("checkout");
                 session.setAttribute("checkout", product);
                 session.setAttribute("totalAmount", total);
+                session.setAttribute("applyfail", "Your code is invalid or cannot be applied to this order.");
+                System.out.println("Voucher apply failed. Setting session attribute 'applyfail'."); // Thêm dòng này để debug
+
                 request.getRequestDispatcher("/WEB-INF/home/checkout.jsp").forward(request, response);
             }
 

@@ -91,9 +91,9 @@
                                     <c:otherwise>Active</c:otherwise>
                                 </c:choose>
                             </p>
-                            <p class="mb-2"><strong>Email Verified:</strong> 
+                            <p class="mb-2"><strong>Google Account:</strong> 
                                 <c:choose>
-                                    <c:when test="${thisCustomer.emailVerified}">Yes</c:when>
+                                    <c:when test="${not empty thisCustomer.googleId}">Yes</c:when>
                                     <c:otherwise>No</c:otherwise>
                                 </c:choose>
                             </p>

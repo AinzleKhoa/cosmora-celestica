@@ -203,7 +203,7 @@ public class StaffDAO extends DBContext {
     }
 
     public boolean isEmailExistForOtherStaff(String email, int staffId) {
-        String sql = "SELECT 1 FROM Staff WHERE email = ? AND id != ?";
+        String sql = "SELECT 1 FROM Staff WHERE email = ? AND staff_id != ?";
         try {
             ResultSet rs = this.execSelectQuery(sql, new Object[]{email, staffId});
             boolean exists = rs.next();
@@ -230,7 +230,7 @@ public class StaffDAO extends DBContext {
         return false;
     }
 
-    public int updateProfileAdmin(Staff staff) {
+    public int updateProfileOnDashboard(Staff staff) {
         try {
             String query = "UPDATE staff\n"
                     + "SET full_name = ?,\n"
@@ -256,7 +256,7 @@ public class StaffDAO extends DBContext {
         return 0;
     }
 
-    public int updateAdminPassword(Staff staff) {
+    public int updatePasswordOnDashboard(Staff staff) {
         try {
             String query = "UPDATE staff\n"
                     + "SET password_hash = ?\n"

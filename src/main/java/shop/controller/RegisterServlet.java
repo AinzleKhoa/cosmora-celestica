@@ -72,7 +72,7 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute("email", email);
             request.setAttribute("password", password);
             request.setAttribute("confirmPassword", confirmPassword);
-            request.setAttribute("message", "An error occurred while processing your registration. Please check your details and try again.");
+            request.setAttribute("message", "The username or email is taken. Please check your details and try again.");
             request.getRequestDispatcher("/WEB-INF/home/register.jsp").forward(request, response);
         }
     }

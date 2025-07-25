@@ -9,14 +9,47 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 <style>
-    .section--admin--profile {
-        margin-left: 220px;
+    .profile {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        max-width: 1000px;
+        padding: 0 20px;
+        margin-bottom: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .section {
+        margin-top: 100px;
+        padding-top: 60px;
+    }
+
+    #resetPasswordForm {
+        margin-top: 0;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+        max-width: 800px;
+        margin-bottom: 400px;
+    }
+
+    #profileCommonUpdate {
+        margin-top: 0;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+    }
+
+    .avatar-input__wrap {
+        width: 200px;
     }
 
     .avatar-display-container {
         margin-bottom: 15px;
         text-align: center;
-        margin-left: 100px;
     }
 
     .avatar-display {
@@ -57,25 +90,33 @@
         display: none;
     }
 
+    /* Avatar modal styles for centering */
     .avatar-modal {
         display: none;
-        padding: 10px;
-        background-color: #004085;
-        border-radius: 8px;
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
         opacity: 0;
-        transform: translateY(-20px);
+        background-color: rgba(0, 0, 0, 0);
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.3s ease;
     }
 
     .avatar-modal.show {
-        display: block;
+        display: flex;
         opacity: 1;
-        transform: translateY(0);
     }
 
-    .avatar-modal .modal-dialog {
-        max-width: 700px;
+    .avatar-modal-dialog {
+        max-width: 600px;
+        width: 90%;
         margin: 0 auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 10px;
     }
 
     .avatar-selection-container {
@@ -89,6 +130,7 @@
         text-align: center;
         border-radius: 8px;
         padding: 10px;
+        cursor: pointer;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -135,7 +177,9 @@
     }
 
     .modal-title {
-        font-size: 20px;
+        text-align: center;
+        font-size: 24px;
+        padding: 15px;
         font-weight: bold;
     }
 
@@ -200,14 +244,6 @@
         background-color: #0056b3;
     }
 </style>
-<c:choose>
-    <c:when test="${not empty requestScope.updateFailed and not empty requestScope.thisCustomer}">
-        <c:set var="user" value="${requestScope.thisEmployee}" />
-    </c:when>
-    <c:otherwise>
-        <c:set var="user" value="${sessionScope.currentEmployee}" />
-    </c:otherwise>
-</c:choose>
 
 <!-- section -->
 <section class="section section--last section--admin--profile">
@@ -268,7 +304,7 @@
             <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
                 <div class="row">
                     <!-- details form -->
-                    <div class="col-12 col-lg-7">
+                    <div class="col-12">
                         <form action="${pageContext.servletContext.contextPath}/profile-dashboard" method="POST" id="profileCommonUpdate" class="form">
                             <input type="hidden" name="action" value="updateProfile"/>
                             <input type="hidden" name="id" value="${user.id}"/>
@@ -338,7 +374,7 @@
                         </form>
                     </div>
                     <!-- end details form -->
-                    <div class="col-12 col-lg-4">
+                    <div class="col-12">
                         <!-- Avatar selection modal (initially hidden) -->
                         <div class="modal avatar-modal" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
                             <div class="modal-dialog avatar-modal-dialog" role="document"> <!-- Fixed modal width -->
@@ -404,13 +440,25 @@
             <div class="tab-pane fade" id="tab-2" role="tabpanel">
                 <div class="row">
                     <!-- details form -->
-                    <div class="col-12 col-lg-7">
+                    <div class="col-12">
                         <form action="${pageContext.servletContext.contextPath}/profile-dashboard" method="POST" id="resetPasswordForm" class="form">
                             <input type="hidden" name="action" value="updatePassword"/>
                             <input type="hidden" name="id" value="${user.id}"/>
                             <div class="row">
                                 <div class="col-12">
                                     <h4 class="form__title">Change password</h4>
+                                </div>
+
+                                <div class="col-12">
+                                    <h4 class="form__title">Your old Password is required to update profile</h4>
+                                </div>
+
+                                <!-- Old Password -->
+                                <div class="col-12">
+                                    <label class="form__label" for="oldpass">Old Password</label>
+                                    <input id="oldpass" type="password" name="oldpass" class="form__input" required>
+                                        <!-- Eye Icon for toggling old password visibility -->
+                                        <i class="fa-solid fa-eye" id="oldpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
                                 <!-- New Password -->
@@ -429,18 +477,6 @@
                                         <i class="fa-solid fa-eye" id="confirmpassEyeIcon" style="position: absolute; right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
                                 </div>
 
-                                <div class="col-12">
-                                    <h4 class="form__title">Your old Password is required to update profile</h4>
-                                </div>
-
-                                <!-- Old Password -->
-                                <div class="col-12">
-                                    <label class="form__label" for="oldpass">Old Password</label>
-                                    <input id="oldpass" type="password" name="oldpass" class="form__input" required>
-                                        <!-- Eye Icon for toggling old password visibility -->
-                                        <i class="fa-solid fa-eye" id="oldpassEyeIcon" style="position: absolute;  right: 20px; top: 54%; transform: translateY(-50%); font-size: 16px; color: #888; cursor: pointer; z-index: 999;"></i>
-                                </div>
-
                                 <!-- Save Button -->
                                 <div class="col-12">
                                     <button class="form__btn" type="submit">Save</button>
@@ -449,66 +485,7 @@
                         </form>
                     </div>
                     <!-- end details form -->
-                    <div class="col-12 col-lg-4">
-                        <!-- Avatar selection modal (initially hidden) -->
-                        <div class="modal avatar-modal" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
-                            <div class="modal-dialog avatar-modal-dialog" role="document"> <!-- Fixed modal width -->
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="avatarModalLabel">Select an Avatar</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Avatar grid container -->
-                                        <div class="avatar-selection-container">
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar1.png" alt="Avatar 1">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar2.png" alt="Avatar 2">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar3.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar4.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar5.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar6.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar7.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar8.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar9.png" alt="Avatar 3">
-                                            </div>
-                                            <div class="avatar-item">
-                                                <img src="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" 
-                                                     class="img-thumbnail avatar-option" data-avatar-url="${pageContext.servletContext.contextPath}/assets/img/avatar/avatar10.png" alt="Avatar 3">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn closeBtnModal" id="closeBtnModal" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>

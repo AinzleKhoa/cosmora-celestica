@@ -74,9 +74,7 @@
                                                     <p class="admin-name">${user.fullName}</p>
                                                 </div>
                                                 <ul class="admin-links">
-                                                    <c:if test="${user.role == 'admin'}">
-                                                        <li><a href="${pageContext.servletContext.contextPath}/profile-dashboard">My Profile</a></li>
-                                                        </c:if>
+                                                    <li><a href="${pageContext.servletContext.contextPath}/profile-dashboard">My Profile</a></li>
                                                     <li><a href="${pageContext.servletContext.contextPath}/logout">Logout</a></li>
                                                 </ul>
                                             </div>
@@ -121,13 +119,11 @@
                         </a>
                     </li>
                 </c:if>
-                <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
-                    <li class="admin-sidebar__item">
-                        <a href="${pageContext.servletContext.contextPath}/manage-products" class="admin-sidebar__link">
-                            <i class="fas fa-box"></i> Manage Products
-                        </a>
-                    </li>
-                </c:if>
+                <li class="admin-sidebar__item">
+                    <a href="${pageContext.servletContext.contextPath}/manage-products" class="admin-sidebar__link">
+                        <i class="fas fa-box"></i> Manage Products
+                    </a>
+                </li>
                 <!-- Check if the user role is admin -->
                 <c:if test="${sessionScope.currentEmployee != null && sessionScope.currentEmployee.role == 'admin'}">
                     <li class="admin-sidebar__item">

@@ -22,7 +22,7 @@
 %>
 
 <style>
-    /* CSS không thay đổi */
+    /* CSS không thay đổi, giữ nguyên */
     .image-uploader {
         border: 2px dashed #ddd;
         border-radius: 8px;
@@ -91,6 +91,19 @@
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
     }
+    .add-1{
+        background-color: #00b7ff;
+        padding: 5px 10px 5px 10px;
+        border-radius: 7px;
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .remove-attr-btn {
+        width: 100%;
+        padding: 5px;
+        border-radius: 7px;
+    }
 </style>
 
 <main class="admin-main">
@@ -108,11 +121,12 @@
         <form action="<%= request.getContextPath()%>/manage-products?action=add" method="post" enctype="multipart/form-data">
             <input type="hidden" id="productType" name="productType" value="">
 
+            <%-- Hiển thị thông báo thành công/lỗi --%>
             <% if (successMessage != null && !successMessage.isEmpty()) {%>
-            <div class="alert alert-success" role="alert"><%= successMessage%></div>
+            <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;"><%= successMessage%></div>
             <% } %>
             <% if (errorMessage != null && !errorMessage.isEmpty()) {%>
-            <div class="alert alert-danger" role="alert"><%= errorMessage%></div>
+            <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;"><%= errorMessage%></div>
             <% } %>
 
             <div class="mb-4">
@@ -124,8 +138,8 @@
                                 String normalizedName = cat.getName().toLowerCase().replaceAll("\\s+", "")
                                         .replace("chuột", "mouse")
                                         .replace("bànphím", "keyboard")
-                                        .replace("tainghe", "headphone")
-                                        .replace("taycầm(controller)", "controller")
+                                        .replace("tai nghe", "headphone") // Thay đổi "tainghe" -> "tai nghe" để khớp hơn
+                                        .replace("tay cầm (controller)", "controller") // Thay đổi "taycầm(controller)" -> "tay cầm (controller)"
                                         .replace("game", "game");
                     %>
                     <option value="<%= cat.getCategoryId()%>" data-normalized-name="<%= normalizedName%>"><%= cat.getName()%></option>
@@ -143,11 +157,11 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Price ($)</label>
-                        <input type="number" step="0.01" class="form-control admin-manage-input" name="price" required>
+                        <input type="number" step="0.01" min="0.01" class="form-control admin-manage-input" name="price" required>
                     </div>
                     <div class="col-md-6" id="quantity-field-wrapper">
                         <label class="form-label admin-manage-label">Quantity</label>
-                        <input type="number" class="form-control admin-manage-input" id="quantity-input" name="quantity" required>
+                        <input type="number" min="1" class="form-control admin-manage-input" id="quantity-input" name="quantity" required>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
@@ -157,8 +171,8 @@
             </div>
 
             <div class="mb-4 admin-manage-fieldset p-4 border rounded">
-                <h3 class="admin-manage-subtitle">Product Images (Up to 6 images)</h3>
-                <div class="row g-3">
+                <h3 class="admin-manage-subtitle">Product Images (At least 1, up to 6 images)</h3>
+                <div class="row g-3" id="image-upload-area">
                     <% for (int i = 1; i <= 6; i++) {%>
                     <div class="col-md-4 col-sm-6 mb-3">
                         <label class="image-uploader" for="productImage<%= i%>">
@@ -167,7 +181,7 @@
                                 <p>Click to upload Image <%=i%></p>
                             </div>
                             <img src="" alt="Preview <%= i%>" class="image-preview">
-                            <input type="file" id="productImage<%= i%>" name="productImages" accept="image/*">
+                            <input type="file" id="productImage<%= i%>" name="productImages" accept="image/*" <% if (i == 1) { %> required <% } %>>
                             <button type="button" class="remove-image-btn">&times;</button>
                         </label>
                     </div>
@@ -184,15 +198,15 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Developer</label>
-                                <input type="text" name="developer" class="form-control admin-manage-input" required>
+                                <input type="text" name="developer" class="form-control admin-manage-input">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Genre</label>
-                                <input type="text" name="genre" class="form-control admin-manage-input" placeholder="e.g., Action, RPG" required>
+                                <input type="text" name="genre" class="form-control admin-manage-input" placeholder="e.g., Action, RPG">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Release Date</label>
-                                <input type="date" name="releaseDate" class="form-control admin-manage-input" required>
+                                <input type="date" name="releaseDate" class="form-control admin-manage-input">
                             </div>
                         </div>
                     </div>
@@ -201,21 +215,25 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Store Platform</label>
-                                <select multiple class="custom-select admin-manage-input" name="platformIds" size="4" required><% if (allPlatforms != null) {
-                                        for (StorePlatform p : allPlatforms) {%>
+                                <select multiple class="custom-select admin-manage-input" name="platformIds" size="4">
+                                    <% if (allPlatforms != null) {
+                                            for (StorePlatform p : allPlatforms) {%>
                                     <option value="<%= p.getPlatformId()%>"><%= p.getStoreOSName()%></option><% }
-                                        } %></select>
+                                            } %>
+                                </select>
                             </div>
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Supported OS</label>
-                                <select multiple class="custom-select admin-manage-input" name="osIds" size="4" required><% if (allOS != null) {
-                                        for (OperatingSystem os : allOS) {%>
+                                <select multiple class="custom-select admin-manage-input" name="osIds" size="4">
+                                    <% if (allOS != null) {
+                                            for (OperatingSystem os : allOS) {%>
                                     <option value="<%= os.getOsId()%>"><%= os.getOsName()%></option><% }
-                                        } %></select>
+                                            } %>
+                                </select>
                             </div>
                             <div class="col-12">
                                 <label for="gameKeys" class="form-label admin-manage-label">Game Keys (one key per line)</label>
-                                <textarea id="gameKeys" name="gameKeys" class="form-control admin-manage-input" rows="8" required></textarea>
+                                <textarea id="gameKeys" name="gameKeys" class="form-control admin-manage-input" rows="8"></textarea>
                             </div>
                         </div>
                     </div>
@@ -228,28 +246,29 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Warranty (months)</label>
-                                <input type="number" name="warrantyMonths" class="form-control admin-manage-input" required>
+                                <input type="number" name="warrantyMonths" class="form-control admin-manage-input" min="0">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Weight (grams)</label>
-                                <input type="number" step="0.01" name="weightGrams" class="form-control admin-manage-input" required>
+                                <input type="number" step="0.01" name="weightGrams" class="form-control admin-manage-input" min="0.01">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Connection Type</label>
-                                <input type="text" name="connectionType" class="form-control admin-manage-input" placeholder="e.g., Wireless, USB-C" required>
+                                <input type="text" name="connectionType" class="form-control admin-manage-input" placeholder="e.g., Wireless, USB-C">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Usage Time (hours)</label>
-                                <input type="number" step="0.1" name="usageTimeHours" class="form-control admin-manage-input" required>
+                                <input type="number" step="0.1" name="usageTimeHours" class="form-control admin-manage-input" min="0">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label admin-manage-label">Brand</label>
-                                <select class="custom-select admin-manage-input" name="brandId" required>
+                                <select class="custom-select admin-manage-input" name="brandId">
                                     <option value="">-- Select Brand --</option>
                                     <% if (brandsList != null) {
                                             for (Brand brand : brandsList) {%>
                                     <option value="<%= brand.getBrandId()%>"><%= brand.getBrandName()%></option><% }
-                                        }%></select>
+                                            }%>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -262,19 +281,19 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Headphone Type</label>
-                                <input type="text" name="headphoneType" class="form-control admin-manage-input" placeholder="e.g., Over-ear, In-ear" required>
+                                <input type="text" name="headphoneType" class="form-control admin-manage-input" placeholder="e.g., Over-ear, In-ear">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" name="headphoneMaterial" class="form-control admin-manage-input" required>
+                                <input type="text" name="headphoneMaterial" class="form-control admin-manage-input">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Battery Capacity (mAh)</label>
-                                <input type="number" name="headphoneBattery" class="form-control admin-manage-input" required>
+                                <input type="number" name="headphoneBattery" class="form-control admin-manage-input" min="0">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label admin-manage-label">Features</label>
-                                <textarea name="headphoneFeatures" class="form-control admin-manage-input" placeholder="e.g., Noise Cancelling" required></textarea>
+                                <textarea name="headphoneFeatures" class="form-control admin-manage-input" placeholder="e.g., Noise Cancelling"></textarea>
                             </div>
                         </div>
                     </div>
@@ -287,15 +306,15 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Size</label>
-                                <input type="text" name="keyboardSize" class="form-control admin-manage-input" placeholder="e.g., Full-size, TKL" required>
+                                <input type="text" name="keyboardSize" class="form-control admin-manage-input" placeholder="e.g., Full-size, TKL">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" name="keyboardMaterial" class="form-control admin-manage-input" required>
+                                <input type="text" name="keyboardMaterial" class="form-control admin-manage-input">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Keyboard Type</label>
-                                <input type="text" name="keyboardType" class="form-control admin-manage-input" placeholder="e.g., Mechanical, Membrane" required>
+                                <input type="text" name="keyboardType" class="form-control admin-manage-input" placeholder="e.g., Mechanical, Membrane">
                             </div>
                         </div>
                     </div>
@@ -308,7 +327,7 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Mouse Type</label>
-                                <input type="text" name="mouseType" class="form-control admin-manage-input" placeholder="e.g., Gaming, Ergonomic" required>
+                                <input type="text" name="mouseType" class="form-control admin-manage-input" placeholder="e.g., Gaming, Ergonomic">
                             </div>
                         </div>
                     </div>
@@ -321,21 +340,30 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" name="controllerMaterial" class="form-control admin-manage-input" required>
+                                <input type="text" name="controllerMaterial" class="form-control admin-manage-input">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Battery Capacity (mAh)</label>
-                                <input type="number" name="controllerBattery" class="form-control admin-manage-input" required>
+                                <input type="number" name="controllerBattery" class="form-control admin-manage-input" min="0">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label admin-manage-label">Charging Time (hours)</label>
-                                <input type="number" step="0.1" name="controllerChargingTime" class="form-control admin-manage-input" required>
+                                <input type="number" step="0.1" name="controllerChargingTime" class="form-control admin-manage-input" min="0">
                             </div>
                         </div>
                     </div>
                 </div>
 
             </div>
+            <div class="mb-4 admin-manage-fieldset p-4 border rounded">
+                <h3 class="admin-manage-subtitle">Custom Attributes</h3>
+                <button type="button" id="addCustomAttributeBtn" class="btn btn-secondary mb-3 add-1">
+                    + Add Custom Attribute
+                </button>
+                
+                <div id="customAttributesContainer"></div>
+            </div>
+
 
             <div class="d-flex justify-content-end align-items:center mt-4">
                 <button type="reset" class="btn admin-manage-reset mr-2"><i class="fas fa-xmark mr-1"></i> Reset</button>
@@ -345,9 +373,6 @@
     </div>
 </main>
 
-<%-- ======================================================== --%>
-<%--        THAY ĐỔI QUAN TRỌNG NẰM TRONG THẺ SCRIPT NÀY      --%>
-<%-- ======================================================== --%>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Javascript cho image-uploader không thay đổi
@@ -392,27 +417,40 @@
     function handleProductTypeChange(selectElement) {
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         const productType = selectedOption.getAttribute('data-normalized-name');
-        document.getElementById('productType').value = productType;
+        document.getElementById('productType').value = productType; // Cập nhật hidden input
 
-        // Lấy các phần tử input cần xử lý
         const quantityInput = document.getElementById('quantity-input');
+        const brandSelect = document.querySelector('select[name="brandId"]');
+        const gameRequiredInputs = document.querySelectorAll('.game-details input[required], .game-details select[required], .game-details textarea[required]');
+        const accessoryRequiredInputs = document.querySelectorAll('.accessory-details input[required], .accessory-details select[required], .accessory-details textarea[required]');
+        const headphoneRequiredInputs = document.querySelectorAll('.headphone-details input[required], .headphone-details select[required], .headphone-details textarea[required]');
+        const keyboardRequiredInputs = document.querySelectorAll('.keyboard-details input[required], .keyboard-details select[required], .keyboard-details textarea[required]');
+        const mouseRequiredInputs = document.querySelectorAll('.mouse-details input[required], .mouse-details select[required], .mouse-details textarea[required]');
+        const controllerRequiredInputs = document.querySelectorAll('.controller-details input[required], .controller-details select[required], .controller-details textarea[required]');
 
-        // BƯỚC 1: XỬ LÝ TRƯỜNG SỐ LƯỢNG (QUANTITY)
+        // BƯỚC 1: XỬ LÝ TRƯỜNG SỐ LƯỢNG (QUANTITY) & Brand
         if (productType === 'game') {
-            quantityInput.value = 1;        // Đặt giá trị là 1
-            quantityInput.readOnly = true;  // Đặt thành chỉ đọc
+            quantityInput.value = 1;
+            quantityInput.readOnly = true;
+            quantityInput.removeAttribute('required'); // Loại bỏ required cho game
+            if (brandSelect)
+                brandSelect.removeAttribute('required'); // Game không cần brand
         } else {
-            quantityInput.value = '';       // Xóa giá trị cũ
-            quantityInput.readOnly = false; // Cho phép nhập liệu
+            // Đối với phụ kiện, số lượng là bắt buộc và có thể nhập
+            quantityInput.value = '';
+            quantityInput.readOnly = false;
+            quantityInput.setAttribute('required', 'required');
+            if (brandSelect)
+                brandSelect.setAttribute('required', 'required'); // Phụ kiện cần brand
         }
 
 
-        // BƯỚC 2: VÔ HIỆU HÓA và ẩn tất cả các trường động
-        // Thao tác này đảm bảo `required` trên các trường bị ẩn không gây lỗi
+        // BƯỚC 2: VÔ HIỆU HÓA, ẩn và loại bỏ `required` khỏi tất cả các trường động
         document.querySelectorAll('#dynamicFieldsContainer .admin-manage-type').forEach(wrapper => {
             wrapper.style.display = 'none';
             wrapper.querySelectorAll('input, select, textarea').forEach(input => {
                 input.disabled = true;
+                input.removeAttribute('required');
             });
         });
 
@@ -420,29 +458,96 @@
         if (!productType)
             return;
 
-
-        // BƯỚC 3: KÍCH HOẠT và hiện lại các trường cần thiết
-        const sectionsToShow = [];
+        // BƯỚC 3: KÍCH HOẠT, hiện lại và thêm `required` cho các trường cần thiết
         if (productType === 'game') {
-            sectionsToShow.push('.game-details');
-        } else {
-            const accessoryTypes = ['mouse', 'keyboard', 'headphone', 'controller'];
-            if (accessoryTypes.includes(productType)) {
-                sectionsToShow.push('.accessory-details');
-                sectionsToShow.push('.' + productType + '-details');
+            const gameDetailsBlock = document.querySelector('.game-details');
+            if (gameDetailsBlock) {
+                gameDetailsBlock.style.display = 'block';
+                gameDetailsBlock.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = false;
+                    // Đặt lại `required` cho các trường cần thiết của game
+                    if (input.name === 'developer' || input.name === 'genre' || input.name === 'releaseDate' || input.name === 'platformIds' || input.name === 'osIds' || input.name === 'gameKeys') {
+                        input.setAttribute('required', 'required');
+                    }
+                });
+            }
+        } else { // Xử lý phụ kiện
+            const accessoryDetailsBlock = document.querySelector('.accessory-details');
+            if (accessoryDetailsBlock) {
+                accessoryDetailsBlock.style.display = 'block';
+                accessoryDetailsBlock.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = false;
+                    // Đặt lại `required` cho các trường chung của phụ kiện
+                    if (input.name === 'warrantyMonths' || input.name === 'weightGrams' || input.name === 'connectionType' || input.name === 'usageTimeHours' || input.name === 'brandId') {
+                        input.setAttribute('required', 'required');
+                    }
+                });
+            }
+
+            const specificAccessoryBlock = document.querySelector('.' + productType + '-details');
+            if (specificAccessoryBlock) {
+                specificAccessoryBlock.style.display = 'block';
+                specificAccessoryBlock.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = false;
+                    // Đặt lại `required` cho các trường cụ thể của từng loại phụ kiện
+                    // Ví dụ cho Headphone, Keyboard, Mouse, Controller
+                    if (productType === 'headphone') {
+                        if (input.name === 'headphoneType' || input.name === 'headphoneMaterial' || input.name === 'headphoneBattery' || input.name === 'headphoneFeatures') {
+                            input.setAttribute('required', 'required');
+                        }
+                    } else if (productType === 'keyboard') {
+                        if (input.name === 'keyboardSize' || input.name === 'keyboardMaterial' || input.name === 'keyboardType') {
+                            input.setAttribute('required', 'required');
+                        }
+                    } else if (productType === 'mouse') {
+                        if (input.name === 'mouseType') {
+                            input.setAttribute('required', 'required');
+                        }
+                    } else if (productType === 'controller') {
+                        if (input.name === 'controllerMaterial' || input.name === 'controllerBattery' || input.name === 'controllerChargingTime') {
+                            input.setAttribute('required', 'required');
+                        }
+                    }
+                });
             }
         }
 
-        sectionsToShow.forEach(selector => {
-            const block = document.querySelector(selector);
-            if (block) {
-                block.style.display = 'block';
-                block.querySelectorAll('input, select, textarea').forEach(input => {
-                    input.disabled = false; // Kích hoạt lại để `required` có hiệu lực
-                });
-            }
-        });
+        // Kiểm tra xem input file đầu tiên có required không
+        const firstImageInput = document.getElementById('productImage1');
+        if (firstImageInput) {
+            firstImageInput.setAttribute('required', 'required');
+        }
     }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const addBtn = document.getElementById('addCustomAttributeBtn');
+        const container = document.getElementById('customAttributesContainer');
+
+        addBtn.addEventListener('click', function () {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('row', 'g-2', 'mb-2');
+
+            wrapper.innerHTML = `
+                <div class="col-md-5">
+                    <input type="text" name="customAttributeNames" class="form-control admin-manage-input" placeholder="Attribute Name" required>
+                </div>
+                <div class="col-md-5">
+                    <input type="text" name="customAttributeValues" class="form-control admin-manage-input" placeholder="Attribute Value" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger remove-attr-btn btn-delete">Delete</button>
+                </div>
+            `;
+
+            container.appendChild(wrapper);
+
+            // Xử lý nút remove
+            wrapper.querySelector('.remove-attr-btn').addEventListener('click', function () {
+                container.removeChild(wrapper);
+            });
+        });
+    });
 </script>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

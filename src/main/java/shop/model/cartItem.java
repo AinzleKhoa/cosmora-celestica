@@ -13,8 +13,8 @@ public class CartItem {
     private int cartId;
     private int customerId;
     private int productId;
-    private int cartQuantity;      
-    private int productQuantity;   
+    private int cartQuantity;
+    private int productQuantity;
 
     private String productName;
     private double price;
@@ -22,9 +22,9 @@ public class CartItem {
     private String imageUrl;
     private String categoryName;
 
-    // Full constructor
+   
     public CartItem(int cartId, int customerId, int productId, int cartQuantity, int productQuantity,
-                    String productName, double price, Double salePrice, String imageUrl, String categoryName) {
+            String productName, double price, Double salePrice, String imageUrl, String categoryName) {
         this.cartId = cartId;
         this.customerId = customerId;
         this.productId = productId;
@@ -119,4 +119,13 @@ public class CartItem {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+
+    public boolean isCanIncrease() {
+        return this.cartQuantity < this.productQuantity;
+    }
+
+    public boolean isCanDecrease() {
+        return this.cartQuantity > 1;
+    }
+
 }

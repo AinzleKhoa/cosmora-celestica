@@ -6,6 +6,8 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Arrays"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="shop.model.Product"%>
 <%@page import="shop.model.Category"%>
@@ -15,14 +17,17 @@
 <%@page import="shop.model.StorePlatform"%>
 <%@page import="shop.model.OperatingSystem"%>
 <%@page import="shop.model.ProductAttribute"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/dashboard-header.jsp" %>
 
 <%
+    // Get data from the servlet
     Product product = (Product) request.getAttribute("product");
     List<Category> categories = (List<Category>) request.getAttribute("categoriesList");
     List<Brand> brands = (List<Brand>) request.getAttribute("brandsList");
     Map<String, String> attributeMap = (Map<String, String>) request.getAttribute("attributeMap");
+
     if (attributeMap == null) {
         attributeMap = new java.util.HashMap<>();
     }
@@ -49,18 +54,33 @@
         }
     }
     boolean isGameProduct = "game".equals(initialProductType);
+
+    // Set predefined attributes to avoid duplication in the "Custom Attributes" section
+    Set<String> predefinedAttributeKeys = new HashSet<>(Arrays.asList(
+            "Warranty", "Weight", "Connection Type", "Usage Time", "Headphone Type",
+            "Material", "Battery Capacity", "Features", "Size", "Keyboard Type",
+            "Mouse Type", "Charging Time"
+    ));
 %>
 
 <style>
-    /* CSS chung */
+    /* General CSS */
     .admin-manage-subtitle {
         font-size: 1.25rem;
         font-weight: 500;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
     }
+    .remove-attr-btn {
+        width: 100%;
+        padding: 5px;
+        border-radius: 7px;
+    }
+    .custom-attribute-row {
+        align-items: center;
+    }
 
-    /* === BẮT ĐẦU CSS CHO UPLOAD ẢNH ĐÃ ĐƯỢC THỐNG NHẤT === */
+    /* CSS for image upload */
     .image-uploader {
         border: 2px dashed #ddd;
         border-radius: 8px;
@@ -75,7 +95,6 @@
         justify-content: center;
         align-items: center;
         background-color: #4a4e69;
-        transition: border-color 0.3s;
     }
     .image-uploader:hover {
         border-color: #007bff;
@@ -105,7 +124,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: none; /* Mặc định ẩn */
+        display: none;
     }
     .remove-image-btn {
         position: absolute;
@@ -121,19 +140,24 @@
         line-height: 25px;
         text-align: center;
         cursor: pointer;
-        display: none; /* Mặc định ẩn */
+        display: none;
         z-index: 10;
         justify-content: center;
         align-items: center;
     }
-
-    /* Class quản lý trạng thái có ảnh */
     .image-uploader.has-image .image-preview,
     .image-uploader.has-image .remove-image-btn {
         display: flex;
     }
     .image-uploader.has-image .image-uploader__content {
         display: none;
+    }
+    .add-1 {
+        background-color: #00b7ff;
+        padding: 5px 10px;
+        border-radius: 7px;
+        color: #ffffff;
+        font-weight: 600;
     }
 </style>
 
@@ -145,45 +169,33 @@
     <div class="admin-manage-wrapper container py-4">
         <div class="mb-4">
             <a href="<%= request.getContextPath()%>/manage-products?action=list" class="admin-manage-back mb-5">
-                <i class="fas fa-arrow-left mr-1"></i> Back
+                <i class="fas fa-arrow-left mr-1"></i> Back to List
             </a>
         </div>
 
         <c:if test="${not empty requestScope.errorMessage}">
-            <div class="alert alert-danger" role="alert">${requestScope.errorMessage}</div>
+            <div style="border: 1px solid green; background-color: yellow; color: black; padding: 10px; margin-bottom: 15px; border-radius: 5px;">${requestScope.errorMessage}</div>
         </c:if>
 
         <% if (product != null) {%>
         <form action="<%= request.getContextPath()%>/manage-products?action=update" method="post" enctype="multipart/form-data">
             <input type="hidden" name="productId" value="<%= product.getProductId()%>">
             <input type="hidden" name="gameDetailsId" value="<%= (gameDetails != null && gameDetails.getGameDetailsId() > 0) ? gameDetails.getGameDetailsId() : "0"%>">
-            <input type="hidden" id="productTypeField" name="productType" value="">
+            <input type="hidden" id="productTypeField" name="productType" value="<%= initialProductType%>">
+            <input type="hidden" name="oldquantity" value="<%= (gameKeys != null ? gameKeys.size() : 0) %>">
 
             <div class="mb-4">
                 <label for="categoryId" class="form-label admin-manage-label">Product Type</label>
-                <select class="form-select admin-manage-input" id="categoryId" name="categoryId" required onchange="handleProductTypeChange(this)" <%= isGameProduct ? "disabled" : ""%>>
+                <select class="form-select admin-manage-input" id="categoryId" name="categoryId" required disabled>
                     <% if (categories != null) {
-                            for (Category cat : categories) {
-                                String normalizedName = cat.getName().toLowerCase().replaceAll("\\s+", "")
-                                        .replace("chuột", "mouse")
-                                        .replace("bànphím", "keyboard")
-                                        .replace("tainghe", "headphone")
-                                        .replace("taycầm(controller)", "controller")
-                                        .replace("game", "game");
-
-                                if (!isGameProduct && "game".equals(normalizedName)) {
-                                    continue;
-                                }
-
-                                boolean isSelected = product.getCategoryId() == cat.getCategoryId();
+                        for (Category cat : categories) {
+                            boolean isSelected = product.getCategoryId() == cat.getCategoryId();
                     %>
-                    <option value="<%= cat.getCategoryId()%>" data-normalized-name="<%= normalizedName%>" <%= isSelected ? "selected" : ""%>><%= cat.getName()%></option>
+                    <option value="<%= cat.getCategoryId()%>" <%= isSelected ? "selected" : ""%>><%= cat.getName()%></option>
                     <% }
-                        }%>
+                    }%>
                 </select>
-                <% if (isGameProduct) {%>
-                <input type="hidden" name="categoryId" value="<%= product.getCategoryId()%>" />
-                <% }%>
+                <input type="hidden" name="categoryId" value="<%= product.getCategoryId() %>"/>
             </div>
 
             <div class="mb-4 admin-manage-fieldset">
@@ -195,11 +207,11 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Price ($)</label>
-                        <input type="number" class="form-control admin-manage-input" step="0.01" name="price" value="<%= product.getPrice()%>" required>
+                        <input type="number" class="form-control admin-manage-input" step="0.01" min="0.01" name="price" value="<%= product.getPrice()%>" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label admin-manage-label">Quantity</label>
-                        <input type="number" class="form-control admin-manage-input" name="quantity" value="<%= product.getQuantity()%>" required <%= isGameProduct ? "readonly" : ""%>>
+                        <input type="number" class="form-control admin-manage-input" name="quantity" min="0" value="<%= product.getQuantity()%>" required <%= isGameProduct ? "readonly" : ""%>>
                     </div>
                     <div class="col-12">
                         <label class="form-label admin-manage-label">Description</label>
@@ -213,9 +225,7 @@
                 <div class="row g-3">
                     <%
                         List<String> imageUrls = product.getImageUrls();
-                        if (imageUrls == null) {
-                            imageUrls = new java.util.ArrayList<>();
-                        }
+                        if (imageUrls == null) imageUrls = new java.util.ArrayList<>();
                         for (int i = 0; i < 6; i++) {
                             String existingImageUrl = (i < imageUrls.size()) ? imageUrls.get(i) : null;
                             boolean hasImage = existingImageUrl != null && !existingImageUrl.isEmpty();
@@ -237,8 +247,7 @@
             </div>
 
             <div id="dynamicFieldsContainer">
-                <%-- Game Section --%>
-                <div class="admin-manage-type game-details" style="display: none;">
+                <div class="admin-manage-type game-details" style="<%= isGameProduct ? "" : "display: none;"%>">
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Game Details</h3>
                         <div class="row g-3">
@@ -257,28 +266,26 @@
                         </div>
                     </div>
                     <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Platforms</h3>
+                        <h3 class="admin-manage-subtitle">Platforms & OS</h3>
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Store Platforms</label>
                                 <select multiple class="form-select admin-manage-input" name="platformIds" size="4">
                                     <% if (allPlatforms != null) {
-                                            for (StorePlatform platform : allPlatforms) {
-                                                boolean isChecked = selectedPlatformIds != null && selectedPlatformIds.contains(platform.getPlatformId());%>
+                                        for (StorePlatform platform : allPlatforms) {
+                                            boolean isChecked = selectedPlatformIds != null && selectedPlatformIds.contains(platform.getPlatformId());%>
                                     <option value="<%= platform.getPlatformId()%>" <%= isChecked ? "selected" : ""%>><%= platform.getStoreOSName()%></option>
-                                    <% }
-                                        } %>
+                                    <% } } %>
                                 </select>
                             </div>
                             <div class="col-12">
                                 <label class="form-label admin-manage-label">Operating Systems</label>
                                 <select multiple class="form-select admin-manage-input" name="osIds" size="4">
                                     <% if (allOS != null) {
-                                            for (OperatingSystem os : allOS) {
-                                                boolean isChecked = selectedOsIds != null && selectedOsIds.contains(os.getOsId());%>
+                                        for (OperatingSystem os : allOS) {
+                                            boolean isChecked = selectedOsIds != null && selectedOsIds.contains(os.getOsId());%>
                                     <option value="<%= os.getOsId()%>" <%= isChecked ? "selected" : ""%>><%= os.getOsName()%></option>
-                                    <% }
-                                        }%>
+                                    <% } }%>
                                 </select>
                             </div>
                         </div>
@@ -286,12 +293,11 @@
                     <div class="mb-4 admin-manage-fieldset">
                         <h3 class="admin-manage-subtitle">Game Keys</h3>
                         <label class="form-label admin-manage-label">Existing Keys (<%= (gameKeys != null ? gameKeys.size() : 0)%>)</label>
-                        <div class="border p-2" style="max-height: 150px; overflow-y: auto;color: #000 ; background-color: #f1f1f1; border-radius: 4px;">
+                        <div class="border p-2" style="max-height: 150px; overflow-y: auto;color: #000; background-color: #f1f1f1; border-radius: 4px;">
                             <% if (gameKeys != null && !gameKeys.isEmpty()) {
-                                    for (GameKey key : gameKeys) {%>
+                                for (GameKey key : gameKeys) {%>
                             <code><%= key.getKeyCode()%></code><br>
-                            <% }
-                            } else { %>
+                            <% } } else { %>
                             <p class="text-muted small mb-0">No existing keys.</p>
                             <% } %>
                         </div>
@@ -302,131 +308,65 @@
                     </div>
                 </div>
 
-                <%
-                    String[] accessoryTypes = {"mouse", "headphone", "keyboard", "controller"};
-                    for (String type : accessoryTypes) {
-                %>
-                <div class="admin-manage-type <%= type%>-details" style="display: none;">
+                <div class="admin-manage-type accessory-details" style="<%= !isGameProduct ? "" : "display: none;"%>">
                     <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Accessory Details</h3>
+                        <h3 class="admin-manage-subtitle">Accessory Brand</h3>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label class="form-label admin-manage-label">Brand</label>
                                 <select class="form-select admin-manage-input" name="brandId">
                                     <option value="">-- Select Brand --</option>
                                     <% if (brands != null) {
-                                            for (Brand brand : brands) {
-                                                Integer productBrandId = product.getBrandId();
-                                                boolean isSelected = productBrandId != null && productBrandId.equals(brand.getBrandId());%>
+                                        for (Brand brand : brands) {
+                                            Integer productBrandId = product.getBrandId();
+                                            boolean isSelected = productBrandId != null && productBrandId.equals(brand.getBrandId());%>
                                     <option value="<%= brand.getBrandId()%>" <%= isSelected ? "selected" : ""%>><%= brand.getBrandName()%></option>
-                                    <% }
-                                        }%>
+                                    <% } }%>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Warranty (Months)</label>
-                                <input type="number" class="form-control admin-manage-input" name="warrantyMonths" value="<%= attributeMap.getOrDefault("Warranty", "")%>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Connection Type</label>
-                                <input type="text" class="form-control admin-manage-input" name="connectionType" value="<%= attributeMap.getOrDefault("Connection Type", "")%>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Weight (grams)</label>
-                                <input type="number" class="form-control admin-manage-input" name="weightGrams" value="<%= attributeMap.getOrDefault("Weight", "")%>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Usage Time (Hours)</label>
-                                <input type="text" class="form-control admin-manage-input" name="usageTimeHours" value="<%= attributeMap.getOrDefault("Usage Time", "")%>">
-                            </div>
                         </div>
                     </div>
-
-                    <% if (type.equals("mouse")) {%>
-                    <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Mouse Specifics</h3>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Mouse Type</label>
-                                <input type="text" class="form-control admin-manage-input" name="mouseType" value="<%= attributeMap.getOrDefault("Mouse Type", "")%>">
-                            </div>
-                        </div>
-                    </div>
-                    <% } else if (type.equals("headphone")) {%>
-                    <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Headphone Specifics</h3>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Headphone Type</label>
-                                <input type="text" class="form-control admin-manage-input" name="headphoneType" value="<%= attributeMap.getOrDefault("Headphone Type", "")%>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" class="form-control admin-manage-input" name="headphoneMaterial" value="<%= attributeMap.getOrDefault("Material", "")%>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Battery Capacity</label>
-                                <input type="text" class="form-control admin-manage-input" name="headphoneBattery" value="<%= attributeMap.getOrDefault("Battery Capacity", "")%>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label admin-manage-label">Features</label>
-                                <input type="text" class="form-control admin-manage-input" name="headphoneFeatures" value="<%= attributeMap.getOrDefault("Features", "")%>">
-                            </div>
-                        </div>
-                    </div>
-                    <% } else if (type.equals("keyboard")) {%>
-                    <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Keyboard Specifics</h3>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label admin-manage-label">Size</label>
-                                <input type="text" class="form-control admin-manage-input" name="keyboardSize" value="<%= attributeMap.getOrDefault("Size", "")%>">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label admin-manage-label">Keyboard Type</label>
-                                <input type="text" class="form-control admin-manage-input" name="keyboardType" value="<%= attributeMap.getOrDefault("Keyboard Type", "")%>">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" class="form-control admin-manage-input" name="keyboardMaterial" value="<%= attributeMap.getOrDefault("Material", "")%>">
-                            </div>
-                        </div>
-                    </div>
-                    <% } else if (type.equals("controller")) {%>
-                    <div class="mb-4 admin-manage-fieldset">
-                        <h3 class="admin-manage-subtitle">Controller Specifics</h3>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label admin-manage-label">Material</label>
-                                <input type="text" class="form-control admin-manage-input" name="controllerMaterial" value="<%= attributeMap.getOrDefault("Material", "")%>">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label admin-manage-label">Battery Capacity</label>
-                                <input type="text" class="form-control admin-manage-input" name="controllerBattery" value="<%= attributeMap.getOrDefault("Battery Capacity", "")%>">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label admin-manage-label">Charging Time</label>
-                                <input type="text" class="form-control admin-manage-input" name="controllerChargingTime" value="<%= attributeMap.getOrDefault("Charging Time", "")%>">
-                            </div>
-                        </div>
-                    </div>
-                    <% } %>
                 </div>
-                <% }%>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-4">
-                <a href="<%= request.getContextPath()%>/manage-products?action=list" class="admin-manage-back">
-                    <i class="fas fa-arrow-left mr-1"></i> Back
-                </a>
-                <div>
-                    <button type="reset" class="btn admin-manage-reset mr-2">
-                        <i class="fas fa-xmark mr-1"></i> Reset
-                    </button>
-                    <button type="submit" class="btn admin-manage-button">
-                        <i class="fas fa-pen-to-square mr-1"></i> Edit
-                    </button>
+            <div class="mb-4 admin-manage-fieldset p-4 border rounded">
+                <h3 class="admin-manage-subtitle">Custom Attributes</h3>
+                <button type="button" id="addCustomAttributeBtn" class="btn btn-secondary mb-3 add-1">
+                    <i class="fas fa-plus mr-1 "></i> Add Custom Attribute
+                </button>
+
+                <div id="customAttributesContainer">
+                    <%
+                        if (product.getAttributes() != null) {
+                            for (ProductAttribute attr : product.getAttributes()) {
+                                if (!predefinedAttributeKeys.contains(attr.getAttributeName())) {
+                    %>
+                    <div class="row g-2 mb-2 custom-attribute-row">
+                        <div class="col-md-5">
+                            <input type="text" name="customAttributeNames" class="form-control admin-manage-input" placeholder="Attribute Name" value="<%= attr.getAttributeName()%>" required>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" name="customAttributeValues" class="form-control admin-manage-input" placeholder="Attribute Value" value="<%= attr.getValue()%>" required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger remove-attr-btn btn-delete">Delete</button>
+                        </div>
+                    </div>
+                    <%
+                                }
+                            }
+                        }
+                    %>
                 </div>
+            </div>
+
+            <div class="d-flex justify-content-end align-items-center mt-4">
+                <button type="button" class="btn admin-manage-back mr-2" onclick="window.location.href='<%= request.getContextPath()%>/manage-products?action=list'">
+                    <i class="fas fa-times mr-1"></i> Cancel
+                </button>
+                <button type="submit" class="btn admin-manage-button">
+                    <i class="fas fa-save mr-1"></i> Save Changes
+                </button>
             </div>
         </form>
         <% } else { %>
@@ -436,74 +376,70 @@
 </main>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Gọi hàm xử lý loại sản phẩm khi trang được tải
-        const initialSelect = document.getElementById('categoryId');
-        if (initialSelect) {
-            handleProductTypeChange(initialSelect);
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    // Disable changing product type during edit
+    const categorySelect = document.getElementById('categoryId');
+    if (categorySelect) {
+        categorySelect.disabled = true;
+    }
 
-        // Bắt đầu logic upload ảnh đã được thống nhất
-        document.querySelectorAll('.image-uploader').forEach(uploader => {
-            const input = uploader.querySelector('input[type="file"]');
-            const hiddenInput = uploader.querySelector('input[type="hidden"][name="originalImageViews"]');
-            const preview = uploader.querySelector('.image-preview');
-            const removeBtn = uploader.querySelector('.remove-image-btn');
+    // Handle image upload and preview
+    document.querySelectorAll('.image-uploader').forEach(uploader => {
+        const input = uploader.querySelector('input[type="file"]');
+        const hiddenInput = uploader.querySelector('input[type="hidden"][name="originalImageViews"]');
+        const preview = uploader.querySelector('.image-preview');
+        const removeBtn = uploader.querySelector('.remove-image-btn');
 
-            // Khi người dùng chọn một file mới
-            input.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        preview.src = e.target.result;
-                        uploader.classList.add('has-image');
-                    }
-                    reader.readAsDataURL(file);
+        input.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    uploader.classList.add('has-image');
                 }
-            });
-
-            // Khi người dùng nhấn nút xóa (×)
-            removeBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                input.value = '';
-                preview.src = '';
-
-                if (hiddenInput) {
-                    hiddenInput.value = ''; // Xóa giá trị để báo cho server biết ảnh đã bị xóa
-                }
-                uploader.classList.remove('has-image');
-            });
+                reader.readAsDataURL(file);
+            }
         });
-        // Kết thúc logic upload ảnh
+
+        removeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            input.value = '';
+            preview.src = '';
+            if (hiddenInput)
+                hiddenInput.value = ''; // Clear the hidden input to mark for removal
+            uploader.classList.remove('has-image');
+        });
     });
 
-    // Hàm xử lý việc hiển thị các trường động dựa trên loại sản phẩm
-    function handleProductTypeChange(selectElement) {
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const productType = selectedOption.getAttribute('data-normalized-name');
+    // Handle adding/removing custom attributes
+    const addBtn = document.getElementById('addCustomAttributeBtn');
+    const container = document.getElementById('customAttributesContainer');
 
-        document.getElementById('productTypeField').value = productType;
+    addBtn.addEventListener('click', () => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'row g-2 mb-2 custom-attribute-row';
+        wrapper.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" name="customAttributeNames" class="form-control admin-manage-input" placeholder="Attribute Name" required>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="customAttributeValues" class="form-control admin-manage-input" placeholder="Attribute Value" required>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger remove-attr-btn btn-delete">Delete</button>
+            </div>
+        `;
+        container.appendChild(wrapper);
+    });
 
-        document.querySelectorAll('.admin-manage-type').forEach(div => {
-            div.style.display = 'none';
-            div.querySelectorAll('input, select, textarea').forEach(input => {
-                input.disabled = true;
-            });
-        });
-
-        if (productType) {
-            const section = document.querySelector('.' + productType + '-details');
-            if (section) {
-                section.style.display = 'block';
-                section.querySelectorAll('input, select, textarea').forEach(input => {
-                    input.disabled = false;
-                });
-            }
+    container.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-attr-btn')) {
+            e.target.closest('.custom-attribute-row').remove();
         }
-    }
+    });
+});
 </script>
 
 <%@include file="/WEB-INF/include/dashboard-footer.jsp" %>

@@ -35,6 +35,7 @@ import shop.model.OperatingSystem;
 import shop.model.Product;
 import shop.model.ProductAttribute;
 import shop.model.StorePlatform;
+import jakarta.servlet.http.HttpSession; // Import HttpSession
 
 /**
  *
@@ -55,7 +56,7 @@ public class ProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) {
-            action = "list";
+            action = "list"; // Default action is to display the list
         }
         try {
             switch (action) {
@@ -82,10 +83,10 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("brandsList", new BrandDAO().getAllBrands());
                     request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
                     request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
-                    request.setAttribute("gameDetails", existingProduct.getGameDetails());
 
                     if (existingProduct.getGameDetailsId() != null && existingProduct.getGameDetailsId() > 0) {
                         int gameDetailsId = existingProduct.getGameDetailsId();
+                        request.setAttribute("gameDetails", existingProduct.getGameDetails());
                         request.setAttribute("gameKeys", new GameKeyDAO().findByGameDetailsId(gameDetailsId));
 
                         List<StorePlatform> selectedPlatforms = new StorePlatformDAO().findByGameDetailsId(gameDetailsId);
@@ -125,17 +126,14 @@ public class ProductServlet extends HttpServlet {
                     ProductDAO productDAO = new ProductDAO();
                     Product product = productDAO.getProductById(id);
 
-                    // 1. Kiểm tra xem sản phẩm có tồn tại không
                     if (product == null) {
                         response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
-                        return; // Dừng xử lý ngay lập tức
+                        return;
                     }
 
-                    // 2. Nếu sản phẩm tồn tại, lấy số sao và gán vào sản phẩm (không cần vòng lặp)
                     double stars = productDAO.getAverageStarsForProduct(product.getProductId());
                     product.setAverageStars(stars);
 
-                    // 3. Xử lý các logic còn lại
                     if ("Game".equalsIgnoreCase(product.getCategoryName()) && product.getGameDetailsId() != null && product.getGameDetailsId() > 0) {
                         int gameDetailsId = product.getGameDetailsId();
                         request.setAttribute("gameKeys", new GameKeyDAO().findByGameDetailsId(gameDetailsId));
@@ -163,12 +161,9 @@ public class ProductServlet extends HttpServlet {
                         request.setAttribute("operatingSystems", distinctOs);
                     }
 
-                    Locale localeVN = new Locale("vi", "VN");
-                    request.setAttribute("currencyFormatter", NumberFormat.getCurrencyInstance(localeVN));
+                    request.setAttribute("currencyFormatter", NumberFormat.getCurrencyInstance(Locale.US));
                     request.setAttribute("timestampFormatter", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"));
                     request.setAttribute("dateFormatter", new SimpleDateFormat("dd/MM/yyyy"));
-
-                    // 4. Gửi dữ liệu tới JSP
                     request.setAttribute("product", product);
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-details.jsp").forward(request, response);
                     break;
@@ -185,43 +180,52 @@ public class ProductServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-delete.jsp").forward(request, response);
                     break;
                 }
-                default: {
+                default: { 
+
+                    HttpSession session = request.getSession(false);
+                    if (session != null) {
+                        if (session.getAttribute("successMessage") != null) {
+                            request.setAttribute("successMessage", session.getAttribute("successMessage"));
+                            session.removeAttribute("successMessage");
+                        }
+                         if (session.getAttribute("errorMessage") != null) {
+                            request.setAttribute("errorMessage", session.getAttribute("errorMessage"));
+                            session.removeAttribute("errorMessage");
+                        }
+                    }
+
                     ProductDAO productDAO = new ProductDAO();
                     List<Product> fullProductList;
                     String searchQuery = request.getParameter("query");
 
                     if ("search".equals(action) && searchQuery != null && !searchQuery.trim().isEmpty()) {
-                        String lowerCaseQuery = searchQuery.toLowerCase();
-                        List<Product> allProducts = productDAO.getAllProducts();
-                        fullProductList = new ArrayList<>();
-                        for (Product p : allProducts) {
-                            if (p.getName() != null && p.getName().toLowerCase().contains(lowerCaseQuery)) {
-                                fullProductList.add(p);
-                            }
-                        }
+                        fullProductList = productDAO.searchProductsByName(searchQuery.trim());
                     } else {
                         fullProductList = productDAO.getAllProducts();
                     }
 
                     int page = 1;
                     try {
-                        page = Integer.parseInt(request.getParameter("page"));
-                    } catch (Exception e) {
+                        String pageStr = request.getParameter("page");
+                        if (pageStr != null && !pageStr.isEmpty()) {
+                            page = Integer.parseInt(pageStr);
+                        }
+                    } catch (NumberFormatException e) {
                         page = 1;
                     }
 
                     int totalProducts = fullProductList.size();
                     int totalPages = (int) Math.ceil((double) totalProducts / PRODUCTS_PER_PAGE);
-                    if (totalPages == 0) {
-                        totalPages = 1;
-                    }
-                    if (page > totalPages) {
-                        page = totalPages;
-                    }
+                    if (totalPages == 0) totalPages = 1;
+                    if (page < 1) page = 1;
+                    if (page > totalPages) page = totalPages;
 
                     int start = (page - 1) * PRODUCTS_PER_PAGE;
                     int end = Math.min(start + PRODUCTS_PER_PAGE, totalProducts);
-                    List<Product> pagedProducts = fullProductList.subList(start, end);
+                    List<Product> pagedProducts = new ArrayList<>();
+                    if (start < end) {
+                        pagedProducts = fullProductList.subList(start, end);
+                    }
 
                     String pageUrl;
                     if ("search".equals(action) && searchQuery != null && !searchQuery.isEmpty()) {
@@ -239,13 +243,24 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("pageUrl", pageUrl);
                     request.setAttribute("previousPageUrl", previousPageUrl);
                     request.setAttribute("nextPageUrl", nextPageUrl);
+                    request.setAttribute("currentQuery", searchQuery);
 
                     request.getRequestDispatcher("/WEB-INF/dashboard/product-list.jsp").forward(request, response);
                     break;
                 }
             }
         } catch (SQLException e) {
+            System.err.println("Database error in doGet: " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException("Database error in doGet", e);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid number format in doGet: " + e.getMessage());
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID or page number format.");
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred in doGet: " + e.getMessage());
+            e.printStackTrace();
+            throw new ServletException("An unexpected error occurred", e);
         }
     }
 
@@ -260,124 +275,183 @@ public class ProductServlet extends HttpServlet {
         try {
             switch (action) {
                 case "add": {
-                    String productType = request.getParameter("productType");
-                    String name = request.getParameter("name");
-                    BigDecimal price = new BigDecimal(request.getParameter("price"));
-                    if (price.compareTo(BigDecimal.ZERO) <= 0) {
-                        request.setAttribute("errorMessage", "Price must be greater than 0!");
+                    try {
+                        String name = request.getParameter("name");
+                        String priceStr = request.getParameter("price");
+                        String description = request.getParameter("description");
+                        String categoryIdStr = request.getParameter("categoryId");
+                        String productType = request.getParameter("productType");
+
+                        if (name == null || name.trim().isEmpty() || priceStr == null || priceStr.trim().isEmpty()
+                                || categoryIdStr == null || categoryIdStr.trim().isEmpty() || productType == null || productType.trim().isEmpty()) {
+                            throw new IllegalArgumentException("Please fill in all required fields: Name, Price, Product Type.");
+                        }
+
+                        BigDecimal price = new BigDecimal(priceStr);
+                        int categoryId = Integer.parseInt(categoryIdStr);
+
+                        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+                            throw new IllegalArgumentException("Price must be a positive value.");
+                        }
+                        
+                        List<String> imageUrls = new ArrayList<>();
+                        String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
+                        File uploadDir = new File(uploadPath);
+                        if (!uploadDir.exists()) {
+                            uploadDir.mkdirs();
+                        }
+
+                        for (Part filePart : request.getParts()) {
+                            if ("productImages".equals(filePart.getName()) && filePart.getSize() > 0) {
+                                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                                if (fileName != null && !fileName.isEmpty()) {
+                                    filePart.write(uploadPath + File.separator + fileName);
+                                    imageUrls.add(fileName);
+                                }
+                            }
+                        }
+
+                        if (imageUrls.isEmpty()) {
+                            throw new IllegalArgumentException("Product must have at least one image.");
+                        }
+
+                        Map<String, ProductAttribute> uniqueAttributes = new HashMap<>();
+                        String[] customNames = request.getParameterValues("customAttributeNames");
+                        String[] customValues = request.getParameterValues("customAttributeValues");
+                        if (customNames != null && customValues != null) {
+                            for (int i = 0; i < customNames.length; i++) {
+                                String attrName = customNames[i];
+                                String attrValue = customValues[i];
+                                if (attrName != null && !attrName.trim().isEmpty() && attrValue != null && !attrValue.trim().isEmpty()) {
+                                    uniqueAttributes.put(attrName.trim().toLowerCase(), new ProductAttribute(attrName.trim(), attrValue.trim()));
+                                }
+                            }
+                        }
+
+                        Product product = new Product();
+                        product.setName(name);
+                        product.setDescription(description);
+                        product.setPrice(price);
+                        product.setCategoryId(categoryId);
+                        product.setActiveProduct(1);
+
+                        ProductDAO productDAO = new ProductDAO();
+
+                        if ("game".equalsIgnoreCase(productType)) {
+                            product.setBrandId(null);
+                            GameDetails gameDetails = new GameDetails();
+                            gameDetails.setDeveloper(request.getParameter("developer"));
+                            gameDetails.setGenre(request.getParameter("genre"));
+                            String releaseDateStr = request.getParameter("releaseDate");
+                            if (releaseDateStr == null || releaseDateStr.trim().isEmpty()) {
+                                throw new IllegalArgumentException("Release Date is required for Games.");
+                            }
+                            gameDetails.setReleaseDate(Date.valueOf(releaseDateStr));
+                            String[] platformIds = request.getParameterValues("platformIds");
+                            String[] osIds = request.getParameterValues("osIds");
+                            String newKeysRaw = request.getParameter("gameKeys");
+                            String[] newKeys = (newKeysRaw != null && !newKeysRaw.trim().isEmpty()) ? newKeysRaw.split("\\r?\\n") : new String[0];
+                            product.setQuantity(newKeys.length);
+                            List<ProductAttribute> finalAttributes = new ArrayList<>(uniqueAttributes.values());
+                            productDAO.addFullGameProduct(product, gameDetails, imageUrls, platformIds, osIds, newKeys, finalAttributes);
+                        } else {
+                            String quantityStr = request.getParameter("quantity");
+                            if (quantityStr == null || quantityStr.trim().isEmpty()) {
+                                throw new IllegalArgumentException("Quantity is required for Accessories.");
+                            }
+                            int quantity = Integer.parseInt(quantityStr);
+                            if (quantity <= 0) {
+                                throw new IllegalArgumentException("Quantity must be a positive number for accessories.");
+                            }
+                            product.setQuantity(quantity);
+                            String brandIdStr = request.getParameter("brandId");
+                            product.setBrandId((brandIdStr != null && !brandIdStr.isEmpty()) ? Integer.parseInt(brandIdStr) : null);
+                            String[] attrNames = {"Warranty", "Weight", "Connection Type", "Usage Time", "Headphone Type", "Material", "Battery Capacity", "Features", "Size", "Keyboard Type", "Mouse Type", "Charging Time"};
+                            String[] paramNames = {"warrantyMonths", "weightGrams", "connectionType", "usageTimeHours", "headphoneType", "headphoneMaterial", "headphoneBattery", "headphoneFeatures", "keyboardSize", "keyboardType", "mouseType", "controllerChargingTime"};
+                            for (int i = 0; i < paramNames.length; i++) {
+                                String value = request.getParameter(paramNames[i]);
+                                if (value != null && !value.trim().isEmpty()) {
+                                    uniqueAttributes.put(attrNames[i].trim().toLowerCase(), new ProductAttribute(attrNames[i], value));
+                                }
+                            }
+                            List<ProductAttribute> finalAttributes = new ArrayList<>(uniqueAttributes.values());
+                            productDAO.addAccessoryProduct(product, finalAttributes, imageUrls);
+                        }
+
+                        // --- Success Redirect with Flash Message ---
+                        request.getSession().setAttribute("successMessage", "Product added successfully.");
+                        response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
+
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Validation Error: " + e.getMessage());
+                        request.setAttribute("errorMessage", e.getMessage());
                         request.setAttribute("categoriesList", new CategoryDAO().getAllCategories());
                         request.setAttribute("brandsList", new BrandDAO().getAllBrands());
                         request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
                         request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
                         request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
-                        return;
+                    } catch (Exception e) {
+                        System.err.println("Error adding product: " + e.getMessage());
+                        e.printStackTrace();
+                        request.setAttribute("errorMessage", "An error occurred while creating the product: " + e.getMessage());
+                        request.setAttribute("categoriesList", new CategoryDAO().getAllCategories());
+                        request.setAttribute("brandsList", new BrandDAO().getAllBrands());
+                        request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
+                        request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
+                        request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
                     }
-                    String description = request.getParameter("description");
-                    int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-
-                    List<String> imageUrls = new ArrayList<>();
-                    String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
-                    File uploadDir = new File(uploadPath);
-                    if (!uploadDir.exists()) {
-                        uploadDir.mkdirs();
-                    }
-                    for (Part filePart : request.getParts()) {
-                        if ("productImages".equals(filePart.getName()) && filePart.getSize() > 0) {
-                            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-                            if (fileName != null && !fileName.isEmpty()) {
-                                filePart.write(uploadPath + File.separator + fileName);
-                                imageUrls.add(fileName);
-                            }
-                        }
-                    }
-
-                    Product product = new Product();
-                    product.setName(name);
-                    product.setDescription(description);
-                    product.setPrice(price);
-//                    product.setQuantity(quantity);
-                    product.setCategoryId(categoryId);
-
-                    ProductDAO productDAO = new ProductDAO();
-
-                    if ("game".equals(productType)) {
-                        product.setQuantity(1);
-                        GameDetails gameDetails = new GameDetails();
-                        gameDetails.setDeveloper(request.getParameter("developer"));
-                        gameDetails.setGenre(request.getParameter("genre"));
-                        gameDetails.setReleaseDate(Date.valueOf(request.getParameter("releaseDate")));
-
-                        String[] platformIds = request.getParameterValues("platformIds");
-                        String[] osIds = request.getParameterValues("osIds");
-                        String newKeysRaw = request.getParameter("gameKeys");
-                        String[] newKeys = (newKeysRaw != null && !newKeysRaw.trim().isEmpty()) ? newKeysRaw.split("\\r?\\n") : new String[0];
-
-                        productDAO.addFullGameProduct(product, gameDetails, imageUrls, platformIds, osIds, newKeys);
-                    } else {
-
-                        // For accessories, get quantity from the form
-                        int quantity = Integer.parseInt(request.getParameter("quantity"));
-                        if (quantity <= 0) {
-                            request.setAttribute("errorMessage", "Quantity must be greater than 0!");
-                            request.setAttribute("categoriesList", new CategoryDAO().getAllCategories());
-                            request.setAttribute("brandsList", new BrandDAO().getAllBrands());
-                            request.setAttribute("allPlatforms", new StorePlatformDAO().getAllPlatforms());
-                            request.setAttribute("allOS", new OperatingSystemDAO().getAllOperatingSystems());
-                            request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
-                            return;
-                        }
-                        product.setQuantity(quantity);
-                        String brandIdStr = request.getParameter("brandId");
-                        product.setBrandId((brandIdStr != null && !brandIdStr.isEmpty()) ? Integer.parseInt(brandIdStr) : null);
-
-                        List<ProductAttribute> attributes = new ArrayList<>();
-                        String[] attrNames = {"Warranty", "Weight", "Connection Type", "Usage Time", "Headphone Type", "Material", "Battery Capacity", "Features", "Size", "Keyboard Type", "Mouse Type", "Charging Time"};
-                        String[] paramNames = {"warrantyMonths", "weightGrams", "connectionType", "usageTimeHours", "headphoneType", "headphoneMaterial", "headphoneBattery", "headphoneFeatures", "keyboardSize", "keyboardType", "mouseType", "controllerChargingTime"};
-
-                        for (int i = 0; i < attrNames.length; i++) {
-                            String value = request.getParameter(paramNames[i]);
-                            if (value != null && !value.trim().isEmpty()) {
-                                ProductAttribute pa = new ProductAttribute();
-                                pa.setAttributeName(attrNames[i]);
-                                pa.setValue(value);
-                                attributes.add(pa);
-                            }
-                        }
-
-                        productDAO.addAccessoryProduct(product, attributes, imageUrls);
-                    }
-                    response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
                 }
                 case "update": {
-                    int productId = Integer.parseInt(request.getParameter("productId"));
                     String name = request.getParameter("name");
-                    BigDecimal price = new BigDecimal(request.getParameter("price"));
-                    if (price.compareTo(BigDecimal.ZERO) <= 0) {
-                        request.setAttribute("errorMessage", "Price must be greater than 0!");
-                        request.getRequestDispatcher("/WEB-INF/dashboard/product-edit.jsp").forward(request, response);
-                        return;
-                    }
+                    String priceStr = request.getParameter("price");
                     String description = request.getParameter("description");
-//                    int quantity = Integer.parseInt(request.getParameter("quantity"));
-
-                    int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+                    String categoryIdStr = request.getParameter("categoryId");
                     String productType = request.getParameter("productType");
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    int oldquantity = Integer.parseInt(request.getParameter("oldquantity"));
 
-                    List<String> finalImageUrls = new ArrayList<>();
-                    String[] originalImageViews = request.getParameterValues("originalImageViews");
-                    if (originalImageViews != null) {
-                        for (String imageUrl : originalImageViews) {
-                            if (imageUrl != null && !imageUrl.isEmpty()) {
-                                finalImageUrls.add(imageUrl);
-                            }
-                        }
+                    if (name == null || name.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Product Name is required.");
                     }
+                    if (priceStr == null || priceStr.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Price is required.");
+                    }
+                    if (categoryIdStr == null || categoryIdStr.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Product Type must be selected.");
+                    }
+                    if (productType == null || productType.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Product Type data is missing.");
+                    }
+
+                    BigDecimal price;
+                    try {
+                        price = new BigDecimal(priceStr);
+                        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+                            throw new IllegalArgumentException("Price must be a positive value.");
+                        }
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Price must be a valid number.");
+                    }
+                    int categoryId = Integer.parseInt(categoryIdStr);
+
+                    // --- 2. Xử lý và xác thực hình ảnh ---
+                    List<String> finalImageUrls = new ArrayList<>();
                     String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
                     File uploadDir = new File(uploadPath);
                     if (!uploadDir.exists()) {
                         uploadDir.mkdirs();
                     }
+
+                    String[] originalImageViews = request.getParameterValues("originalImageViews");
+                    if (originalImageViews != null) {
+                        for (String imageUrl : originalImageViews) {
+                            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                                finalImageUrls.add(imageUrl.trim());
+                            }
+                        }
+                    }
+
                     for (Part filePart : request.getParts()) {
                         if ("productImages".equals(filePart.getName()) && filePart.getSize() > 0) {
                             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
@@ -387,76 +461,113 @@ public class ProductServlet extends HttpServlet {
                             }
                         }
                     }
+                    if (finalImageUrls.isEmpty()) {
+                        throw new IllegalArgumentException("Product must have at least one image.");
+                    }
 
+                    // --- 3. Tạo đối tượng và thu thập dữ liệu theo loại ---
                     Product product = new Product();
-                    product.setProductId(productId);
                     product.setName(name);
                     product.setDescription(description);
                     product.setPrice(price);
-//                    product.setQuantity(quantity);
                     product.setCategoryId(categoryId);
+                    product.setActiveProduct(1);
 
                     GameDetails gameDetails = null;
-                    List<ProductAttribute> attributes = null;
-                    String[] platformIds = null;
-                    String[] osIds = null;
-                    String[] newKeys = null;
+                    String[] platformIds = null, osIds = null, newKeys = null;
+                    Map<String, ProductAttribute> uniqueAttributes = new HashMap<>();
 
                     if ("game".equalsIgnoreCase(productType)) {
-                        product.setQuantity(1);
-                        product.setBrandId(null);
-                        int gameDetailsId = 0;
-                        String gameDetailsIdStr = request.getParameter("gameDetailsId");
-                        if (gameDetailsIdStr != null && !gameDetailsIdStr.isEmpty()) {
-                            gameDetailsId = Integer.parseInt(gameDetailsIdStr);
+                        // Validation dành riêng cho Game
+                        String developer = request.getParameter("developer");
+                        String genre = request.getParameter("genre");
+                        String releaseDateStr = request.getParameter("releaseDate");
+                        if (developer == null || developer.trim().isEmpty()) {
+                            throw new IllegalArgumentException("Developer is required for games.");
                         }
+                        if (genre == null || genre.trim().isEmpty()) {
+                            throw new IllegalArgumentException("Genre is required for games.");
+                        }
+                        if (releaseDateStr == null || releaseDateStr.trim().isEmpty()) {
+                            throw new IllegalArgumentException("Release Date is required for games.");
+                        }
+
+                        Date releaseDate;
+                        try {
+                            releaseDate = Date.valueOf(releaseDateStr);
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Invalid Release Date format. Use YYYY-MM-DD.");
+                        }
+
+                        product.setBrandId(null);
+
+                        int gameDetailsId = Integer.parseInt(request.getParameter("gameDetailsId"));
                         if (gameDetailsId > 0) {
                             product.setGameDetailsId(gameDetailsId);
                         }
+                        gameDetails = new GameDetails(gameDetailsId, developer, genre, releaseDate);
 
-                        gameDetails = new GameDetails();
-                        gameDetails.setGameDetailsId(gameDetailsId);
-                        gameDetails.setDeveloper(request.getParameter("developer"));
-                        gameDetails.setGenre(request.getParameter("genre"));
-                        String releaseDateStr = request.getParameter("releaseDate");
-                        if (releaseDateStr != null && !releaseDateStr.isEmpty()) {
-                            gameDetails.setReleaseDate(Date.valueOf(releaseDateStr));
-                        }
                         platformIds = request.getParameterValues("platformIds");
                         osIds = request.getParameterValues("osIds");
                         String newKeysRaw = request.getParameter("newGameKeys");
                         if (newKeysRaw != null && !newKeysRaw.trim().isEmpty()) {
                             newKeys = newKeysRaw.split("\\r?\\n");
+                        }else{
+                            newKeys = new String[0];
                         }
-                    } else {
-                        // For accessories, get quantity from the form
-                        int quantity = Integer.parseInt(request.getParameter("quantity"));
-                        if (quantity <= 0) {
-                            request.setAttribute("errorMessage", "Quantity must be greater than 0!");
-                            request.getRequestDispatcher("/WEB-INF/dashboard/product-add.jsp").forward(request, response);
-                            return;
+                        int sum = oldquantity + newKeys.length;
+                        product.setQuantity(sum);
+
+                    } else { 
+                        String quantityStr = request.getParameter("quantity");
+                        if (quantityStr == null || quantityStr.trim().isEmpty() ) {
+                            throw new IllegalArgumentException("Quantity is required for accessories.");
+                        }
+                        int quantity;
+                        try {
+                            quantity = Integer.parseInt(quantityStr);
+                            if (quantity <= 0) {
+                                throw new IllegalArgumentException("The quantity must be a non-negative number and equal to zero.");
+                            }
+                        } catch (NumberFormatException e) {
+                            throw new IllegalArgumentException("Quantity must be a valid number.");
                         }
                         product.setQuantity(quantity);
                         product.setGameDetailsId(null);
+
                         String brandIdStr = request.getParameter("brandId");
                         product.setBrandId((brandIdStr != null && !brandIdStr.isEmpty()) ? Integer.parseInt(brandIdStr) : null);
+                    }
 
-                        attributes = new ArrayList<>();
-                        String[] attrNames = {"Warranty", "Weight", "Connection Type", "Usage Time", "Headphone Type", "Material", "Battery Capacity", "Features", "Size", "Keyboard Type", "Mouse Type", "Charging Time"};
-                        String[] paramNames = {"warrantyMonths", "weightGrams", "connectionType", "usageTimeHours", "headphoneType", "headphoneMaterial", "headphoneBattery", "headphoneFeatures", "keyboardSize", "keyboardType", "mouseType", "controllerChargingTime"};
-
-                        for (int i = 0; i < attrNames.length; i++) {
-                            String value = request.getParameter(paramNames[i]);
-                            if (value != null && !value.trim().isEmpty()) {
-                                ProductAttribute pa = new ProductAttribute();
-                                pa.setAttributeName(attrNames[i]);
-                                pa.setValue(value);
-                                attributes.add(pa);
+                    // --- 4. Thu thập và xác thực thuộc tính tùy chỉnh ---
+                    String[] customNames = request.getParameterValues("customAttributeNames");
+                    String[] customValues = request.getParameterValues("customAttributeValues");
+                    if (customNames != null && customValues != null) {
+                        for (int i = 0; i < customNames.length; i++) {
+                            String attrName = customNames[i];
+                            String attrValue = customValues[i];
+                            boolean nameExists = attrName != null && !attrName.trim().isEmpty();
+                            boolean valueExists = attrValue != null && !attrValue.trim().isEmpty();
+                            if (nameExists && !valueExists) {
+                                throw new IllegalArgumentException("Custom attribute '" + attrName + "' is missing a value.");
+                            }
+                            if (!nameExists && valueExists) {
+                                throw new IllegalArgumentException("A custom attribute value '" + attrValue + "' is missing a name.");
+                            }
+                            if (nameExists) {
+                                uniqueAttributes.put(attrName.trim().toLowerCase(), new ProductAttribute(attrName.trim(), attrValue.trim()));
                             }
                         }
                     }
+                    List<ProductAttribute> finalAttributes = new ArrayList<>(uniqueAttributes.values());
 
-                    new ProductDAO().updateProduct(product, gameDetails, attributes, finalImageUrls, platformIds, osIds, newKeys);
+                    // --- 5. Gọi DAO để cập nhật CSDL ---
+                    ProductDAO productDAO = new ProductDAO();
+
+                    product.setProductId(productId);
+                    productDAO.updateProduct(product, gameDetails, finalAttributes, finalImageUrls, platformIds, osIds, newKeys);
+                    
+                    request.getSession().setAttribute("successMessage", "Product updated successfully.");
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
                 }
@@ -464,6 +575,7 @@ public class ProductServlet extends HttpServlet {
                     int id = Integer.parseInt(request.getParameter("id"));
                     ProductDAO productDAO = new ProductDAO();
                     productDAO.deleteProduct(id);
+                    request.getSession().setAttribute("successMessage", "Product deleted successfully.");
                     response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
                     break;
                 }
@@ -475,6 +587,7 @@ public class ProductServlet extends HttpServlet {
                     ProductDAO productDAO = new ProductDAO();
                     productDAO.updateProductVisibility(productId, newStatus);
 
+                    request.getSession().setAttribute("successMessage", "Product status updated successfully.");
                     String redirectUrl = request.getContextPath() + "/manage-products?action=list";
                     if (page != null && !page.isEmpty()) {
                         redirectUrl += "&page=" + page;
@@ -488,9 +601,11 @@ public class ProductServlet extends HttpServlet {
                     break;
             }
         } catch (Exception e) {
+            System.err.println("An unexpected error occurred in doPost (main catch): " + e.getMessage());
             e.printStackTrace();
-            request.setAttribute("errorMessage", "err: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/dashboard/product-list.jsp").forward(request, response);
+            HttpSession session = request.getSession();
+            session.setAttribute("errorMessage", "An unexpected error occurred: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/manage-products?action=list");
         }
     }
 
